@@ -48,8 +48,13 @@ export function HomeScreen() {
     }
 
     function handleAgendar(instrumento: string) {
-        // router.push({ pathname: '/agendamento', params: { instrumento } });
-        console.log('Agendar aula de', instrumento, '-', selecao[instrumento]);
+        router.push({
+            pathname: '/agendamento',
+            params: {
+                instrumento,
+                nivel: selecao[instrumento],
+            },
+        });
     }
 
     if (carregando) {
