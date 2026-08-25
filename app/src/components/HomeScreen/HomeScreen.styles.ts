@@ -19,6 +19,28 @@ export const styles = StyleSheet.create({
         paddingTop: 64,
         paddingBottom: 8,
     },
+    headerTopo: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    headerTextos: {
+        flex: 1,
+    },
+    botaoEditarInstrumentos: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        backgroundColor: AZUL_CLARO,
+        borderRadius: 20,
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+    },
+    botaoEditarInstrumentosTexto: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: AZUL,
+    },
     eyebrow: {
         fontSize: 12,
         fontWeight: '700',
@@ -61,23 +83,47 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'flex-start',
     },
+    cardIdentidade: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        flex: 1,
+    },
+    iconeCirculo: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     instrumentoNome: {
         fontSize: 17,
         fontWeight: '700',
         color: TEXTO_PRINCIPAL,
-        marginBottom: 8,
+        marginBottom: 6,
     },
     nivelBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 3,
         alignSelf: 'flex-start',
         backgroundColor: DOURADO_FUNDO,
         borderRadius: 20,
         paddingHorizontal: 10,
         paddingVertical: 4,
     },
+    nivelBadgeIntermediario: {
+        backgroundColor: AZUL_CLARO,
+    },
     nivelBadgeTexto: {
         fontSize: 12,
         fontWeight: '700',
         color: DOURADO,
+        marginRight: 2,
+    },
+    nivelBadgeTextoIntermediario: {
+        color: AZUL,
     },
     botaoEditar: {
         width: 36,
@@ -86,9 +132,6 @@ export const styles = StyleSheet.create({
         backgroundColor: AZUL_CLARO,
         alignItems: 'center',
         justifyContent: 'center',
-    },
-    botaoEditarTexto: {
-        fontSize: 16,
     },
     niveisContainer: {
         flexDirection: 'row',
