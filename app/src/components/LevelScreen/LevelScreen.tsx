@@ -4,13 +4,22 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { LevelConstants } from '../../constants/LevelConstants';
-import { getSelecao, setOnboardingCompleto, setSelecao } from '../../utils/onboarding';
+import {
+  getSelecao,
+  setOnboardingCompleto,
+  setSelecao,
+} from '../../utils/onboarding';
+
 import { styles } from './LevelScreen.styles';
 
 const NIVEIS = LevelConstants.NIVEIS;
+
+const ESTRELAS = ['★', '★★', '★★★'];
 
 export function LevelScreen() {
   const router = useRouter();
@@ -32,19 +41,22 @@ export function LevelScreen() {
   const [niveis, setNiveis] = useState<Record<string, string>>({});
 
   // Pré-preenche os níveis dos instrumentos que já tinham nível escolhido
-  // (fluxo de edição vindo da Home)
   useEffect(() => {
     getSelecao().then((selecaoSalva) => {
       setNiveis((prev) => {
         const preenchido = { ...prev };
+
         listaInstrumentos.forEach((instrumento) => {
           if (selecaoSalva[instrumento]) {
-            preenchido[instrumento] = selecaoSalva[instrumento];
+            preenchido[instrumento] =
+              selecaoSalva[instrumento];
           }
         });
+
         return preenchido;
       });
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -60,8 +72,8 @@ export function LevelScreen() {
     listaInstrumentos.every((instrumento) => niveis[instrumento]);
 
   async function handleContinuar() {
-    // Mantém só os instrumentos que ainda estão selecionados
     const selecaoFinal: Record<string, string> = {};
+
     listaInstrumentos.forEach((instrumento) => {
       selecaoFinal[instrumento] = niveis[instrumento];
     });
@@ -73,73 +85,138 @@ export function LevelScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.botaoVoltar}
-          onPress={() => router.back()}
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'bottom']}
+    >
+      <View style={styles.container}>
+
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.botaoVoltar}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.seta}>‹</Text>
+            <Text style={styles.textoVoltar}>
+              Voltar
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Conteúdo */}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Text style={styles.seta}>←</Text>
-          <Text style={styles.textoVoltar}>Voltar</Text>
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.titulo}>
+            Qual é o seu nível?
+          </Text>
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+          <Text style={styles.subtitulo}>
+            Selecione o nível que melhor representa sua
+            experiência em cada instrumento.
+          </Text>
 
-        <Text style={styles.pergunta}>
-          Qual é o seu nível em cada instrumento?
-        </Text>
+          <View style={styles.listaInstrumentos}>
+            {listaInstrumentos.map((instrumento) => (
+              <View
+                key={instrumento}
+                style={styles.instrumentoCard}
+              >
+                <Text style={styles.instrumentoTitulo}>
+                  {instrumento}
+                </Text>
 
-        <View style={styles.listaInstrumentos}>
-          {listaInstrumentos.map((instrumento) => (
-            <View key={instrumento} style={styles.instrumentoCard}>
-              <Text style={styles.instrumentoTitulo}>
-                {instrumento}
-              </Text>
+                <View style={styles.niveisContainer}>
+                  {NIVEIS.map((nivel, index) => {
+                    const selecionado =
+                      niveis[instrumento] === nivel;
 
-              {NIVEIS.map((nivel) => {
-                const selecionado = niveis[instrumento] === nivel;
+                    const estrelas =
+                      ESTRELAS[index] ?? '★';
 
-                return (
-                  <TouchableOpacity
-                    key={nivel}
-                    style={[
-                      styles.opcao,
-                      selecionado && styles.opcaoSelecionada,
-                    ]}
-                    onPress={() => selecionarNivel(instrumento, nivel)}
-                  >
-                    <Text
-                      style={[
-                        styles.opcaoTexto,
-                        selecionado && styles.opcaoTextoSelecionado,
-                      ]}
-                    >
-                      {nivel}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
+                    return (
+                      <TouchableOpacity
+                        key={nivel}
+                        style={[
+                          styles.opcao,
+                          selecionado &&
+                          styles.opcaoSelecionada,
+                        ]}
+                        onPress={() =>
+                          selecionarNivel(
+                            instrumento,
+                            nivel
+                          )
+                        }
+                        activeOpacity={0.8}
+                      >
+                        <View
+                          style={
+                            styles.opcaoConteudo
+                          }
+                        >
+                          <View>
+                            <Text
+                              style={[
+                                styles.opcaoTexto,
+                                selecionado &&
+                                styles.opcaoTextoSelecionado,
+                              ]}
+                            >
+                              {nivel}
+                            </Text>
 
+                            <Text
+                              style={[
+                                styles.estrelas,
+                                selecionado &&
+                                styles.estrelasSelecionadas,
+                              ]}
+                            >
+                              {estrelas}
+                            </Text>
+                          </View>
+
+                          {selecionado && (
+                            <Text
+                              style={
+                                styles.check
+                              }
+                            >
+                              ✓
+                            </Text>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+
+        {/* Botão fixo */}
+        <View style={styles.footer}>
           <TouchableOpacity
             style={[
               styles.botaoContinuar,
-              !podeContinuar && styles.botaoDesabilitado,
+              !podeContinuar &&
+              styles.botaoDesabilitado,
             ]}
             disabled={!podeContinuar}
             onPress={handleContinuar}
+            activeOpacity={0.8}
           >
             <Text style={styles.botaoTexto}>
               Continuar
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
