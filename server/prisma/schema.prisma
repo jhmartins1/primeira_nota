@@ -1,0 +1,99 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../src/generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model Usuario {
+    id    Int     @id @default(autoincrement())
+    name  String
+    email String  @unique
+    image String?
+
+    agendamentos Agendamento[]
+
+    createdAt DateTime @default(now())
+}
+
+model Professor {
+    id    Int     @id @default(autoincrement())
+    name  String
+    email String  @unique
+    phone String
+    image String?
+
+    instrumentos     ProfessorInstrumento[]
+    disponibilidades Disponibilidade[]
+    agendamentos     Agendamento[]
+}
+
+model Instrumento {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    professores  ProfessorInstrumento[]
+    agendamentos Agendamento[]
+}
+
+model Nivel {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    professores  ProfessorInstrumento[]
+    agendamentos Agendamento[]
+}
+
+model ProfessorInstrumento {
+    id            Int @id @default(autoincrement())
+    professorId   Int
+    instrumentoId Int
+    nivelId       Int
+
+    professor   Professor   @relation(fields: [professorId], references: [id])
+    instrumento Instrumento @relation(fields: [instrumentoId], references: [id])
+    nivel       Nivel       @relation(fields: [nivelId], references: [id])
+
+    @@unique([professorId, instrumentoId, nivelId])
+}
+
+model Disponibilidade {
+    id          Int      @id @default(autoincrement())
+    professorId Int
+    data        DateTime
+    horaInicio  DateTime
+    horaFim     DateTime
+
+    professor Professor @relation(fields: [professorId], references: [id])
+
+    @@index([professorId, data])
+}
+
+model Agendamento {
+    id            Int      @id @default(autoincrement())
+    usuarioId     Int
+    professorId   Int
+    instrumentoId Int
+    nivelId       Int
+    dataHora      DateTime
+
+    status StatusAgendamento @default(AGENDADO)
+
+    usuario     Usuario     @relation(fields: [usuarioId], references: [id])
+    professor   Professor   @relation(fields: [professorId], references: [id])
+    instrumento Instrumento @relation(fields: [instrumentoId], references: [id])
+    nivel       Nivel       @relation(fields: [nivelId], references: [id])
+
+    createdAt DateTime @default(now())
+
+    @@unique([professorId, dataHora])
+    @@index([usuarioId])
+}
+
+enum StatusAgendamento {
+    AGENDADO
+    CANCELADO
+    CONCLUIDO
+}
