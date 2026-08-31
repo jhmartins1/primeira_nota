@@ -12,8 +12,17 @@ export const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+    },
+
+    scroll: {
+        flex: 1,
+    },
+
+    scrollContent: {
         alignItems: 'center',
         paddingHorizontal: 24,
+        paddingBottom: 12,
+        flexGrow: 1,
     },
 
     // ========================================
@@ -48,9 +57,9 @@ export const styles = StyleSheet.create({
     // ========================================
 
     logo: {
-        width: 220,
-        height: 220,
-        marginTop: 28,
+        width: 200,
+        height: 200,
+        marginTop: 4,
         marginBottom: 2,
     },
 
@@ -69,7 +78,7 @@ export const styles = StyleSheet.create({
     // ========================================
 
     titulo: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: '700',
         textAlign: 'center',
         color: '#222',
@@ -81,7 +90,7 @@ export const styles = StyleSheet.create({
     },
 
     tituloEdicao: {
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: '700',
         textAlign: 'center',
         color: '#222',
@@ -95,9 +104,10 @@ export const styles = StyleSheet.create({
 
     pergunta: {
         width: '100%',
-        fontSize: 16,
+        fontSize: 14,
         color: '#555',
         marginBottom: 16,
+        textAlign: 'center',
     },
 
     // ========================================
@@ -161,7 +171,7 @@ export const styles = StyleSheet.create({
 
     footer: {
         width: '100%',
-        marginTop: 'auto',
+        paddingHorizontal: 24,
         paddingBottom: 10,
         paddingTop: 12,
         backgroundColor: '#fff',
