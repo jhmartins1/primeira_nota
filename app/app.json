@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "app",
+    "name": "Primeira Nota",
     "slug": "app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/primeira_nota_logo2.png",
     "scheme": "app",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -12,12 +12,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.jhmartins1.app"
     },
     "web": {
       "output": "static",
@@ -38,6 +37,18 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5d3dc582-4dcb-4716-af08-7b915f13ce2b"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5d3dc582-4dcb-4716-af08-7b915f13ce2b"
     }
   }
 }
