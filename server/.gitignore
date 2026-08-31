@@ -1,21 +1,30 @@
-# dependencies (bun install)
-node_modules
+# dependencies
+node_modules/
 
-# output
-out
-dist
+# Prisma generated client
+src/generated/
+
+# Prisma AI/agent skills
+.claude/
+.cursor/
+.agents/
+.devin/
+
+# build output
+out/
+dist/
 *.tgz
 
 # code coverage
-coverage
+coverage/
 *.lcov
 
 # logs
-logs
-_.log
-report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+logs/
+*.log
+report.*.*.*.*.json
 
-# dotenv environment variable files
+# environment variables
 .env
 .env.development.local
 .env.test.local
@@ -24,11 +33,11 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # caches
 .eslintcache
-.cache
+.cache/
 *.tsbuildinfo
 
-# IntelliJ based IDEs
-.idea
+# IntelliJ
+.idea/
 
-# Finder (MacOS) folder config
+# macOS
 .DS_Store
