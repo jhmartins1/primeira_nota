@@ -1,12 +1,16 @@
 import express from 'express';
 import testRoute from './utils/test.routes';
 import { instrumentRoutes } from './routes/instrument.routes';
+import { professorRoutes } from './routes/professor.routes';
+import { NivelRouter } from './routes/nivel.routes';
 
 const app = express();
 
 app.use(express.json());
 app.use('/test', testRoute);
 app.use('/instrument', instrumentRoutes);
+app.use('/professor', professorRoutes);
+app.use('/nivel', NivelRouter);
 
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
