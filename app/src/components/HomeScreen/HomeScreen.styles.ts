@@ -10,6 +10,8 @@ const DOURADO = '#B8842E';
 const DOURADO_FUNDO = '#FBF1DE';
 const VERDE = '#2E8B57';
 const VERDE_FUNDO = '#EAF6EF';
+const VERMELHO = '#B42318';
+const VERMELHO_FUNDO = '#FFF1F0';
 
 export const styles = StyleSheet.create({
     container: {
@@ -25,6 +27,23 @@ export const styles = StyleSheet.create({
     header: {
         paddingTop: 8,
         paddingBottom: 20,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    botaoLogout: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: VERMELHO_FUNDO,
+        borderWidth: 1,
+        borderColor: '#F3D0CC',
+        marginLeft: 12,
+    },
+
+    botaoLogoutCarregando: {
+        backgroundColor: '#F8E3E1',
     },
 
     eyebrow: {
@@ -297,13 +316,18 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: BORDA,
         borderRadius: 16,
-        padding: 14,
+        padding: 16,
+    },
+
+    aulaTopo: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 14,
     },
+
     aulaIcone: {
-        width: 48,
-        height: 48,
+        width: 50,
+        height: 50,
         borderRadius: 14,
         backgroundColor: AZUL_CLARO,
         alignItems: 'center',
@@ -314,33 +338,58 @@ export const styles = StyleSheet.create({
     aulaInfo: {
         flex: 1,
     },
+
     aulaInstrumento: {
-        fontSize: 15,
+        fontSize: 17,
         fontWeight: '800',
         color: TEXTO_PRINCIPAL,
-        marginBottom: 5,
     },
     aulaDataLinha: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
-        marginBottom: 3,
+        gap: 6,
+        marginBottom: 9,
     },
 
     aulaData: {
-        fontSize: 12,
-        color: TEXTO_SECUNDARIO,
+        fontSize: 13,
+        color: TEXTO_PRINCIPAL,
+        fontWeight: '600',
     },
 
     aulaProfessorLinha: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5,
+        gap: 6,
     },
 
     aulaProfessor: {
-        fontSize: 12,
+        fontSize: 13,
         color: TEXTO_SECUNDARIO,
+    },
+    aulaDetalhes: {
+        borderTopWidth: 1,
+        borderTopColor: BORDA,
+        paddingTop: 13,
+        marginBottom: 12,
+    },
+
+    botaoCancelarAula: {
+        height: 42,
+        borderRadius: 11,
+        borderWidth: 1,
+        borderColor: '#E5D0CE',
+        backgroundColor: '#FFF8F7',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 7,
+    },
+
+    botaoCancelarAulaTexto: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#B42318',
     },
 
     listaVazia: {

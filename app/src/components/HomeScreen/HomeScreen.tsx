@@ -1,6 +1,15 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo } from 'react';
+import { useAuth } from '@clerk/expo';
 import {
+    FontAwesome5,
+    MaterialCommunityIcons,
+} from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    RefreshControl,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -8,342 +17,809 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {
-    FontAwesome5,
-    MaterialCommunityIcons,
-} from '@expo/vector-icons';
-
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
 import { styles } from './HomeScreen.styles';
 
-type Selecao = Record<string, string>;
+const API_URL =
+    process.env.EXPO_PUBLIC_API_URL;
 
-type Aula = {
-    id: string;
+interface InstrumentoUsuario {
     instrumento: string;
     nivel: string;
-    data: string;
-    diaSemana: string;
-    horario: string;
-    professor: string;
-};
-
-/*
-==================================================
-DADOS MOCKADOS
-==================================================
-
-Por enquanto estamos simulando as aulas.
-
-Depois que o backend estiver pronto, isso será
-substituído por uma chamada à API:
-
-GET /aulas/minhas
-
-*/
-
-const AULAS_MOCK: Aula[] = [
-    {
-        id: '1',
-        instrumento: 'Guitarra',
-        nivel: 'Iniciante',
-        data: '02/09',
-        diaSemana: 'Quarta-feira',
-        horario: '19:00',
-        professor: 'João Silva',
-    },
-    {
-        id: '2',
-        instrumento: 'Violão',
-        nivel: 'Iniciante',
-        data: '05/09',
-        diaSemana: 'Sábado',
-        horario: '15:00',
-        professor: 'Carlos Mendes',
-    },
-    {
-        id: '3',
-        instrumento: 'Teclado',
-        nivel: 'Iniciante',
-        data: '09/09',
-        diaSemana: 'Quarta-feira',
-        horario: '18:00',
-        professor: 'Mariana Souza',
-    },
-];
-
-/*
-==================================================
-COMPONENTE DE ÍCONE DO INSTRUMENTO
-==================================================
-
-O getInstrumentIcon() retorna:
-
-{
-    familia: 'material',
-    nome: 'guitar-acoustic'
 }
 
-ou:
-
-{
-    familia: 'fontawesome5',
-    nome: 'drum'
+interface Professor {
+    id: number;
+    name: string;
+    email?: string;
+    phone?: string;
+    image?: string | null;
 }
 
-Precisamos transformar isso no componente
-correto antes de renderizar.
-*/
+interface Agendamento {
+    id: number;
+    usuarioId: number;
+    professorId: number;
+    instrumentoId: number;
+    nivelId: number;
+    dataHora: string;
+    status:
+    | 'AGENDADO'
+    | 'CANCELADO'
+    | 'CONCLUIDO';
 
-function IconeInstrumento({
-    instrumento,
-    tamanho,
-}: {
-    instrumento: string;
-    tamanho: number;
-}) {
-    const icone = getInstrumentIcon(instrumento);
+    professor: Professor;
 
-    if (icone.familia === 'material') {
-        return (
-            <MaterialCommunityIcons
-                name={icone.nome}
-                size={tamanho}
-                color="#093373"
-            />
+    instrumento: {
+        id: number;
+        name: string;
+    };
+
+    nivel: {
+        id: number;
+        name: string;
+    };
+}
+
+interface Usuario {
+    id: number;
+    name: string;
+    email: string;
+    phone?: string | null;
+    image?: string | null;
+    profileComplete: boolean;
+    onboardingComplete: boolean;
+    instrumentos: InstrumentoUsuario[];
+}
+
+function formatarDataBrasilia(
+    dataHora: string
+) {
+    const data = new Date(dataHora);
+
+    const brasilia = new Date(
+        data.getTime() -
+        3 * 60 * 60 * 1000
+    );
+
+    const dia = String(
+        brasilia.getUTCDate()
+    ).padStart(2, '0');
+
+    const mes = String(
+        brasilia.getUTCMonth() + 1
+    ).padStart(2, '0');
+
+    const ano =
+        brasilia.getUTCFullYear();
+
+    const hora = String(
+        brasilia.getUTCHours()
+    ).padStart(2, '0');
+
+    const minuto = String(
+        brasilia.getUTCMinutes()
+    ).padStart(2, '0');
+
+    return {
+        data: `${dia}/${mes}/${ano}`,
+        hora: `${hora}:${minuto}`,
+    };
+}
+
+function formatarDiaSemana(
+    dataHora: string
+) {
+    const data = new Date(dataHora);
+
+    const brasilia = new Date(
+        data.getTime() -
+        3 * 60 * 60 * 1000
+    );
+
+    return brasilia
+        .toLocaleDateString('pt-BR', {
+            weekday: 'long',
+            timeZone: 'UTC',
+        })
+        .replace(
+            /^./,
+            (letra) =>
+                letra.toUpperCase()
         );
-    }
-
-    if (icone.familia === 'fontawesome5') {
-        return (
-            <FontAwesome5
-                name={icone.nome}
-                size={tamanho}
-                color="#093373"
-            />
-        );
-    }
-
-    return null;
 }
 
 export default function HomeScreen() {
     const router = useRouter();
 
-    const params = useLocalSearchParams();
+    const {
+        getToken,
+        signOut,
+    } = useAuth();
 
-    /*
-    ==================================================
-    RECUPERA OS INSTRUMENTOS DO ONBOARDING
-    ==================================================
+    const [usuario, setUsuario] =
+        useState<Usuario | null>(null);
 
-    O LevelScreen atualmente envia:
+    const [agendamentos, setAgendamentos] =
+        useState<Agendamento[]>([]);
 
-    router.replace({
-        pathname: '/home',
-        params: {
-            selecao: JSON.stringify(selecaoFinal),
-        },
-    });
+    const [carregando, setCarregando] =
+        useState(true);
 
-    Exemplo:
+    const [atualizando, setAtualizando] =
+        useState(false);
 
-    {
-        "Guitarra": "Iniciante",
-        "Violão": "Iniciante"
-    }
-    */
+    const [cancelandoId, setCancelandoId] =
+        useState<number | null>(null);
 
-    const selecaoParam = Array.isArray(params.selecao)
-        ? params.selecao[0]
-        : params.selecao;
+    const [erro, setErro] =
+        useState<string | null>(null);
 
-    const selecao: Selecao = useMemo(() => {
-        if (!selecaoParam) {
-            return {};
-        }
+    const [saindo, setSaindo] =
+        useState(false);
 
+    const carregarDados = async (
+        mostrarLoading = true
+    ) => {
         try {
-            return JSON.parse(selecaoParam);
-        } catch {
-            console.warn(
-                'Não foi possível interpretar os instrumentos recebidos.',
+            if (!API_URL) {
+                throw new Error(
+                    'EXPO_PUBLIC_API_URL não configurada.'
+                );
+            }
+
+            if (mostrarLoading) {
+                setCarregando(true);
+            } else {
+                setAtualizando(true);
+            }
+
+            setErro(null);
+
+            const token =
+                await getToken();
+
+            if (!token) {
+                throw new Error(
+                    'Token de autenticação não encontrado.'
+                );
+            }
+
+            // ----------------------------------------------------
+            // USUÁRIO
+            // ----------------------------------------------------
+
+            const usuarioResponse =
+                await fetch(
+                    `${API_URL}/usuario/me`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
+                        },
+                    }
+                );
+
+            if (!usuarioResponse.ok) {
+                throw new Error(
+                    `Erro ao buscar usuário: ${usuarioResponse.status}`
+                );
+            }
+
+            const usuarioData =
+                await usuarioResponse.json();
+
+            setUsuario(usuarioData);
+
+            // ----------------------------------------------------
+            // AGENDAMENTOS
+            // ----------------------------------------------------
+
+            const agendamentosResponse =
+                await fetch(
+                    `${API_URL}/agendamento`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
+                        },
+                    }
+                );
+
+            if (
+                !agendamentosResponse.ok
+            ) {
+                throw new Error(
+                    `Erro ao buscar agendamentos: ${agendamentosResponse.status}`
+                );
+            }
+
+            const agendamentosData =
+                await agendamentosResponse.json();
+
+            const lista: Agendamento[] =
+                Array.isArray(
+                    agendamentosData
+                )
+                    ? agendamentosData
+                    : [];
+
+            const futuros = lista
+                .filter(
+                    (item) =>
+                        item.status ===
+                        'AGENDADO' &&
+                        new Date(
+                            item.dataHora
+                        ).getTime() >
+                        Date.now()
+                )
+                .sort(
+                    (a, b) =>
+                        new Date(
+                            a.dataHora
+                        ).getTime() -
+                        new Date(
+                            b.dataHora
+                        ).getTime()
+                );
+
+            setAgendamentos(
+                futuros
+            );
+        } catch (error) {
+            console.error(
+                'Erro ao carregar Home:',
+                error
             );
 
-            return {};
+            setErro(
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível carregar os dados.'
+            );
+        } finally {
+            setCarregando(false);
+            setAtualizando(false);
         }
-    }, [selecaoParam]);
+    };
 
-    /*
-    ==================================================
-    INSTRUMENTOS
-    ==================================================
-    */
+    useEffect(() => {
+        carregarDados();
+    }, []);
 
-    const instrumentos = Object.entries(selecao);
-
-    /*
-    ==================================================
-    AULAS
-    ==================================================
-    */
-
-    const aulas = AULAS_MOCK;
-
-    /*
-    ==================================================
-    PRÓXIMA AULA
-    ==================================================
-    */
-
-    const proximaAula = aulas.length > 0
-        ? aulas[0]
-        : null;
-
-    /*
-    ==================================================
-    OUTRAS AULAS
-    ==================================================
-
-    A primeira aula já aparece no card
-    "Próxima aula", então aqui mostramos as demais.
-    */
-
-    const proximasAulas = aulas.slice(1);
-
-    /*
-    ==================================================
-    NAVEGAÇÃO
-    ==================================================
-    */
-
-    function handleAgendar() {
-        router.push('/agendamento');
+    async function atualizarTela() {
+        await carregarDados(false);
     }
 
-    function handleEditarInstrumentos() {
-        router.push('/instrument');
+    const proximaAula =
+        agendamentos.length > 0
+            ? agendamentos[0]
+            : null;
+
+    const demaisAulas =
+        agendamentos.slice(1, 4);
+
+    // ============================================================
+    // LOGOUT
+    // ============================================================
+
+    function confirmarLogout() {
+        Alert.alert(
+            'Sair da conta?',
+            'Você será desconectado da sua conta.',
+            [
+                {
+                    text: 'Cancelar',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Sair',
+                    style: 'destructive',
+                    onPress:
+                        realizarLogout,
+                },
+            ]
+        );
     }
 
-    function handleVerDetalhes(aula: Aula) {
-        console.log('Detalhes da aula:', aula);
+    async function realizarLogout() {
+        try {
+            setSaindo(true);
+
+            await signOut();
+
+            // O AuthGuard do _layout.tsx
+            // detectará que o usuário não está
+            // mais autenticado e redirecionará
+            // automaticamente para /login.
+        } catch (error) {
+            console.error(
+                'Erro ao fazer logout:',
+                error
+            );
+
+            Alert.alert(
+                'Erro',
+                'Não foi possível sair da conta. Tente novamente.'
+            );
+        } finally {
+            setSaindo(false);
+        }
     }
 
-    function handleVerTodas() {
-        console.log('Ver todas as aulas');
+    // ============================================================
+    // CANCELAR AULA
+    // ============================================================
+
+    function confirmarCancelamento(
+        agendamento: Agendamento
+    ) {
+        const data =
+            formatarDataBrasilia(
+                agendamento.dataHora
+            );
+
+        Alert.alert(
+            'Cancelar aula?',
+            `Tem certeza que deseja cancelar sua aula de ${agendamento.instrumento.name} com ${agendamento.professor.name} em ${data.data} às ${data.hora}?`,
+            [
+                {
+                    text: 'Voltar',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Cancelar aula',
+                    style: 'destructive',
+                    onPress: () =>
+                        cancelarAula(
+                            agendamento
+                        ),
+                },
+            ]
+        );
+    }
+
+    async function cancelarAula(
+        agendamento: Agendamento
+    ) {
+        try {
+            setCancelandoId(
+                agendamento.id
+            );
+
+            if (!API_URL) {
+                throw new Error(
+                    'EXPO_PUBLIC_API_URL não configurada.'
+                );
+            }
+
+            const token =
+                await getToken();
+
+            if (!token) {
+                throw new Error(
+                    'Token de autenticação não encontrado.'
+                );
+            }
+
+            const response =
+                await fetch(
+                    `${API_URL}/agendamento/${agendamento.id}/cancelar`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
+                        },
+                    }
+                );
+
+            const texto =
+                await response.text();
+
+            if (!response.ok) {
+                let mensagem =
+                    'Não foi possível cancelar a aula.';
+
+                try {
+                    const erro =
+                        JSON.parse(
+                            texto
+                        );
+
+                    if (erro.error) {
+                        mensagem =
+                            erro.error;
+                    }
+                } catch { }
+
+                throw new Error(
+                    mensagem
+                );
+            }
+
+            setAgendamentos(
+                (listaAtual) =>
+                    listaAtual.filter(
+                        (item) =>
+                            item.id !==
+                            agendamento.id
+                    )
+            );
+
+            Alert.alert(
+                'Aula cancelada',
+                'Sua aula foi cancelada com sucesso.'
+            );
+
+            await carregarDados(false);
+        } catch (error) {
+            console.error(
+                'Erro ao cancelar aula:',
+                error
+            );
+
+            Alert.alert(
+                'Erro',
+                error instanceof Error
+                    ? error.message
+                    : 'Não foi possível cancelar a aula.'
+            );
+        } finally {
+            setCancelandoId(
+                null
+            );
+        }
+    }
+
+    // ============================================================
+    // LOADING
+    // ============================================================
+
+    if (carregando) {
+        return (
+            <SafeAreaView
+                style={styles.container}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems:
+                            'center',
+                        justifyContent:
+                            'center',
+                    }}
+                >
+                    <ActivityIndicator
+                        size="large"
+                        color="#093373"
+                    />
+
+                    <Text
+                        style={{
+                            marginTop: 12,
+                            color: '#6B7280',
+                            fontSize: 14,
+                        }}
+                    >
+                        Carregando...
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    // ============================================================
+    // ERRO
+    // ============================================================
+
+    if (erro && !usuario) {
+        return (
+            <SafeAreaView
+                style={styles.container}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems:
+                            'center',
+                        justifyContent:
+                            'center',
+                        paddingHorizontal: 30,
+                    }}
+                >
+                    <MaterialCommunityIcons
+                        name="alert-circle-outline"
+                        size={50}
+                        color="#093373"
+                    />
+
+                    <Text
+                        style={{
+                            marginTop: 15,
+                            fontSize: 19,
+                            fontWeight:
+                                '800',
+                            color:
+                                '#1A1E29',
+                            textAlign:
+                                'center',
+                        }}
+                    >
+                        Não foi possível
+                        carregar
+                    </Text>
+
+                    <Text
+                        style={{
+                            marginTop: 8,
+                            fontSize: 14,
+                            lineHeight: 21,
+                            color:
+                                '#6B7280',
+                            textAlign:
+                                'center',
+                        }}
+                    >
+                        {erro}
+                    </Text>
+
+                    <TouchableOpacity
+                        style={{
+                            marginTop: 20,
+                            backgroundColor:
+                                '#093373',
+                            paddingHorizontal:
+                                25,
+                            paddingVertical:
+                                13,
+                            borderRadius:
+                                12,
+                        }}
+                        onPress={() =>
+                            carregarDados()
+                        }
+                    >
+                        <Text
+                            style={{
+                                color:
+                                    '#FFFFFF',
+                                fontWeight:
+                                    '700',
+                            }}
+                        >
+                            Tentar novamente
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </SafeAreaView>
+        );
     }
 
     return (
         <SafeAreaView
             style={styles.container}
-            edges={['top']}
         >
             <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={
+                    false
+                }
+                contentContainerStyle={
+                    styles.scrollContent
+                }
+                refreshControl={
+                    <RefreshControl
+                        refreshing={
+                            atualizando
+                        }
+                        onRefresh={
+                            atualizarTela
+                        }
+                        tintColor="#093373"
+                    />
+                }
             >
-
-                {/* ==================================================
-                    HEADER
-                ================================================== */}
+                {/* HEADER */}
 
                 <View style={styles.header}>
-                    <Text style={styles.eyebrow}>
-                        Primeira Nota
-                    </Text>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.eyebrow}>
+                            PRIMEIRA NOTA
+                        </Text>
 
-                    <Text style={styles.titulo}>
-                        Olá! 👋
-                    </Text>
+                        <Text style={styles.titulo}>
+                            Olá, {usuario?.name?.split(' ')[0] ?? 'Aluno'}!
+                        </Text>
 
-                    <Text style={styles.subtitulo}>
-                        Confira suas próximas aulas.
-                    </Text>
+                        <Text style={styles.subtitulo}>
+                            Acompanhe suas aulas e continue evoluindo.
+                        </Text>
+                    </View>
+
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={confirmarLogout}
+                        disabled={saindo}
+                        style={[
+                            styles.botaoLogout,
+                            saindo && styles.botaoLogoutCarregando,
+                        ]}
+                    >
+                        {saindo ? (
+                            <ActivityIndicator
+                                size="small"
+                                color="#B42318"
+                            />
+                        ) : (
+                            <MaterialCommunityIcons
+                                name="logout"
+                                size={21}
+                                color="#B42318"
+                            />
+                        )}
+                    </TouchableOpacity>
                 </View>
 
-
-                {/* ==================================================
-                    PRÓXIMA AULA
-                ================================================== */}
+                {/* PRÓXIMA AULA */}
 
                 {proximaAula ? (
-                    <View style={styles.proximaAulaCard}>
-
-                        {/* TOPO */}
-
-                        <View style={styles.proximaAulaTopo}>
-
-                            <Text style={styles.proximaAulaLabel}>
+                    <View
+                        style={
+                            styles.proximaAulaCard
+                        }
+                    >
+                        <View
+                            style={
+                                styles.proximaAulaTopo
+                            }
+                        >
+                            <Text
+                                style={
+                                    styles.proximaAulaLabel
+                                }
+                            >
                                 PRÓXIMA AULA
                             </Text>
 
-                            <View style={styles.proximaAulaStatus}>
-
-                                <View style={styles.statusPonto} />
-
-                                <Text style={styles.statusTexto}>
-                                    Agendada
-                                </Text>
-
-                            </View>
-
-                        </View>
-
-
-                        {/* INSTRUMENTO */}
-
-                        <View style={styles.proximaAulaConteudo}>
-
-                            <View style={styles.proximaAulaIcone}>
-
-                                <IconeInstrumento
-                                    instrumento={
-                                        proximaAula.instrumento
+                            <View
+                                style={
+                                    styles.proximaAulaStatus
+                                }
+                            >
+                                <View
+                                    style={
+                                        styles.statusPonto
                                     }
-                                    tamanho={30}
                                 />
 
+                                <Text
+                                    style={
+                                        styles.statusTexto
+                                    }
+                                >
+                                    Agendada
+                                </Text>
+                            </View>
+                        </View>
+
+                        <View
+                            style={
+                                styles.proximaAulaConteudo
+                            }
+                        >
+                            <View
+                                style={
+                                    styles.proximaAulaIcone
+                                }
+                            >
+                                {(() => {
+                                    const icone =
+                                        getInstrumentIcon(
+                                            proximaAula
+                                                .instrumento
+                                                .name
+                                        );
+
+                                    if (
+                                        icone.familia ===
+                                        'material'
+                                    ) {
+                                        return (
+                                            <MaterialCommunityIcons
+                                                name={
+                                                    icone.nome
+                                                }
+                                                size={
+                                                    31
+                                                }
+                                                color="#093373"
+                                            />
+                                        );
+                                    }
+
+                                    return (
+                                        <FontAwesome5
+                                            name={
+                                                icone.nome
+                                            }
+                                            size={
+                                                28
+                                            }
+                                            color="#093373"
+                                        />
+                                    );
+                                })()}
                             </View>
 
-                            <View style={styles.proximaAulaInfo}>
-
+                            <View
+                                style={
+                                    styles.proximaAulaInfo
+                                }
+                            >
                                 <Text
                                     style={
                                         styles.proximaAulaInstrumento
                                     }
                                 >
-                                    {proximaAula.instrumento}
+                                    {
+                                        proximaAula
+                                            .instrumento
+                                            .name
+                                    }
                                 </Text>
 
-                                <View style={styles.proximaAulaNivel}>
-
-                                    <MaterialCommunityIcons
-                                        name="star"
-                                        size={14}
-                                        color="#B8842E"
-                                    />
+                                <View
+                                    style={
+                                        styles.proximaAulaNivel
+                                    }
+                                >
+                                    <Text
+                                        style={{
+                                            color:
+                                                '#B8842E',
+                                            fontSize:
+                                                12,
+                                            fontWeight:
+                                                '800',
+                                        }}
+                                    >
+                                        ★
+                                    </Text>
 
                                     <Text
                                         style={
                                             styles.proximaAulaNivelTexto
                                         }
                                     >
-                                        {proximaAula.nivel}
+                                        {
+                                            proximaAula
+                                                .nivel
+                                                .name
+                                        }
                                     </Text>
-
                                 </View>
-
                             </View>
-
                         </View>
 
-
-                        {/* DATA E HORÁRIO */}
-
-                        <View style={styles.proximaAulaDetalhes}>
-
-                            <View style={styles.detalheItem}>
-
+                        <View
+                            style={
+                                styles.proximaAulaDetalhes
+                            }
+                        >
+                            <View
+                                style={
+                                    styles.detalheItem
+                                }
+                            >
                                 <MaterialCommunityIcons
                                     name="calendar-outline"
                                     size={19}
@@ -351,26 +827,43 @@ export default function HomeScreen() {
                                 />
 
                                 <View>
-
-                                    <Text style={styles.detalheLabel}>
+                                    <Text
+                                        style={
+                                            styles.detalheLabel
+                                        }
+                                    >
                                         Data
                                     </Text>
 
-                                    <Text style={styles.detalheValor}>
-                                        {proximaAula.diaSemana}
+                                    <Text
+                                        style={
+                                            styles.detalheValor
+                                        }
+                                    >
+                                        {
+                                            formatarDataBrasilia(
+                                                proximaAula.dataHora
+                                            ).data
+                                        }
                                     </Text>
 
-                                    <Text style={styles.detalheSubvalor}>
-                                        {proximaAula.data}
+                                    <Text
+                                        style={
+                                            styles.detalheSubvalor
+                                        }
+                                    >
+                                        {formatarDiaSemana(
+                                            proximaAula.dataHora
+                                        )}
                                     </Text>
-
                                 </View>
-
                             </View>
 
-
-                            <View style={styles.detalheItem}>
-
+                            <View
+                                style={
+                                    styles.detalheItem
+                                }
+                            >
                                 <MaterialCommunityIcons
                                     name="clock-outline"
                                     size={19}
@@ -378,60 +871,116 @@ export default function HomeScreen() {
                                 />
 
                                 <View>
-
-                                    <Text style={styles.detalheLabel}>
+                                    <Text
+                                        style={
+                                            styles.detalheLabel
+                                        }
+                                    >
                                         Horário
                                     </Text>
 
-                                    <Text style={styles.detalheValor}>
-                                        {proximaAula.horario}
+                                    <Text
+                                        style={
+                                            styles.detalheValor
+                                        }
+                                    >
+                                        {
+                                            formatarDataBrasilia(
+                                                proximaAula.dataHora
+                                            ).hora
+                                        }
                                     </Text>
 
+                                    <Text
+                                        style={
+                                            styles.detalheSubvalor
+                                        }
+                                    >
+                                        1 hora
+                                    </Text>
                                 </View>
-
                             </View>
-
                         </View>
 
-
-                        {/* PROFESSOR */}
-
-                        <View style={styles.professorContainer}>
-
-                            <View style={styles.professorIcone}>
-
-                                <MaterialCommunityIcons
-                                    name="account-outline"
-                                    size={20}
-                                    color="#093373"
-                                />
-
+                        <View
+                            style={
+                                styles.professorContainer
+                            }
+                        >
+                            <View
+                                style={
+                                    styles.professorIcone
+                                }
+                            >
+                                {proximaAula
+                                    .professor
+                                    .image ? (
+                                    <Image
+                                        source={{
+                                            uri: proximaAula
+                                                .professor
+                                                .image,
+                                        }}
+                                        style={{
+                                            width: 38,
+                                            height: 38,
+                                            borderRadius:
+                                                19,
+                                        }}
+                                    />
+                                ) : (
+                                    <FontAwesome5
+                                        name="user"
+                                        size={17}
+                                        color="#093373"
+                                    />
+                                )}
                             </View>
 
-                            <View style={styles.professorInfo}>
-
-                                <Text style={styles.detalheLabel}>
+                            <View
+                                style={
+                                    styles.professorInfo
+                                }
+                            >
+                                <Text
+                                    style={
+                                        styles.detalheLabel
+                                    }
+                                >
                                     Professor
                                 </Text>
 
-                                <Text style={styles.professorNome}>
-                                    {proximaAula.professor}
+                                <Text
+                                    style={
+                                        styles.professorNome
+                                    }
+                                >
+                                    {
+                                        proximaAula
+                                            .professor
+                                            .name
+                                    }
                                 </Text>
-
                             </View>
-
                         </View>
 
-
-                        {/* DETALHES */}
-
                         <TouchableOpacity
-                            style={styles.botaoDetalhes}
-                            onPress={() =>
-                                handleVerDetalhes(proximaAula)
+                            style={
+                                styles.botaoDetalhes
                             }
-                            activeOpacity={0.8}
+                            activeOpacity={0.85}
+                            onPress={() =>
+                                Alert.alert(
+                                    'Aula',
+                                    `${proximaAula.instrumento.name} com ${proximaAula.professor.name}\n${formatarDataBrasilia(proximaAula.dataHora).data} às ${formatarDataBrasilia(proximaAula.dataHora).hora}`
+                                )
+                            }
                         >
+                            <MaterialCommunityIcons
+                                name="information-outline"
+                                size={18}
+                                color="#FFFFFF"
+                            />
 
                             <Text
                                 style={
@@ -440,228 +989,141 @@ export default function HomeScreen() {
                             >
                                 Ver detalhes
                             </Text>
-
-                            <MaterialCommunityIcons
-                                name="arrow-right"
-                                size={18}
-                                color="#FFFFFF"
-                            />
-
                         </TouchableOpacity>
 
+                        <TouchableOpacity
+                            style={{
+                                height: 44,
+                                marginTop: 9,
+                                borderRadius: 12,
+                                borderWidth: 1,
+                                borderColor:
+                                    '#E5E7EB',
+                                backgroundColor:
+                                    '#FFFFFF',
+                                flexDirection:
+                                    'row',
+                                alignItems:
+                                    'center',
+                                justifyContent:
+                                    'center',
+                                gap: 7,
+                            }}
+                            activeOpacity={0.8}
+                            disabled={
+                                cancelandoId ===
+                                proximaAula.id
+                            }
+                            onPress={() =>
+                                confirmarCancelamento(
+                                    proximaAula
+                                )
+                            }
+                        >
+                            {cancelandoId ===
+                                proximaAula.id ? (
+                                <ActivityIndicator
+                                    size="small"
+                                    color="#B42318"
+                                />
+                            ) : (
+                                <>
+                                    <MaterialCommunityIcons
+                                        name="calendar-remove-outline"
+                                        size={18}
+                                        color="#B42318"
+                                    />
+
+                                    <Text
+                                        style={{
+                                            fontSize:
+                                                13,
+                                            fontWeight:
+                                                '700',
+                                            color:
+                                                '#B42318',
+                                        }}
+                                    >
+                                        Cancelar aula
+                                    </Text>
+                                </>
+                            )}
+                        </TouchableOpacity>
                     </View>
                 ) : (
-
-                    /* ==================================================
-                       NENHUMA AULA
-                    ================================================== */
-
-                    <View style={styles.semAulaCard}>
-
-                        <View style={styles.semAulaIcone}>
-
+                    <View
+                        style={
+                            styles.semAulaCard
+                        }
+                    >
+                        <View
+                            style={
+                                styles.semAulaIcone
+                            }
+                        >
                             <MaterialCommunityIcons
-                                name="calendar-blank-outline"
-                                size={32}
+                                name="calendar-plus"
+                                size={30}
                                 color="#093373"
                             />
-
                         </View>
 
-                        <Text style={styles.semAulaTitulo}>
-                            Nenhuma aula agendada
+                        <Text
+                            style={
+                                styles.semAulaTitulo
+                            }
+                        >
+                            Você não tem aulas
+                            agendadas
                         </Text>
 
-                        <Text style={styles.semAulaTexto}>
-                            Você ainda não possui nenhuma aula marcada.
-                            Que tal agendar sua primeira aula?
+                        <Text
+                            style={
+                                styles.semAulaTexto
+                            }
+                        >
+                            Agende uma aula e
+                            comece sua próxima
+                            evolução musical.
                         </Text>
-
                     </View>
                 )}
 
-
-                {/* ==================================================
-                    MINHAS AULAS
-                ================================================== */}
-
-                <View style={styles.secao}>
-
-                    <View style={styles.secaoHeader}>
-
-                        <View>
-
-                            <Text style={styles.secaoTitulo}>
-                                Minhas aulas
-                            </Text>
-
-                            <Text style={styles.secaoSubtitulo}>
-                                Próximos agendamentos
-                            </Text>
-
-                        </View>
-
-
-                        {aulas.length > 0 && (
-                            <TouchableOpacity
-                                onPress={handleVerTodas}
-                                activeOpacity={0.7}
-                            >
-
-                                <Text style={styles.verTodas}>
-                                    Ver todas
-                                </Text>
-
-                            </TouchableOpacity>
-                        )}
-
-                    </View>
-
-
-                    {proximasAulas.length > 0 ? (
-
-                        <View style={styles.listaAulas}>
-
-                            {proximasAulas.map((aula) => (
-
-                                <TouchableOpacity
-                                    key={aula.id}
-                                    style={styles.aulaCard}
-                                    onPress={() =>
-                                        handleVerDetalhes(aula)
-                                    }
-                                    activeOpacity={0.8}
-                                >
-
-                                    {/* ÍCONE */}
-
-                                    <View style={styles.aulaIcone}>
-
-                                        <IconeInstrumento
-                                            instrumento={
-                                                aula.instrumento
-                                            }
-                                            tamanho={24}
-                                        />
-
-                                    </View>
-
-
-                                    {/* INFORMAÇÕES */}
-
-                                    <View style={styles.aulaInfo}>
-
-                                        <Text
-                                            style={
-                                                styles.aulaInstrumento
-                                            }
-                                        >
-                                            {aula.instrumento}
-                                        </Text>
-
-
-                                        <View
-                                            style={
-                                                styles.aulaDataLinha
-                                            }
-                                        >
-
-                                            <MaterialCommunityIcons
-                                                name="calendar-outline"
-                                                size={14}
-                                                color="#6B7280"
-                                            />
-
-                                            <Text
-                                                style={
-                                                    styles.aulaData
-                                                }
-                                            >
-                                                {aula.data} •{' '}
-                                                {aula.horario}
-                                            </Text>
-
-                                        </View>
-
-
-                                        <View
-                                            style={
-                                                styles.aulaProfessorLinha
-                                            }
-                                        >
-
-                                            <MaterialCommunityIcons
-                                                name="account-outline"
-                                                size={14}
-                                                color="#6B7280"
-                                            />
-
-                                            <Text
-                                                style={
-                                                    styles.aulaProfessor
-                                                }
-                                            >
-                                                {aula.professor}
-                                            </Text>
-
-                                        </View>
-
-                                    </View>
-
-
-                                    {/* SETA */}
-
-                                    <MaterialCommunityIcons
-                                        name="chevron-right"
-                                        size={24}
-                                        color="#9CA3AF"
-                                    />
-
-                                </TouchableOpacity>
-
-                            ))}
-
-                        </View>
-
-                    ) : (
-
-                        <View style={styles.listaVazia}>
-
-                            <Text style={styles.listaVaziaTexto}>
-                                Nenhuma outra aula agendada.
-                            </Text>
-
-                        </View>
-
-                    )}
-
-                </View>
-
-
-                {/* ==================================================
-                    AGENDAR NOVA AULA
-                ================================================== */}
+                {/* BOTÃO AGENDAR */}
 
                 <TouchableOpacity
-                    style={styles.botaoAgendar}
-                    onPress={handleAgendar}
+                    style={
+                        styles.botaoAgendar
+                    }
                     activeOpacity={0.85}
+                    onPress={() =>
+                        router.push(
+                            '/agendamento'
+                        )
+                    }
                 >
-
-                    <View style={styles.botaoAgendarIcone}>
-
+                    <View
+                        style={
+                            styles.botaoAgendarIcone
+                        }
+                    >
                         <MaterialCommunityIcons
-                            name="plus"
+                            name="calendar-plus"
                             size={24}
                             color="#093373"
                         />
-
                     </View>
 
-
-                    <View style={styles.botaoAgendarInfo}>
-
-                        <Text style={styles.botaoAgendarTitulo}>
+                    <View
+                        style={
+                            styles.botaoAgendarInfo
+                        }
+                    >
+                        <Text
+                            style={
+                                styles.botaoAgendarTitulo
+                            }
+                        >
                             Agendar nova aula
                         </Text>
 
@@ -670,53 +1132,341 @@ export default function HomeScreen() {
                                 styles.botaoAgendarSubtitulo
                             }
                         >
-                            Escolha instrumento, professor e horário
+                            Escolha instrumento,
+                            professor, dia e
+                            horário
                         </Text>
-
                     </View>
 
-
                     <MaterialCommunityIcons
-                        name="arrow-right"
-                        size={22}
+                        name="chevron-right"
+                        size={24}
                         color="#FFFFFF"
                     />
-
                 </TouchableOpacity>
 
+                {/* MINHAS AULAS */}
 
-                {/* ==================================================
-                    MEUS INSTRUMENTOS
-                ================================================== */}
-
-                <View style={styles.secao}>
-
-                    <View style={styles.secaoHeader}>
-
+                <View
+                    style={
+                        styles.secao
+                    }
+                >
+                    <View
+                        style={
+                            styles.secaoHeader
+                        }
+                    >
                         <View>
+                            <Text
+                                style={
+                                    styles.secaoTitulo
+                                }
+                            >
+                                Minhas aulas
+                            </Text>
 
-                            <Text style={styles.secaoTitulo}>
+                            <Text
+                                style={
+                                    styles.secaoSubtitulo
+                                }
+                            >
+                                Próximos
+                                agendamentos
+                            </Text>
+                        </View>
+
+                        {agendamentos.length >
+                            3 && (
+                                <Text
+                                    style={
+                                        styles.verTodas
+                                    }
+                                >
+                                    Ver todas
+                                </Text>
+                            )}
+                    </View>
+
+                    {demaisAulas.length >
+                        0 ? (
+                        <View
+                            style={
+                                styles.listaAulas
+                            }
+                        >
+                            {demaisAulas.map(
+                                (
+                                    aula
+                                ) => (
+                                    <View
+                                        key={
+                                            aula.id
+                                        }
+                                        style={
+                                            styles.aulaCard
+                                        }
+                                    >
+                                        <View
+                                            style={
+                                                styles.aulaTopo
+                                            }
+                                        >
+                                            <View
+                                                style={
+                                                    styles.aulaIcone
+                                                }
+                                            >
+                                                {(() => {
+                                                    const icone =
+                                                        getInstrumentIcon(
+                                                            aula
+                                                                .instrumento
+                                                                .name
+                                                        );
+
+                                                    if (
+                                                        icone.familia ===
+                                                        'material'
+                                                    ) {
+                                                        return (
+                                                            <MaterialCommunityIcons
+                                                                name={
+                                                                    icone.nome
+                                                                }
+                                                                size={
+                                                                    24
+                                                                }
+                                                                color="#093373"
+                                                            />
+                                                        );
+                                                    }
+
+                                                    return (
+                                                        <FontAwesome5
+                                                            name={
+                                                                icone.nome
+                                                            }
+                                                            size={
+                                                                22
+                                                            }
+                                                            color="#093373"
+                                                        />
+                                                    );
+                                                })()}
+                                            </View>
+
+                                            <View
+                                                style={
+                                                    styles.aulaInfo
+                                                }
+                                            >
+                                                <Text
+                                                    style={
+                                                        styles.aulaInstrumento
+                                                    }
+                                                >
+                                                    {
+                                                        aula
+                                                            .instrumento
+                                                            .name
+                                                    }
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={
+                                                styles.aulaDetalhes
+                                            }
+                                        >
+                                            <View
+                                                style={
+                                                    styles.aulaDataLinha
+                                                }
+                                            >
+                                                <MaterialCommunityIcons
+                                                    name="calendar-outline"
+                                                    size={
+                                                        15
+                                                    }
+                                                    color="#6B7280"
+                                                />
+
+                                                <Text
+                                                    style={
+                                                        styles.aulaData
+                                                    }
+                                                >
+                                                    {
+                                                        formatarDataBrasilia(
+                                                            aula.dataHora
+                                                        ).data
+                                                    }{' '}
+                                                    às{' '}
+                                                    {
+                                                        formatarDataBrasilia(
+                                                            aula.dataHora
+                                                        ).hora
+                                                    }
+                                                </Text>
+                                            </View>
+
+                                            <View
+                                                style={
+                                                    styles.aulaProfessorLinha
+                                                }
+                                            >
+                                                <MaterialCommunityIcons
+                                                    name="account-outline"
+                                                    size={
+                                                        15
+                                                    }
+                                                    color="#6B7280"
+                                                />
+
+                                                <Text
+                                                    style={
+                                                        styles.aulaProfessor
+                                                    }
+                                                >
+                                                    {
+                                                        aula
+                                                            .professor
+                                                            .name
+                                                    }
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        <TouchableOpacity
+                                            style={
+                                                styles.botaoCancelarAula
+                                            }
+                                            activeOpacity={
+                                                0.8
+                                            }
+                                            disabled={
+                                                cancelandoId ===
+                                                aula.id
+                                            }
+                                            onPress={() =>
+                                                confirmarCancelamento(
+                                                    aula
+                                                )
+                                            }
+                                        >
+                                            {cancelandoId ===
+                                                aula.id ? (
+                                                <ActivityIndicator
+                                                    size="small"
+                                                    color="#B42318"
+                                                />
+                                            ) : (
+                                                <>
+                                                    <MaterialCommunityIcons
+                                                        name="calendar-remove-outline"
+                                                        size={
+                                                            17
+                                                        }
+                                                        color="#B42318"
+                                                    />
+
+                                                    <Text
+                                                        style={
+                                                            styles.botaoCancelarAulaTexto
+                                                        }
+                                                    >
+                                                        Cancelar aula
+                                                    </Text>
+                                                </>
+                                            )}
+                                        </TouchableOpacity>
+                                    </View>
+                                )
+                            )}
+                        </View>
+                    ) : (
+                        <View
+                            style={{
+                                backgroundColor:
+                                    '#FFFFFF',
+                                borderRadius:
+                                    16,
+                                borderWidth:
+                                    1,
+                                borderColor:
+                                    '#E7EAF0',
+                                padding: 18,
+                                alignItems:
+                                    'center',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    fontSize:
+                                        13,
+                                    color:
+                                        '#6B7280',
+                                }}
+                            >
+                                Nenhuma outra aula
+                                agendada.
+                            </Text>
+                        </View>
+                    )}
+                </View>
+
+                {/* MEUS INSTRUMENTOS */}
+
+                <View
+                    style={
+                        styles.secao
+                    }
+                >
+                    <View
+                        style={
+                            styles.secaoHeader
+                        }
+                    >
+                        <View>
+                            <Text
+                                style={
+                                    styles.secaoTitulo
+                                }
+                            >
                                 Meus instrumentos
                             </Text>
 
-                            <Text style={styles.secaoSubtitulo}>
-                                Seus níveis atuais
+                            <Text
+                                style={
+                                    styles.secaoSubtitulo
+                                }
+                            >
+                                Seus níveis
+                                atuais
                             </Text>
-
                         </View>
-
 
                         <TouchableOpacity
                             style={
                                 styles.botaoEditarInstrumentos
                             }
-                            onPress={handleEditarInstrumentos}
                             activeOpacity={0.8}
+                            onPress={() =>
+                                router.push({
+                                    pathname:
+                                        '/instrument',
+                                    params: {
+                                        modoEdicao:
+                                            'true',
+                                    },
+                                })
+                            }
                         >
-
                             <MaterialCommunityIcons
                                 name="pencil-outline"
-                                size={16}
+                                size={15}
                                 color="#093373"
                             />
 
@@ -727,139 +1477,160 @@ export default function HomeScreen() {
                             >
                                 Editar
                             </Text>
-
                         </TouchableOpacity>
-
                     </View>
 
+                    {usuario?.instrumentos
+                        ?.length ? (
+                        <View
+                            style={
+                                styles.instrumentosLista
+                            }
+                        >
+                            {usuario.instrumentos.map(
+                                (
+                                    instrumento,
+                                    index
+                                ) => {
+                                    const icone =
+                                        getInstrumentIcon(
+                                            instrumento.instrumento
+                                        );
 
-                    {instrumentos.length > 0 ? (
-
-                        <View style={styles.instrumentosLista}>
-
-                            {instrumentos.map(
-                                ([instrumento, nivel]) => (
-
-                                    <View
-                                        key={instrumento}
-                                        style={
-                                            styles.instrumentoCard
-                                        }
-                                    >
-
-                                        {/* ÍCONE */}
-
-                                        <View
+                                    return (
+                                        <TouchableOpacity
+                                            key={`${instrumento.instrumento}-${index}`}
                                             style={
-                                                styles.instrumentoIcone
+                                                styles.instrumentoCard
+                                            }
+                                            activeOpacity={
+                                                0.8
+                                            }
+                                            onPress={() =>
+                                                router.push(
+                                                    '/agendamento'
+                                                )
                                             }
                                         >
-
-                                            <IconeInstrumento
-                                                instrumento={
-                                                    instrumento
-                                                }
-                                                tamanho={23}
-                                            />
-
-                                        </View>
-
-
-                                        {/* INFORMAÇÕES */}
-
-                                        <View
-                                            style={
-                                                styles.instrumentoInfo
-                                            }
-                                        >
-
-                                            <Text
+                                            <View
                                                 style={
-                                                    styles.instrumentoNome
+                                                    styles.instrumentoIcone
                                                 }
                                             >
-                                                {instrumento}
-                                            </Text>
+                                                {icone.familia ===
+                                                    'material' ? (
+                                                    <MaterialCommunityIcons
+                                                        name={
+                                                            icone.nome
+                                                        }
+                                                        size={
+                                                            25
+                                                        }
+                                                        color="#093373"
+                                                    />
+                                                ) : (
+                                                    <FontAwesome5
+                                                        name={
+                                                            icone.nome
+                                                        }
+                                                        size={
+                                                            23
+                                                        }
+                                                        color="#093373"
+                                                    />
+                                                )}
+                                            </View>
 
                                             <View
                                                 style={
-                                                    styles.instrumentoNivel
+                                                    styles.instrumentoInfo
                                                 }
                                             >
-
-                                                <MaterialCommunityIcons
-                                                    name="star"
-                                                    size={13}
-                                                    color="#B8842E"
-                                                />
-
                                                 <Text
                                                     style={
-                                                        styles.instrumentoNivelTexto
+                                                        styles.instrumentoNome
                                                     }
                                                 >
-                                                    {nivel}
+                                                    {
+                                                        instrumento.instrumento
+                                                    }
                                                 </Text>
 
+                                                <View
+                                                    style={
+                                                        styles.instrumentoNivel
+                                                    }
+                                                >
+                                                    <Text
+                                                        style={{
+                                                            color:
+                                                                '#B8842E',
+                                                            fontSize:
+                                                                12,
+                                                        }}
+                                                    >
+                                                        ★
+                                                    </Text>
+
+                                                    <Text
+                                                        style={
+                                                            styles.instrumentoNivelTexto
+                                                        }
+                                                    >
+                                                        {
+                                                            instrumento.nivel
+                                                        }
+                                                    </Text>
+                                                </View>
                                             </View>
 
-                                        </View>
-
-
-                                        {/* CHECK */}
-
-                                        <MaterialCommunityIcons
-                                            name="check-circle"
-                                            size={21}
-                                            color="#093373"
-                                        />
-
-                                    </View>
-
-                                ),
+                                            <MaterialCommunityIcons
+                                                name="chevron-right"
+                                                size={
+                                                    22
+                                                }
+                                                color="#093373"
+                                            />
+                                        </TouchableOpacity>
+                                    );
+                                }
                             )}
-
                         </View>
-
                     ) : (
-
                         <View
                             style={
                                 styles.instrumentosVazio
                             }
                         >
-
                             <Text
                                 style={
                                     styles.instrumentosVazioTexto
                                 }
                             >
-                                Nenhum instrumento cadastrado.
+                                Você ainda não
+                                possui instrumentos
+                                cadastrados.
                             </Text>
 
                             <TouchableOpacity
-                                onPress={
-                                    handleEditarInstrumentos
+                                onPress={() =>
+                                    router.push(
+                                        '/instrument'
+                                    )
                                 }
-                                activeOpacity={0.7}
                             >
-
                                 <Text
                                     style={
                                         styles.instrumentosVazioLink
                                     }
                                 >
-                                    Adicionar instrumento
+                                    Adicionar
+                                    instrumento
                                 </Text>
-
                             </TouchableOpacity>
-
                         </View>
-
                     )}
-
                 </View>
-
             </ScrollView>
         </SafeAreaView>
     );
