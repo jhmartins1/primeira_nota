@@ -1,9 +1,8 @@
 import { Router } from 'express';
-
+import { clerkAuthMiddleware } from '../middlewares/clerkAuth';
 import { GetOneUsuarioController } from '../controllers/Usuario/GetOneUsuarioController';
 import { UpdateUsuarioController } from '../controllers/Usuario/UpdateUsuarioController';
-
-import { clerkAuthMiddleware } from '../middlewares/clerkAuth';
+import { SaveUsuarioInstrumentosController } from '../controllers/Usuario/SaveUsuarioInstrumentosController';
 
 const userRoute = Router();
 
@@ -13,6 +12,8 @@ const getOneUsuarioController =
 const updateUsuarioController =
     new UpdateUsuarioController();
 
+const saveUsuarioInstrumentosController =
+    new SaveUsuarioInstrumentosController();
 
 // ========================================
 // GET USUÁRIO AUTENTICADO
@@ -35,6 +36,16 @@ userRoute.patch(
     clerkAuthMiddleware,
     (req, res) =>
         updateUsuarioController.handle(req, res)
+);
+
+// ========================================
+// SALVAR INSTRUMENTOS DO USUÁRIO AUTENTICADO
+// ========================================
+userRoute.post(
+    '/instrumentos',
+    clerkAuthMiddleware,
+    (req, res) =>
+        saveUsuarioInstrumentosController.handle(req, res)
 );
 
 
