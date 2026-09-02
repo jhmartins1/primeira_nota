@@ -1,13 +1,12 @@
+
 import { StyleSheet } from 'react-native';
 
 const AZUL = '#093373';
 
 export const styles = StyleSheet.create({
-
-    safeArea: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
+    // ========================================
+    // CONTAINER
+    // ========================================
 
     container: {
         flex: 1,
@@ -21,56 +20,56 @@ export const styles = StyleSheet.create({
     scrollContent: {
         alignItems: 'center',
         paddingHorizontal: 24,
-        paddingBottom: 12,
-        flexGrow: 1,
+        paddingBottom: 30,
     },
 
     // ========================================
-    // VOLTAR
+    // LOADING
     // ========================================
 
-    botaoVoltar: {
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 24,
+    },
+
+    loadingTexto: {
+        marginTop: 12,
+        fontSize: 15,
+        color: '#555',
+        textAlign: 'center',
+    },
+
+    // ========================================
+    // HEADER
+    // ========================================
+
+    header: {
         width: '100%',
+        height: 52,
         flexDirection: 'row',
         alignItems: 'center',
-        alignSelf: 'flex-start',
-        marginTop: 4,
-        marginBottom: -4,
+        paddingHorizontal: 20,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#f0f0f0',
     },
 
-    seta: {
-        fontSize: 32,
-        lineHeight: 32,
+    botaoVoltar: {
+        width: 40,
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    headerTitulo: {
+        flex: 1,
+        fontSize: 18,
+        fontWeight: '700',
         color: AZUL,
-        fontWeight: '400',
-    },
-
-    textoVoltar: {
-        marginLeft: 3,
-        fontSize: 16,
-        color: AZUL,
-        fontWeight: '600',
-    },
-
-    // ========================================
-    // LOGO
-    // ========================================
-
-    logo: {
-        width: 200,
-        height: 200,
-        marginTop: 4,
-        marginBottom: 2,
-    },
-
-    /*
-     * Quando estiver editando, o botão Voltar
-     * ocupa um pequeno espaço no topo.
-     * Diminuímos um pouco o espaço da logo para
-     * manter a tela equilibrada.
-     */
-    logoEdicao: {
-        marginTop: 8,
+        textAlign: 'center',
+        marginRight: 40,
     },
 
     // ========================================
@@ -78,54 +77,46 @@ export const styles = StyleSheet.create({
     // ========================================
 
     titulo: {
-        fontSize: 20,
+        width: '100%',
+        fontSize: 22,
         fontWeight: '700',
         textAlign: 'center',
         color: '#222',
-        marginBottom: 28,
+        marginTop: 20,
+        marginBottom: 10,
     },
 
-    tituloAzul: {
-        color: AZUL,
-    },
-
-    tituloEdicao: {
-        fontSize: 20,
-        fontWeight: '700',
-        textAlign: 'center',
-        color: '#222',
-        marginTop: 0,
-        marginBottom: 28,
-    },
-
-    // ========================================
-    // PERGUNTA
-    // ========================================
-
-    pergunta: {
+    subtitulo: {
         width: '100%',
         fontSize: 14,
-        color: '#555',
-        marginBottom: 16,
+        lineHeight: 21,
+        color: '#666',
         textAlign: 'center',
+        marginBottom: 24,
     },
 
     // ========================================
-    // OPÇÕES
+    // LISTA DE INSTRUMENTOS
     // ========================================
 
-    opcoesContainer: {
+    listaInstrumentos: {
         width: '100%',
         gap: 12,
-        marginBottom: 20,
+        marginBottom: 24,
     },
+
+    // ========================================
+    // OPÇÃO
+    // ========================================
 
     opcao: {
         width: '100%',
+        minHeight: 76,
         borderWidth: 1.5,
         borderColor: '#ddd',
-        borderRadius: 12,
-        paddingVertical: 14,
+        borderRadius: 14,
+        paddingHorizontal: 18,
+        flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#fff',
     },
@@ -135,63 +126,78 @@ export const styles = StyleSheet.create({
         backgroundColor: '#F1EEFE',
     },
 
-    opcaoInterna: {
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+    // ========================================
+    // ÍCONE
+    // ========================================
+
+    iconeContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
         alignItems: 'center',
-        paddingHorizontal: 20,
+        justifyContent: 'center',
+        backgroundColor: '#F1F4F8',
+        marginRight: 14,
     },
 
-    opcaoEsquerda: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
+    iconeContainerSelecionado: {
+        backgroundColor: AZUL,
     },
 
-    opcaoTexto: {
+    // ========================================
+    // NOME
+    // ========================================
+
+    nomeInstrumento: {
+        flex: 1,
         fontSize: 16,
+        fontWeight: '500',
         color: '#333',
     },
 
-    opcaoTextoSelecionado: {
+    nomeInstrumentoSelecionado: {
         color: AZUL,
-        fontWeight: '600',
-    },
-
-    check: {
-        color: AZUL,
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '700',
     },
 
     // ========================================
-    // FOOTER
+    // CHECK
     // ========================================
 
-    footer: {
-        width: '100%',
-        paddingHorizontal: 24,
-        paddingBottom: 10,
-        paddingTop: 12,
-        backgroundColor: '#fff',
+    checkContainer: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: AZUL,
+        marginLeft: 10,
     },
+
+    // ========================================
+    // BOTÃO CONTINUAR
+    // ========================================
 
     botaoContinuar: {
         width: '100%',
-        backgroundColor: AZUL,
+        minHeight: 54,
         borderRadius: 12,
-        paddingVertical: 16,
+        backgroundColor: AZUL,
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        marginTop: 4,
     },
 
-    botaoDesabilitado: {
+    botaoContinuarDesabilitado: {
         backgroundColor: '#ccc',
     },
 
-    botaoTexto: {
+    textoBotaoContinuar: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: '700',
     },
 });
+

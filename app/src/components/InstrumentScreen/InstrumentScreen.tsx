@@ -1,10 +1,16 @@
-import { useUser } from '@clerk/expo';
-import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+
+import { useAuth } from '@clerk/expo';
 import {
-    Image,
+    FontAwesome5,
+    MaterialCommunityIcons,
+} from '@expo/vector-icons';
+import {
+    useLocalSearchParams,
+    useRouter,
+} from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
+import {
+    ActivityIndicator,
     ScrollView,
     Text,
     TouchableOpacity,
@@ -16,264 +22,499 @@ import { instrumentConstants } from '../../constants/InstrumentConstants';
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
 import { styles } from './InstrumentScreen.styles';
 
-const INSTRUMENTOS = instrumentConstants.INSTRUMENTOS;
+const INSTRUMENTOS =
+    instrumentConstants.INSTRUMENTOS;
+
+interface InstrumentoUsuario {
+    instrumento: string;
+    nivel: string;
+}
+
+interface UsuarioResponse {
+    instrumentos?: InstrumentoUsuario[];
+
+    usuario?: {
+        instrumentos?: InstrumentoUsuario[];
+    };
+}
 
 export function InstrumentScreen() {
     const router = useRouter();
+    const { getToken } = useAuth();
 
-    const { user } = useUser();
+    const {
+        instrumentosIniciais,
+        modoEdicao: modoEdicaoParam,
+    } = useLocalSearchParams<{
+        instrumentosIniciais?: string;
+        modoEdicao?: string;
+    }>();
 
-    const { instrumentosIniciais } =
-        useLocalSearchParams<{
-            instrumentosIniciais?: string;
-        }>();
-
-    /**
-     * Se instrumentosIniciais existe, significa que o usuário
-     * chegou aqui através da edição na Home.
+    /*
+     * Define se estamos no modo de edição.
+     *
+     * A Home envia:
+     *
+     * modoEdicao=true
+     *
+     * Também mantemos instrumentosIniciais como
+     * fallback para compatibilidade.
      */
-    const modoEdicao = !!instrumentosIniciais;
+    const modoEdicao =
+        modoEdicaoParam === 'true' ||
+        !!instrumentosIniciais;
 
+    /*
+     * Instrumentos iniciais recebidos pela navegação.
+     */
     const iniciais = useMemo<string[]>(() => {
         if (!instrumentosIniciais) {
             return [];
         }
 
         try {
-            return JSON.parse(instrumentosIniciais) as string[];
-        } catch {
+            const parsed = JSON.parse(
+                instrumentosIniciais
+            );
+
+            if (!Array.isArray(parsed)) {
+                return [];
+            }
+
+            return parsed.filter(
+                (item): item is string =>
+                    typeof item === 'string'
+            );
+        } catch (error) {
+            console.error(
+                'Erro ao interpretar instrumentos iniciais:',
+                error
+            );
+
             return [];
         }
     }, [instrumentosIniciais]);
 
-    const [instrumentosSelecionados, setInstrumentosSelecionados] =
-        useState<string[]>(iniciais);
+    /*
+     * Instrumentos selecionados atualmente.
+     */
+    const [
+        instrumentosSelecionados,
+        setInstrumentosSelecionados,
+    ] = useState<string[]>(iniciais);
 
-    function toggleInstrumento(instrumento: string) {
-        setInstrumentosSelecionados((prev) => {
-            if (prev.includes(instrumento)) {
-                return prev.filter(
-                    (item) => item !== instrumento
-                );
-            }
+    /*
+     * Guarda os níveis dos instrumentos que o
+     * usuário já possui.
+     *
+     * Exemplo:
+     *
+     * {
+     *   Violão: 'Iniciante',
+     *   Guitarra: 'Intermediário'
+     * }
+     */
+    const [
+        niveisExistentes,
+        setNiveisExistentes,
+    ] = useState<Record<string, string>>({});
 
-            return [...prev, instrumento];
-        });
-    }
+    /*
+     * Loading durante a busca dos instrumentos.
+     */
+    const [carregando, setCarregando] =
+        useState(modoEdicao);
 
-    function handleVoltar() {
-        /**
-         * Volta para a tela anterior sem salvar as alterações.
-         */
-        router.back();
-    }
-
-    async function handleContinuar() {
-        if (!user) {
+    /*
+     * Busca os instrumentos existentes do usuário.
+     */
+    useEffect(() => {
+        if (!modoEdicao) {
+            setCarregando(false);
             return;
         }
 
-        try {
-            /**
-             * Salva os instrumentos separados por usuário.
-             *
-             * Exemplo:
-             * instrumentos_user_user_123
-             * instrumentos_user_user_456
-             */
-            const chave = `instrumentos_user_${user.id}`;
+        let cancelado = false;
 
-            await AsyncStorage.setItem(
-                chave,
-                JSON.stringify(instrumentosSelecionados)
-            );
+        async function carregarInstrumentosUsuario() {
+            try {
+                setCarregando(true);
 
-            router.push({
-                pathname: '/level',
-                params: {
-                    instrumentos: JSON.stringify(
+                const token = await getToken();
+
+                if (!token) {
+                    throw new Error('Token não encontrado.');
+                }
+
+                const response = await fetch(
+                    'http://10.0.2.2:3333/usuario/me',
+                    {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                const texto = await response.text();
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Erro ${response.status}: ${texto}`
+                    );
+                }
+
+                let data: UsuarioResponse;
+
+                try {
+                    data = JSON.parse(texto);
+                } catch {
+                    throw new Error(
+                        `Backend não retornou JSON: ${texto}`
+                    );
+                }
+
+                const instrumentosUsuario =
+                    Array.isArray(data.instrumentos)
+                        ? data.instrumentos
+                        : Array.isArray(data.usuario?.instrumentos)
+                            ? data.usuario.instrumentos
+                            : [];
+
+                const nomes =
+                    instrumentosUsuario
+                        .map((item) => item.instrumento)
+                        .filter(
+                            (nome): nome is string =>
+                                typeof nome === 'string'
+                        );
+
+                const mapaNiveis: Record<string, string> = {};
+
+                instrumentosUsuario.forEach((item) => {
+                    if (
+                        typeof item.instrumento === 'string' &&
+                        typeof item.nivel === 'string'
+                    ) {
+                        mapaNiveis[item.instrumento] =
+                            item.nivel;
+                    }
+                });
+
+                if (!cancelado) {
+                    setInstrumentosSelecionados(nomes);
+                    setNiveisExistentes(mapaNiveis);
+                }
+            } catch (error) {
+                if (!cancelado) {
+                    console.error(
+                        'Erro ao carregar instrumentos do usuário:',
+                        error
+                    );
+
+                    setInstrumentosSelecionados(iniciais);
+                }
+            } finally {
+                if (!cancelado) {
+                    setCarregando(false);
+                }
+            }
+        }
+
+        carregarInstrumentosUsuario();
+
+        return () => {
+            cancelado = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [modoEdicao]);
+
+    /*
+     * Seleciona ou desmarca um instrumento.
+     */
+    function toggleInstrumento(
+        instrumento: string
+    ) {
+        setInstrumentosSelecionados(
+            (prev) => {
+                /*
+                 * Se já estiver selecionado,
+                 * remove.
+                 */
+                if (
+                    prev.includes(instrumento)
+                ) {
+                    return prev.filter(
+                        (item) =>
+                            item !== instrumento
+                    );
+                }
+
+                /*
+                 * Caso contrário, adiciona.
+                 */
+                return [
+                    ...prev,
+                    instrumento,
+                ];
+            }
+        );
+    }
+
+    /*
+     * Volta para a tela anterior.
+     */
+    function handleVoltar() {
+        router.back();
+    }
+
+    /*
+     * Vai para a tela de níveis.
+     */
+    function handleContinuar() {
+        if (
+            instrumentosSelecionados.length ===
+            0
+        ) {
+            return;
+        }
+
+        router.push({
+            pathname: '/level',
+
+            params: {
+                instrumentos:
+                    JSON.stringify(
                         instrumentosSelecionados
                     ),
-                },
-            });
-        } catch (error) {
-            console.error(
-                'Erro ao salvar instrumentos:',
-                error
-            );
-        }
+
+                niveisExistentes:
+                    JSON.stringify(
+                        niveisExistentes
+                    ),
+
+                modoEdicao:
+                    modoEdicao
+                        ? 'true'
+                        : 'false',
+            },
+        });
+    }
+
+    /*
+     * Tela de carregamento.
+     */
+    if (carregando) {
+        return (
+            <SafeAreaView
+                style={styles.container}
+            >
+                <View
+                    style={styles.loadingContainer}
+                >
+                    <ActivityIndicator
+                        size="large"
+                        color="#093373"
+                    />
+
+                    <Text
+                        style={styles.loadingTexto}
+                    >
+                        Carregando seus
+                        instrumentos...
+                    </Text>
+                </View>
+            </SafeAreaView>
+        );
     }
 
     return (
         <SafeAreaView
-            style={styles.safeArea}
-            edges={['top', 'bottom']}
+            style={styles.container}
         >
-            <View style={styles.container}>
-                <ScrollView
-                    style={styles.scroll}
-                    contentContainerStyle={styles.scrollContent}
-                    showsVerticalScrollIndicator={false}
+            {/* HEADER */}
+
+            <View style={styles.header}>
+                <TouchableOpacity
+                    onPress={handleVoltar}
+                    activeOpacity={0.7}
+                    style={styles.botaoVoltar}
                 >
-                    {modoEdicao && (
-                        <TouchableOpacity
-                            style={styles.botaoVoltar}
-                            onPress={handleVoltar}
-                            activeOpacity={0.7}
-                            hitSlop={{
-                                top: 10,
-                                bottom: 10,
-                                left: 10,
-                                right: 10,
-                            }}
-                        >
-                            <Text style={styles.seta}>
-                                ‹
-                            </Text>
-
-                            <Text style={styles.textoVoltar}>
-                                Voltar
-                            </Text>
-                        </TouchableOpacity>
-                    )}
-
-                    <Image
-                        source={require('../../../assets/images/primeira_nota_logo2.png')}
-                        style={[
-                            styles.logo,
-                            modoEdicao && styles.logoEdicao,
-                        ]}
-                        resizeMode="contain"
+                    <MaterialCommunityIcons
+                        name="arrow-left"
+                        size={26}
+                        color="#093373"
                     />
+                </TouchableOpacity>
 
-                    {modoEdicao ? (
-                        <Text style={styles.tituloEdicao}>
-                            Editar instrumentos
-                        </Text>
-                    ) : (
-                        <Text style={styles.titulo}>
-                            Bem vindo à Escola de Música{'\n'}
-                            <Text style={styles.tituloAzul}>
-                                Primeira Nota
-                            </Text>
-                        </Text>
-                    )}
+                <Text style={styles.headerTitulo}>
+                    Primeira Nota
+                </Text>
+            </View>
 
-                    <Text style={styles.pergunta}>
-                        Quais instrumentos deseja aprender ou
-                        evoluir?
-                    </Text>
+            {/* CONTEÚDO */}
 
-                    <View style={styles.opcoesContainer}>
-                        {INSTRUMENTOS.map((instrumento) => {
+            <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={
+                    styles.scrollContent
+                }
+                showsVerticalScrollIndicator={
+                    false
+                }
+            >
+                {/* TÍTULO */}
+
+                <Text style={styles.titulo}>
+                    {modoEdicao
+                        ? 'Editar instrumentos'
+                        : 'Quais instrumentos você toca?'}
+                </Text>
+
+                {/* SUBTÍTULO */}
+
+                <Text style={styles.subtitulo}>
+                    {modoEdicao
+                        ? 'Selecione os instrumentos que deseja manter ou adicionar.'
+                        : 'Selecione os instrumentos que você deseja aprender ou praticar.'}
+                </Text>
+
+                {/* LISTA */}
+
+                <View
+                    style={
+                        styles.listaInstrumentos
+                    }
+                >
+                    {INSTRUMENTOS.map(
+                        (instrumento) => {
                             const selecionado =
                                 instrumentosSelecionados.includes(
                                     instrumento
                                 );
 
                             const icone =
-                                getInstrumentIcon(instrumento);
+                                getInstrumentIcon(
+                                    instrumento
+                                );
 
                             return (
                                 <TouchableOpacity
                                     key={instrumento}
-                                    style={[
-                                        styles.opcao,
-                                        selecionado &&
-                                        styles.opcaoSelecionada,
-                                    ]}
+                                    activeOpacity={0.8}
                                     onPress={() =>
                                         toggleInstrumento(
                                             instrumento
                                         )
                                     }
-                                    activeOpacity={0.8}
+                                    style={[
+                                        styles.opcao,
+
+                                        selecionado &&
+                                        styles.opcaoSelecionada,
+                                    ]}
                                 >
+                                    {/* ÍCONE */}
+
                                     <View
-                                        style={
-                                            styles.opcaoInterna
-                                        }
+                                        style={[
+                                            styles.iconeContainer,
+
+                                            selecionado &&
+                                            styles.iconeContainerSelecionado,
+                                        ]}
                                     >
-                                        <View
-                                            style={
-                                                styles.opcaoEsquerda
-                                            }
-                                        >
-                                            {icone.familia ===
-                                                'material' ? (
-                                                <MaterialCommunityIcons
-                                                    name={
-                                                        icone.nome
-                                                    }
-                                                    size={22}
-                                                    color={
-                                                        selecionado
-                                                            ? '#093373'
-                                                            : '#333'
-                                                    }
-                                                />
-                                            ) : (
-                                                <FontAwesome5
-                                                    name={
-                                                        icone.nome
-                                                    }
-                                                    size={20}
-                                                    color={
-                                                        selecionado
-                                                            ? '#093373'
-                                                            : '#333'
-                                                    }
-                                                />
-                                            )}
-
-                                            <Text
-                                                style={[
-                                                    styles.opcaoTexto,
-                                                    selecionado &&
-                                                    styles.opcaoTextoSelecionado,
-                                                ]}
-                                            >
-                                                {instrumento}
-                                            </Text>
-                                        </View>
-
-                                        {selecionado && (
-                                            <Text
-                                                style={
-                                                    styles.check
+                                        {icone.familia ===
+                                            'material' ? (
+                                            <MaterialCommunityIcons
+                                                name={icone.nome}
+                                                size={32}
+                                                color={
+                                                    selecionado
+                                                        ? '#FFFFFF'
+                                                        : '#093373'
                                                 }
-                                            >
-                                                ✓
-                                            </Text>
+                                            />
+                                        ) : (
+                                            <FontAwesome5
+                                                name={icone.nome}
+                                                size={30}
+                                                color={
+                                                    selecionado
+                                                        ? '#FFFFFF'
+                                                        : '#093373'
+                                                }
+                                            />
                                         )}
                                     </View>
+
+                                    {/* NOME */}
+
+                                    <Text
+                                        style={[
+                                            styles.nomeInstrumento,
+
+                                            selecionado &&
+                                            styles.nomeInstrumentoSelecionado,
+                                        ]}
+                                    >
+                                        {instrumento}
+                                    </Text>
+
+                                    {/* CHECK */}
+
+                                    {selecionado && (
+                                        <View
+                                            style={
+                                                styles.checkContainer
+                                            }
+                                        >
+                                            <MaterialCommunityIcons
+                                                name="check"
+                                                size={19}
+                                                color="#FFFFFF"
+                                            />
+                                        </View>
+                                    )}
                                 </TouchableOpacity>
                             );
-                        })}
-                    </View>
-                </ScrollView>
-
-                <View style={styles.footer}>
-                    <TouchableOpacity
-                        style={[
-                            styles.botaoContinuar,
-                            instrumentosSelecionados.length ===
-                            0 &&
-                            styles.botaoDesabilitado,
-                        ]}
-                        disabled={
-                            instrumentosSelecionados.length ===
-                            0
                         }
-                        onPress={handleContinuar}
-                        activeOpacity={0.85}
-                    >
-                        <Text style={styles.botaoTexto}>
-                            Continuar
-                        </Text>
-                    </TouchableOpacity>
+                    )}
                 </View>
-            </View>
+
+                {/* BOTÃO CONTINUAR */}
+
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    disabled={
+                        instrumentosSelecionados.length ===
+                        0
+                    }
+                    onPress={handleContinuar}
+                    style={[
+                        styles.botaoContinuar,
+
+                        instrumentosSelecionados.length ===
+                        0 &&
+                        styles.botaoContinuarDesabilitado,
+                    ]}
+                >
+                    <Text
+                        style={
+                            styles.textoBotaoContinuar
+                        }
+                    >
+                        Continuar
+                    </Text>
+
+                    <MaterialCommunityIcons
+                        name="arrow-right"
+                        size={22}
+                        color="#FFFFFF"
+                    />
+                </TouchableOpacity>
+            </ScrollView>
         </SafeAreaView>
     );
 }
+
