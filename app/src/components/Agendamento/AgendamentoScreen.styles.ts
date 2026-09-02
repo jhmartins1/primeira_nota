@@ -4,6 +4,7 @@ const AZUL = '#093373';
 const AZUL_CLARO = '#EAF0FB';
 
 const FUNDO = '#F5F6FA';
+
 const BORDA = '#E4E7EC';
 
 const TEXTO_PRINCIPAL = '#1A1E29';
@@ -13,11 +14,10 @@ const DOURADO = '#B8842E';
 const DOURADO_FUNDO = '#FBF1DE';
 
 export const styles = StyleSheet.create({
-
     /*
-     * =========================
+     * ============================================================
      * CONTAINER
-     * =========================
+     * ============================================================
      */
 
     safeArea: {
@@ -31,198 +31,401 @@ export const styles = StyleSheet.create({
     },
 
     /*
-     * =========================
+     * ============================================================
+     * LOADING
+     * ============================================================
+     */
+
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 35,
+    },
+
+    loadingTitulo: {
+        marginTop: 18,
+        fontSize: 19,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        textAlign: 'center',
+    },
+
+    loadingTexto: {
+        marginTop: 8,
+        fontSize: 14,
+        lineHeight: 21,
+        color: TEXTO_SECUNDARIO,
+        textAlign: 'center',
+    },
+
+    /*
+     * ============================================================
+     * ERRO
+     * ============================================================
+     */
+
+    erroContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 30,
+    },
+
+    erroTitulo: {
+        marginTop: 16,
+        fontSize: 20,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        textAlign: 'center',
+        marginBottom: 8,
+    },
+
+    erroTexto: {
+        fontSize: 14,
+        lineHeight: 21,
+        color: TEXTO_SECUNDARIO,
+        textAlign: 'center',
+        marginBottom: 22,
+    },
+
+    botaoErro: {
+        backgroundColor: AZUL,
+        paddingHorizontal: 25,
+        paddingVertical: 13,
+        borderRadius: 12,
+    },
+
+    botaoErroTexto: {
+        color: '#FFFFFF',
+        fontSize: 14,
+        fontWeight: '700',
+    },
+
+    /*
+     * ============================================================
+     * SCROLL DA SELEÇÃO DE INSTRUMENTOS
+     * ============================================================
+     */
+
+    instrumentosScroll: {
+        paddingHorizontal: 22,
+        paddingTop: 12,
+        paddingBottom: 30,
+    },
+
+    /*
+     * ============================================================
      * HEADER
-     * =========================
+     * ============================================================
      */
 
     header: {
-        paddingHorizontal: 24,
-
-        // Mais para cima no celular
         paddingTop: 4,
-
-        paddingBottom: 10,
+        paddingBottom: 18,
     },
 
     botaoVoltar: {
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-start',
-
-        marginBottom: 10,
-    },
-
-    seta: {
-        fontSize: 32,
-        lineHeight: 32,
-        color: AZUL,
-        fontWeight: '400',
+        marginBottom: 22,
     },
 
     textoVoltar: {
-        marginLeft: 4,
-        fontSize: 16,
+        marginLeft: 5,
+        fontSize: 15,
         color: AZUL,
         fontWeight: '600',
     },
 
     eyebrow: {
-        fontSize: 12,
-        fontWeight: '700',
-
-        color: TEXTO_SECUNDARIO,
-
+        fontSize: 11,
+        fontWeight: '800',
+        color: AZUL,
+        letterSpacing: 1.4,
         textTransform: 'uppercase',
-        letterSpacing: 0.6,
-
         marginBottom: 7,
     },
 
+    titulo: {
+        fontSize: 26,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+    },
+
+    subtitulo: {
+        fontSize: 14,
+        lineHeight: 21,
+        color: TEXTO_SECUNDARIO,
+        marginTop: 7,
+    },
+
     /*
-     * =========================
-     * INSTRUMENTO + NÍVEL
-     * =========================
+     * ============================================================
+     * CARD DE INSTRUÇÕES
+     * ============================================================
+     */
+
+    instrucoesCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: AZUL_CLARO,
+        borderRadius: 18,
+        padding: 16,
+        marginBottom: 26,
+    },
+
+    instrucoesIcone: {
+        width: 48,
+        height: 48,
+        borderRadius: 15,
+        backgroundColor: '#FFFFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 13,
+    },
+
+    instrucoesInfo: {
+        flex: 1,
+    },
+
+    instrucoesTitulo: {
+        fontSize: 14,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        marginBottom: 4,
+    },
+
+    instrucoesTexto: {
+        fontSize: 12,
+        lineHeight: 18,
+        color: TEXTO_SECUNDARIO,
+    },
+
+    /*
+     * ============================================================
+     * LISTA DE INSTRUMENTOS
+     * ============================================================
+     */
+
+    listaTitulo: {
+        fontSize: 19,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+    },
+
+    listaSubtitulo: {
+        fontSize: 13,
+        color: TEXTO_SECUNDARIO,
+        marginTop: 3,
+        marginBottom: 13,
+    },
+
+    instrumentosLista: {
+        gap: 10,
+    },
+
+    instrumentoCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: BORDA,
+        borderRadius: 17,
+        padding: 14,
+    },
+
+    instrumentoIcone: {
+        width: 52,
+        height: 52,
+        borderRadius: 15,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 13,
+    },
+
+    instrumentoInfo: {
+        flex: 1,
+    },
+
+    instrumentoNome: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        marginBottom: 5,
+    },
+
+    instrumentoNivel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    estrelas: {
+        fontSize: 13,
+        color: DOURADO,
+        marginRight: 5,
+    },
+
+    instrumentoNivelTexto: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: DOURADO,
+    },
+
+    instrumentoSeta: {
+        width: 34,
+        height: 34,
+        borderRadius: 17,
+        backgroundColor: '#F7F8FB',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 8,
+    },
+
+    instrumentosVazio: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: BORDA,
+        borderRadius: 17,
+        padding: 28,
+        alignItems: 'center',
+    },
+
+    instrumentosVazioTitulo: {
+        marginTop: 12,
+        fontSize: 16,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        textAlign: 'center',
+    },
+
+    instrumentosVazioTexto: {
+        marginTop: 6,
+        fontSize: 13,
+        lineHeight: 19,
+        color: TEXTO_SECUNDARIO,
+        textAlign: 'center',
+    },
+
+    /*
+     * ============================================================
+     * CONTEÚDO DA TELA DE AGENDAMENTO
+     * ============================================================
+     */
+
+    scrollContent: {
+        paddingHorizontal: 22,
+        paddingTop: 4,
+        paddingBottom: 20,
+    },
+
+    /*
+     * ============================================================
+     * INSTRUMENTO SELECIONADO
+     * ============================================================
      */
 
     instrumentoHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '100%',
+        marginTop: 3,
     },
 
     iconeInstrumento: {
-        width: 48,
-        height: 48,
-
-        borderRadius: 14,
-
+        width: 54,
+        height: 54,
+        borderRadius: 17,
         backgroundColor: AZUL_CLARO,
-
         alignItems: 'center',
         justifyContent: 'center',
-
-        marginRight: 12,
+        marginRight: 13,
     },
 
-    titulo: {
+    instrumentoTituloContainer: {
         flex: 1,
-
-        fontSize: 24,
-        fontWeight: '700',
-
-        color: TEXTO_PRINCIPAL,
     },
 
     nivelBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-
+        alignSelf: 'flex-start',
         backgroundColor: DOURADO_FUNDO,
-
         borderWidth: 1,
         borderColor: '#F1DDAF',
-
-        borderRadius: 10,
-
+        borderRadius: 20,
         paddingHorizontal: 9,
-        paddingVertical: 7,
-
-        marginLeft: 8,
+        paddingVertical: 4,
+        marginTop: 6,
     },
 
     estrelasNivel: {
-        fontSize: 13,
-
+        fontSize: 12,
         color: DOURADO,
-
-        letterSpacing: 1,
-
         marginRight: 5,
     },
 
     nivelTexto: {
-        fontSize: 12,
-        fontWeight: '700',
-
+        fontSize: 11,
+        fontWeight: '800',
         color: DOURADO,
     },
 
     /*
-     * =========================
-     * SCROLL
-     * =========================
-     */
-
-    scrollContent: {
-        paddingHorizontal: 24,
-
-        paddingTop: 0,
-
-        paddingBottom: 20,
-    },
-
-    /*
-     * =========================
+     * ============================================================
      * SEÇÕES
-     * =========================
+     * ============================================================
      */
+
+    secao: {
+        marginBottom: 27,
+    },
 
     secaoTitulo: {
         fontSize: 18,
-        fontWeight: '700',
-
-        marginTop: 14,
-        marginBottom: 5,
-
+        fontWeight: '800',
         color: TEXTO_PRINCIPAL,
+        marginBottom: 5,
     },
 
     secaoDescricao: {
         fontSize: 13,
         lineHeight: 19,
-
         color: TEXTO_SECUNDARIO,
-
-        marginBottom: 14,
+        marginBottom: 13,
     },
 
     vazioTexto: {
-        fontSize: 14,
-        lineHeight: 20,
-
+        fontSize: 13,
+        lineHeight: 19,
         color: TEXTO_SECUNDARIO,
-
-        marginTop: 4,
+        marginTop: 2,
     },
 
     /*
-     * =========================
+     * ============================================================
      * PROFESSORES
-     * =========================
+     * ============================================================
      */
 
     professoresContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-
-        gap: 12,
+        gap: 10,
     },
 
     professorCard: {
-        width: 100,
-
+        width: 105,
+        minHeight: 132,
         alignItems: 'center',
-
+        justifyContent: 'center',
         paddingVertical: 12,
-        paddingHorizontal: 8,
-
-        borderRadius: 14,
-
+        paddingHorizontal: 7,
+        borderRadius: 16,
         borderWidth: 1.5,
         borderColor: BORDA,
-
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
     },
 
     professorCardSelecionado: {
@@ -232,83 +435,77 @@ export const styles = StyleSheet.create({
 
     professorFotoContainer: {
         position: 'relative',
-
         marginBottom: 8,
     },
 
     professorFoto: {
         width: 62,
         height: 62,
-
         borderRadius: 31,
+    },
+
+    professorFotoPlaceholder: {
+        width: 62,
+        height: 62,
+        borderRadius: 31,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 
     professorCheck: {
         position: 'absolute',
-
         right: -2,
         bottom: -2,
-
         width: 21,
         height: 21,
-
         borderRadius: 11,
-
         backgroundColor: AZUL,
-
         alignItems: 'center',
         justifyContent: 'center',
-
         borderWidth: 2,
-        borderColor: '#fff',
+        borderColor: '#FFFFFF',
     },
 
     professorCheckTexto: {
-        color: '#fff',
-
+        color: '#FFFFFF',
         fontSize: 11,
-        fontWeight: '700',
+        fontWeight: '800',
     },
 
     professorNome: {
         fontSize: 12,
-
+        lineHeight: 16,
         textAlign: 'center',
-
         fontWeight: '600',
-
         color: TEXTO_PRINCIPAL,
     },
 
     professorNomeSelecionado: {
         color: AZUL,
+        fontWeight: '800',
     },
 
     /*
-     * =========================
+     * ============================================================
      * DIAS
-     * =========================
+     * ============================================================
      */
 
     diasContainer: {
-        gap: 10,
-
-        paddingBottom: 4,
+        gap: 9,
+        paddingRight: 5,
     },
 
     diaCard: {
-        width: 62,
-        height: 70,
-
+        width: 64,
+        height: 72,
         alignItems: 'center',
         justifyContent: 'center',
-
-        borderRadius: 14,
-
+        borderRadius: 15,
         borderWidth: 1.5,
         borderColor: BORDA,
-
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
     },
 
     diaCardSelecionado: {
@@ -316,27 +513,17 @@ export const styles = StyleSheet.create({
         backgroundColor: AZUL_CLARO,
     },
 
-    diaCardDesabilitado: {
-        opacity: 0.35,
-    },
-
     diaSemanaTexto: {
-        fontSize: 12,
-
-        fontWeight: '500',
-
+        fontSize: 11,
+        fontWeight: '600',
         color: TEXTO_SECUNDARIO,
-
         textTransform: 'capitalize',
     },
 
     diaMesTexto: {
-        fontSize: 18,
-
-        fontWeight: '700',
-
+        fontSize: 19,
+        fontWeight: '800',
         marginTop: 4,
-
         color: TEXTO_PRINCIPAL,
     },
 
@@ -345,32 +532,29 @@ export const styles = StyleSheet.create({
     },
 
     /*
-     * =========================
+     * ============================================================
      * HORÁRIOS
-     * =========================
+     * ============================================================
      */
 
     horariosContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-
-        gap: 10,
+        gap: 9,
     },
 
     horarioCard: {
-        minWidth: 78,
-
-        paddingVertical: 11,
-        paddingHorizontal: 15,
-
+        minWidth: 84,
+        height: 45,
+        paddingHorizontal: 13,
         borderRadius: 12,
-
         borderWidth: 1.5,
         borderColor: BORDA,
-
-        backgroundColor: '#fff',
-
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        gap: 6,
     },
 
     horarioCardSelecionado: {
@@ -379,124 +563,107 @@ export const styles = StyleSheet.create({
     },
 
     horarioTexto: {
-        fontSize: 14,
-
-        fontWeight: '600',
-
+        fontSize: 13,
+        fontWeight: '700',
         color: TEXTO_PRINCIPAL,
     },
 
     horarioTextoSelecionado: {
-        color: '#fff',
+        color: '#FFFFFF',
     },
 
     /*
-     * =========================
+     * ============================================================
      * RESUMO
-     * =========================
+     * ============================================================
      */
 
     resumoCard: {
         flexDirection: 'row',
         alignItems: 'center',
-
-        padding: 16,
-
-        borderRadius: 16,
-
+        padding: 15,
+        borderRadius: 17,
         backgroundColor: DOURADO_FUNDO,
-
         borderWidth: 1,
         borderColor: '#F1DDAF',
-
-        // Espaço antes do botão
-        marginBottom: 12,
     },
 
     resumoFoto: {
-        width: 52,
-        height: 52,
+        width: 54,
+        height: 54,
+        borderRadius: 27,
+    },
 
-        borderRadius: 26,
+    resumoFotoPlaceholder: {
+        width: 54,
+        height: 54,
+        borderRadius: 27,
+        backgroundColor: '#FFFFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 
     resumoTextos: {
         flex: 1,
-
         marginLeft: 13,
     },
 
     resumoInstrumento: {
-        fontSize: 13,
-
+        fontSize: 12,
         color: DOURADO,
-
-        fontWeight: '700',
+        fontWeight: '800',
     },
 
     resumoProfessor: {
         fontSize: 16,
-
-        fontWeight: '700',
-
+        fontWeight: '800',
         marginTop: 3,
-
         color: TEXTO_PRINCIPAL,
     },
 
     resumoData: {
         fontSize: 13,
-
         color: TEXTO_SECUNDARIO,
-
         marginTop: 4,
     },
 
     /*
-     * =========================
-     * ESPAÇO DO FOOTER
-     * =========================
+     * ============================================================
+     * FOOTER
+     * ============================================================
      */
 
     espacoFooter: {
-        height: 20,
+        height: 25,
     },
 
-    /*
-     * =========================
-     * FOOTER
-     * =========================
-     */
-
     footer: {
-        paddingHorizontal: 24,
-
+        paddingHorizontal: 22,
         paddingTop: 10,
         paddingBottom: 10,
-
         backgroundColor: FUNDO,
-
         borderTopWidth: 1,
         borderTopColor: '#E9EBF0',
     },
 
     botaoConfirmar: {
         width: '100%',
-
+        minHeight: 54,
         backgroundColor: AZUL,
-
-        paddingVertical: 16,
-
-        borderRadius: 14,
-
+        borderRadius: 15,
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+
+    botaoConfirmarDesabilitado: {
+        opacity: 0.45,
     },
 
     botaoConfirmarTexto: {
-        color: '#fff',
-
-        fontWeight: '700',
-
-        fontSize: 15,
+        color: '#FFFFFF',
+        fontWeight: '800',
+        fontSize: 14,
     },
 });
