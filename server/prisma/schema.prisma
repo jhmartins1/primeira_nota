@@ -17,7 +17,43 @@ model Usuario {
 
     agendamentos Agendamento[]
 
+    instrumentos UsuarioInstrumento[]
+
     createdAt DateTime @default(now())
+}
+
+model Instrumento {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    professores  ProfessorInstrumento[]
+    agendamentos Agendamento[]
+
+    usuarios UsuarioInstrumento[]
+}
+
+model Nivel {
+    id   Int    @id @default(autoincrement())
+    name String @unique
+
+    professores  ProfessorInstrumento[]
+    agendamentos Agendamento[]
+
+    usuarios UsuarioInstrumento[]
+}
+
+model UsuarioInstrumento {
+    id            Int @id @default(autoincrement())
+    usuarioId     Int
+    instrumentoId Int
+    nivelId       Int
+
+    usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+    instrumento Instrumento @relation(fields: [instrumentoId], references: [id])
+    nivel       Nivel       @relation(fields: [nivelId], references: [id])
+
+    @@unique([usuarioId, instrumentoId])
+    @@index([usuarioId])
 }
 
 model Professor {
@@ -30,22 +66,6 @@ model Professor {
     instrumentos     ProfessorInstrumento[]
     disponibilidades Disponibilidade[]
     agendamentos     Agendamento[]
-}
-
-model Instrumento {
-    id   Int    @id @default(autoincrement())
-    name String @unique
-
-    professores  ProfessorInstrumento[]
-    agendamentos Agendamento[]
-}
-
-model Nivel {
-    id   Int    @id @default(autoincrement())
-    name String @unique
-
-    professores  ProfessorInstrumento[]
-    agendamentos Agendamento[]
 }
 
 model ProfessorInstrumento {
@@ -90,7 +110,6 @@ model Agendamento {
 
     createdAt DateTime @default(now())
 
-    @@unique([professorId, dataHora])
     @@index([usuarioId])
 }
 

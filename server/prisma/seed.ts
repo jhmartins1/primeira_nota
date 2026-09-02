@@ -10,8 +10,6 @@ async function main() {
             create: { name },
         });
     }
-
-    console.log('Níveis criados com sucesso');
 }
 
 main()
