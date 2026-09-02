@@ -89,11 +89,6 @@ export function CompleteScreen() {
                 );
                 return;
             }
-
-            console.log('Telefone salvo com sucesso:', data);
-
-            // Volta para o index.
-            // O index vai verificar novamente o cadastro.
             router.replace('/');
         } catch (error) {
             console.log(
