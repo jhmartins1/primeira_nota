@@ -1,41 +1,54 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ONBOARDING_KEY = '@primeira_nota:onboarding_completo';
-const SELECAO_KEY = '@primeira_nota:selecao';
+function getChaveOnboarding(userId: string) {
+    return `onboardingCompleto_${userId}`;
+}
 
-// instrumento -> nível
-export type Selecao = Record<string, string>;
-
-export async function getOnboardingCompleto(): Promise<boolean> {
+export async function getOnboardingCompleto(
+    userId: string
+): Promise<boolean> {
     try {
-        const valor = await AsyncStorage.getItem(ONBOARDING_KEY);
+        const chave = getChaveOnboarding(userId);
+
+        const valor = await AsyncStorage.getItem(chave);
+
         return valor === 'true';
-    } catch {
+    } catch (error) {
+        console.error(
+            'Erro ao verificar onboarding:',
+            error
+        );
+
         return false;
     }
 }
 
-export async function setOnboardingCompleto(): Promise<void> {
+export async function salvarOnboardingCompleto(
+    userId: string
+): Promise<void> {
     try {
-        await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+        const chave = getChaveOnboarding(userId);
+
+        await AsyncStorage.setItem(chave, 'true');
     } catch (error) {
-        console.error('Erro ao salvar onboarding:', error);
+        console.error(
+            'Erro ao salvar onboarding:',
+            error
+        );
     }
 }
 
-export async function getSelecao(): Promise<Selecao> {
+export async function limparOnboarding(
+    userId: string
+): Promise<void> {
     try {
-        const valor = await AsyncStorage.getItem(SELECAO_KEY);
-        return valor ? (JSON.parse(valor) as Selecao) : {};
-    } catch {
-        return {};
-    }
-}
+        const chave = getChaveOnboarding(userId);
 
-export async function setSelecao(selecao: Selecao): Promise<void> {
-    try {
-        await AsyncStorage.setItem(SELECAO_KEY, JSON.stringify(selecao));
+        await AsyncStorage.removeItem(chave);
     } catch (error) {
-        console.error('Erro ao salvar seleção:', error);
+        console.error(
+            'Erro ao limpar onboarding:',
+            error
+        );
     }
 }
