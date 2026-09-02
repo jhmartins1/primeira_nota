@@ -18,8 +18,6 @@ export async function clerkAuthMiddleware(
     try {
         const authHeader = req.headers.authorization;
 
-        console.log('Authorization recebido:', !!authHeader);
-
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({
                 error: 'Token não fornecido',
@@ -28,19 +26,9 @@ export async function clerkAuthMiddleware(
 
         const token = authHeader.replace('Bearer ', '');
 
-        console.log('Token recebido:', !!token);
-
-        console.log(
-            'CLERK_SECRET_KEY carregada:',
-            !!process.env.CLERK_SECRET_KEY
-        );
-
         const payload = await verifyToken(token, {
             secretKey: process.env.CLERK_SECRET_KEY,
         });
-
-        console.log('Token Clerk válido!');
-        console.log('Clerk User ID:', payload.sub);
 
         const usuario = await prisma.usuario.findUnique({
             where: {
@@ -49,11 +37,6 @@ export async function clerkAuthMiddleware(
         });
 
         if (!usuario) {
-            console.log(
-                'Usuário Clerk não encontrado no banco:',
-                payload.sub
-            );
-
             return res.status(404).json({
                 error: 'Usuário não encontrado',
             });
