@@ -20,11 +20,13 @@
     "typescript": "^5.9.0"
   },
   "dependencies": {
+    "@clerk/backend": "^3.17.0",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "7.10.0",
     "@types/express": "^5.0.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "svix": "^2.2.0"
   }
 }
