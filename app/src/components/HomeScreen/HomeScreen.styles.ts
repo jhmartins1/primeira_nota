@@ -8,194 +8,487 @@ const TEXTO_PRINCIPAL = '#1A1E29';
 const TEXTO_SECUNDARIO = '#6B7280';
 const DOURADO = '#B8842E';
 const DOURADO_FUNDO = '#FBF1DE';
+const VERDE = '#2E8B57';
+const VERDE_FUNDO = '#EAF6EF';
 
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: FUNDO,
     },
+
+    scrollContent: {
+        paddingHorizontal: 22,
+        paddingTop: 18,
+        paddingBottom: 40,
+    },
     header: {
-        paddingHorizontal: 24,
-        paddingTop: 64,
-        paddingBottom: 8,
+        paddingTop: 8,
+        paddingBottom: 20,
     },
-    headerTopo: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    headerTextos: {
-        flex: 1,
-    },
-    botaoEditarInstrumentos: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        backgroundColor: AZUL_CLARO,
-        borderRadius: 20,
-        paddingVertical: 8,
-        paddingHorizontal: 14,
-    },
-    botaoEditarInstrumentosTexto: {
-        fontSize: 13,
-        fontWeight: '700',
-        color: AZUL,
-    },
+
     eyebrow: {
         fontSize: 12,
         fontWeight: '700',
         color: AZUL,
         letterSpacing: 1.4,
         textTransform: 'uppercase',
-        marginBottom: 4,
+        marginBottom: 5,
     },
+
     titulo: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: '800',
         color: TEXTO_PRINCIPAL,
     },
+
     subtitulo: {
         fontSize: 14,
         color: TEXTO_SECUNDARIO,
-        marginTop: 4,
-    },
-    scrollContent: {
-        paddingHorizontal: 24,
-        paddingTop: 16,
-        paddingBottom: 40,
-        gap: 14,
-    },
-    card: {
+        marginTop: 5,
+    }, proximaAulaCard: {
         backgroundColor: '#FFFFFF',
-        borderRadius: 18,
+        borderRadius: 20,
         borderWidth: 1,
         borderColor: BORDA,
-        padding: 16,
+        padding: 18,
+        marginBottom: 28,
+
         shadowColor: '#0F1B3D',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-        elevation: 2,
-        marginBottom: 14,
+        shadowOffset: {
+            width: 0,
+            height: 7,
+        },
+        shadowOpacity: 0.06,
+        shadowRadius: 14,
+        elevation: 3,
     },
-    cardHeader: {
+
+    proximaAulaTopo: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'center',
+        marginBottom: 18,
     },
-    cardIdentidade: {
+
+    proximaAulaLabel: {
+        fontSize: 11,
+        fontWeight: '800',
+        color: AZUL,
+        letterSpacing: 1.2,
+    },
+
+    proximaAulaStatus: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        flex: 1,
+        gap: 6,
+        backgroundColor: VERDE_FUNDO,
+        paddingHorizontal: 9,
+        paddingVertical: 5,
+        borderRadius: 20,
     },
-    iconeCirculo: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+
+    statusPonto: {
+        width: 7,
+        height: 7,
+        borderRadius: 4,
+        backgroundColor: VERDE,
+    },
+
+    statusTexto: {
+        fontSize: 11,
+        fontWeight: '700',
+        color: VERDE,
+    },
+
+    proximaAulaConteudo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+
+    proximaAulaIcone: {
+        width: 58,
+        height: 58,
+        borderRadius: 17,
         backgroundColor: AZUL_CLARO,
         alignItems: 'center',
         justifyContent: 'center',
+        marginRight: 14,
     },
-    instrumentoNome: {
-        fontSize: 17,
-        fontWeight: '700',
+
+    proximaAulaInfo: {
+        flex: 1,
+    },
+
+    proximaAulaInstrumento: {
+        fontSize: 21,
+        fontWeight: '800',
         color: TEXTO_PRINCIPAL,
-        marginBottom: 6,
+        marginBottom: 7,
     },
-    nivelBadge: {
+
+    proximaAulaNivel: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 3,
         alignSelf: 'flex-start',
+        gap: 4,
         backgroundColor: DOURADO_FUNDO,
         borderRadius: 20,
-        paddingHorizontal: 10,
+        paddingHorizontal: 9,
         paddingVertical: 4,
     },
-    nivelBadgeIntermediario: {
-        backgroundColor: AZUL_CLARO,
-    },
-    nivelBadgeTexto: {
+
+    proximaAulaNivelTexto: {
         fontSize: 12,
         fontWeight: '700',
         color: DOURADO,
-        marginRight: 2,
     },
-    nivelBadgeTextoIntermediario: {
-        color: AZUL,
+
+    proximaAulaDetalhes: {
+        flexDirection: 'row',
+        borderTopWidth: 1,
+        borderTopColor: BORDA,
+        borderBottomWidth: 1,
+        borderBottomColor: BORDA,
+        paddingVertical: 15,
+        marginBottom: 14,
     },
-    botaoEditar: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
+    detalheItem: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        gap: 9,
+    },
+
+    detalheLabel: {
+        fontSize: 11,
+        color: TEXTO_SECUNDARIO,
+        marginBottom: 2,
+    },
+
+    detalheValor: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: TEXTO_PRINCIPAL,
+    },
+
+    detalheSubvalor: {
+        fontSize: 12,
+        color: TEXTO_SECUNDARIO,
+        marginTop: 1,
+    },
+
+    professorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+
+    professorIcone: {
+        width: 38,
+        height: 38,
+        borderRadius: 19,
         backgroundColor: AZUL_CLARO,
         alignItems: 'center',
         justifyContent: 'center',
+        marginRight: 10,
     },
-    niveisContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-        marginTop: 14,
-        paddingTop: 14,
-        borderTopWidth: 1,
-        borderTopColor: BORDA,
+
+    professorInfo: {
+        flex: 1,
     },
-    opcaoNivel: {
-        borderWidth: 1,
-        borderColor: AZUL_CLARO,
-        backgroundColor: AZUL_CLARO,
-        borderRadius: 20,
-        paddingHorizontal: 14,
-        paddingVertical: 8,
+
+    professorNome: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: TEXTO_PRINCIPAL,
     },
-    opcaoNivelSelecionada: {
-        backgroundColor: AZUL,
-        borderColor: AZUL,
-    },
-    opcaoNivelTexto: {
-        fontSize: 13,
-        color: AZUL,
-        fontWeight: '600',
-    },
-    opcaoNivelTextoSelecionado: {
-        color: '#FFFFFF',
-    },
-    botaoAgendarCard: {
-        marginTop: 14,
-        backgroundColor: AZUL,
+
+    botaoDetalhes: {
+        height: 46,
         borderRadius: 12,
-        paddingVertical: 12,
+        backgroundColor: AZUL,
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
     },
-    botaoAgendarCardTexto: {
+
+    botaoDetalhesTexto: {
         color: '#FFFFFF',
         fontSize: 14,
         fontWeight: '700',
     },
-    botaoTrocar: {
-        alignSelf: 'center',
-        marginTop: 6,
-        paddingVertical: 10,
-        paddingHorizontal: 16,
+    semAulaCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: BORDA,
+        padding: 24,
+        alignItems: 'center',
+        marginBottom: 28,
     },
-    botaoTrocarTexto: {
-        color: AZUL,
-        fontSize: 14,
-        fontWeight: '600',
-        textDecorationLine: 'underline',
-    },
-    vazioContainer: {
-        flex: 1,
+
+    semAulaIcone: {
+        width: 66,
+        height: 66,
+        borderRadius: 33,
+        backgroundColor: AZUL_CLARO,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 16,
-        paddingHorizontal: 24,
+        marginBottom: 14,
     },
-    vazioTexto: {
-        fontSize: 15,
+
+    semAulaTitulo: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        marginBottom: 7,
+        textAlign: 'center',
+    },
+
+    semAulaTexto: {
+        fontSize: 14,
+        lineHeight: 21,
         color: TEXTO_SECUNDARIO,
         textAlign: 'center',
+    },
+
+    /*
+    ========================================
+    SEÇÕES
+    ========================================
+    */
+
+    secao: {
+        marginBottom: 28,
+    },
+
+    secaoHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+
+    secaoTitulo: {
+        fontSize: 19,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+    },
+
+    secaoSubtitulo: {
+        fontSize: 12,
+        color: TEXTO_SECUNDARIO,
+        marginTop: 3,
+    },
+
+    verTodas: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: AZUL,
+    },
+    listaAulas: {
+        gap: 10,
+    },
+    aulaCard: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: BORDA,
+        borderRadius: 16,
+        padding: 14,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    aulaIcone: {
+        width: 48,
+        height: 48,
+        borderRadius: 14,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+
+    aulaInfo: {
+        flex: 1,
+    },
+    aulaInstrumento: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: TEXTO_PRINCIPAL,
+        marginBottom: 5,
+    },
+    aulaDataLinha: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        marginBottom: 3,
+    },
+
+    aulaData: {
+        fontSize: 12,
+        color: TEXTO_SECUNDARIO,
+    },
+
+    aulaProfessorLinha: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+    },
+
+    aulaProfessor: {
+        fontSize: 12,
+        color: TEXTO_SECUNDARIO,
+    },
+
+    listaVazia: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: BORDA,
+        padding: 18,
+        alignItems: 'center',
+    },
+
+    listaVaziaTexto: {
+        fontSize: 13,
+        color: TEXTO_SECUNDARIO,
+    },
+    botaoAgendar: {
+        backgroundColor: AZUL,
+        borderRadius: 17,
+        minHeight: 72,
+        paddingHorizontal: 15,
+        paddingVertical: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 30,
+
+        shadowColor: '#093373',
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+        shadowOpacity: 0.18,
+        shadowRadius: 10,
+        elevation: 4,
+    },
+
+    botaoAgendarIcone: {
+        width: 46,
+        height: 46,
+        borderRadius: 14,
+        backgroundColor: '#FFFFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+
+    botaoAgendarInfo: {
+        flex: 1,
+    },
+
+    botaoAgendarTitulo: {
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#FFFFFF',
+        marginBottom: 3,
+    },
+
+    botaoAgendarSubtitulo: {
+        fontSize: 11,
+        color: '#DCE6F5',
+    },
+
+    /*
+    ========================================
+    MEUS INSTRUMENTOS
+    ========================================
+    */
+
+    botaoEditarInstrumentos: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        backgroundColor: AZUL_CLARO,
+        borderRadius: 20,
+        paddingVertical: 7,
+        paddingHorizontal: 11,
+    },
+
+    botaoEditarInstrumentosTexto: {
+        fontSize: 12,
+        fontWeight: '700',
+        color: AZUL,
+    },
+
+    instrumentosLista: {
+        gap: 9,
+    },
+
+    instrumentoCard: {
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: BORDA,
+        borderRadius: 16,
+        padding: 13,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    instrumentoIcone: {
+        width: 46,
+        height: 46,
+        borderRadius: 13,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+
+    instrumentoInfo: {
+        flex: 1,
+    },
+
+    instrumentoNome: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: TEXTO_PRINCIPAL,
+        marginBottom: 4,
+    },
+
+    instrumentoNivel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+    },
+
+    instrumentoNivelTexto: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: DOURADO,
+    },
+
+    instrumentosVazio: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: BORDA,
+        padding: 20,
+        alignItems: 'center',
+    },
+
+    instrumentosVazioTexto: {
+        fontSize: 13,
+        color: TEXTO_SECUNDARIO,
+        marginBottom: 8,
+    },
+
+    instrumentosVazioLink: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: AZUL,
     },
 });
