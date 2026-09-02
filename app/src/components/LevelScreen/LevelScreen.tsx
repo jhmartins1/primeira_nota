@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -9,12 +9,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LevelConstants } from '../../constants/LevelConstants';
-import {
-  getSelecao,
-  setOnboardingCompleto,
-  setSelecao,
-} from '../../utils/onboarding';
-
 import { styles } from './LevelScreen.styles';
 
 const NIVEIS = LevelConstants.NIVEIS;
@@ -25,63 +19,173 @@ export function LevelScreen() {
   const router = useRouter();
 
   const { instrumentos } = useLocalSearchParams<{
-    instrumentos: string;
+    instrumentos?: string;
   }>();
 
+  /**
+   * Converte os instrumentos recebidos pela rota
+   * em um array de strings.
+   */
   const listaInstrumentos = useMemo<string[]>(() => {
-    if (!instrumentos) return [];
+    if (!instrumentos) {
+      return [];
+    }
 
     try {
-      return JSON.parse(instrumentos) as string[];
-    } catch {
+      const parsed = JSON.parse(instrumentos);
+
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed.filter(
+        (item): item is string => typeof item === 'string'
+      );
+    } catch (error) {
+      console.error(
+        'Erro ao interpretar instrumentos:',
+        error
+      );
+
       return [];
     }
   }, [instrumentos]);
 
-  const [niveis, setNiveis] = useState<Record<string, string>>({});
+  /**
+   * Guarda o nível selecionado para cada instrumento.
+   *
+   * Exemplo:
+   *
+   * {
+   *   Violão: 'Iniciante',
+   *   Guitarra: 'Intermediário'
+   * }
+   */
+  const [niveis, setNiveis] =
+    useState<Record<string, string>>({});
 
-  // Pré-preenche os níveis dos instrumentos que já tinham nível escolhido
-  useEffect(() => {
-    getSelecao().then((selecaoSalva) => {
-      setNiveis((prev) => {
-        const preenchido = { ...prev };
-
-        listaInstrumentos.forEach((instrumento) => {
-          if (selecaoSalva[instrumento]) {
-            preenchido[instrumento] =
-              selecaoSalva[instrumento];
-          }
-        });
-
-        return preenchido;
-      });
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function selecionarNivel(instrumento: string, nivel: string) {
+  /**
+   * Seleciona o nível de um instrumento.
+   */
+  function selecionarNivel(
+    instrumento: string,
+    nivel: string
+  ) {
     setNiveis((prev) => ({
       ...prev,
       [instrumento]: nivel,
     }));
   }
 
+  /**
+   * Verifica se todos os instrumentos possuem
+   * um nível selecionado.
+   */
   const podeContinuar =
     listaInstrumentos.length > 0 &&
-    listaInstrumentos.every((instrumento) => niveis[instrumento]);
+    listaInstrumentos.every(
+      (instrumento) => Boolean(niveis[instrumento])
+    );
 
-  async function handleContinuar() {
+  /**
+   * Finaliza a seleção dos níveis.
+   */
+  function handleContinuar() {
+    if (!podeContinuar) {
+      return;
+    }
+
     const selecaoFinal: Record<string, string> = {};
 
     listaInstrumentos.forEach((instrumento) => {
-      selecaoFinal[instrumento] = niveis[instrumento];
+      const nivel = niveis[instrumento];
+
+      if (nivel) {
+        selecaoFinal[instrumento] = nivel;
+      }
     });
 
-    await setSelecao(selecaoFinal);
-    await setOnboardingCompleto();
+    console.log(
+      'Instrumentos e níveis selecionados:',
+      selecaoFinal
+    );
 
-    router.replace('/home');
+    /**
+     * Por enquanto enviamos os dados pela navegação.
+     *
+     * Posteriormente esses dados serão enviados
+     * para o backend usando o user.id do Clerk.
+     */
+    router.replace({
+      pathname: '/home',
+      params: {
+        selecao: JSON.stringify(selecaoFinal),
+      },
+    });
+  }
+
+  /**
+   * Caso não existam instrumentos recebidos,
+   * volta para a tela de instrumentos.
+   */
+  if (listaInstrumentos.length === 0) {
+    return (
+      <SafeAreaView
+        style={styles.safeArea}
+        edges={['top', 'bottom']}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              style={styles.botaoVoltar}
+              onPress={() => router.back()}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.seta}>‹</Text>
+
+              <Text style={styles.textoVoltar}>
+                Voltar
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 24,
+            }}
+          >
+            <Text
+              style={{
+                textAlign: 'center',
+                fontSize: 16,
+              }}
+            >
+              Nenhum instrumento foi selecionado.
+            </Text>
+
+            <TouchableOpacity
+              onPress={() => router.replace('/instrument')}
+              style={{
+                marginTop: 20,
+              }}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '600',
+                }}
+              >
+                Selecionar instrumentos
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -99,6 +203,7 @@ export function LevelScreen() {
             activeOpacity={0.7}
           >
             <Text style={styles.seta}>‹</Text>
+
             <Text style={styles.textoVoltar}>
               Voltar
             </Text>
@@ -154,9 +259,7 @@ export function LevelScreen() {
                         activeOpacity={0.8}
                       >
                         <View
-                          style={
-                            styles.opcaoConteudo
-                          }
+                          style={styles.opcaoConteudo}
                         >
                           <View>
                             <Text
@@ -182,9 +285,7 @@ export function LevelScreen() {
 
                           {selecionado && (
                             <Text
-                              style={
-                                styles.check
-                              }
+                              style={styles.check}
                             >
                               ✓
                             </Text>
