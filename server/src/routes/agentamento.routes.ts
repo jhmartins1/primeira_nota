@@ -6,8 +6,12 @@ import { CreateAgendamentoController } from '../controllers/Agendamento/CreateAg
 import { GetAgendamentosController } from '../controllers/Agendamento/GetAgendamentosController';
 import { GetDisponibilidadeController } from '../controllers/Agendamento/GetDisponibilidadeController';
 import { CancelarAgendamentoController } from '../controllers/Agendamento/CancelarAgendamentoController';
+import { GetAgendamentosProfessorController } from '../controllers/Agendamento/GetAgendamentosProfessorController';
 
 const agendamentoRoutes = Router();
+
+const getAgendamentosProfessorController =
+    new GetAgendamentosProfessorController();
 
 const createAgendamentoController =
     new CreateAgendamentoController();
@@ -27,6 +31,13 @@ agendamentoRoutes.get(
     clerkAuthMiddleware,
     (req, res) =>
         getDisponibilidadeController.handle(req, res)
+);
+
+// Buscar agendamentos do professor logado
+agendamentoRoutes.get(
+    '/professor',
+    clerkAuthMiddleware,
+    (req, res) => getAgendamentosProfessorController.handle(req, res)
 );
 
 
