@@ -5,27 +5,52 @@ import {
 
 import {
     ActivityIndicator,
+    Image,
     Text,
     TouchableOpacity,
     View,
 } from 'react-native';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
+import { getCorNivel } from '../../constants/NivelColors';
 import { formatarDataBrasilia } from '../HomeScreen/formatters';
 
 import { styles } from './ProfessorHomeScreen.styles';
 import { AgendamentoProfessor } from './types';
 
+const FUSO_BRASILIA = 'America/Sao_Paulo';
+
+function formatarDiaSemana(dataHora: string): string {
+    return new Intl.DateTimeFormat('pt-BR', {
+        timeZone: FUSO_BRASILIA,
+        weekday: 'long',
+    }).format(new Date(dataHora));
+}
+
+function obterIniciais(nome: string): string {
+    const partes = nome.trim().split(/\s+/);
+
+    const primeira = partes[0]?.[0] ?? '';
+    const ultima =
+        partes.length > 1
+            ? partes[partes.length - 1][0]
+            : '';
+
+    return (primeira + ultima).toUpperCase();
+}
+
 interface AulaAlunoCardProps {
     aula: AgendamentoProfessor;
     cancelando: boolean;
     onCancelar: () => void;
+    destaque?: boolean;
 }
 
 export function AulaAlunoCard({
     aula,
     cancelando,
     onCancelar,
+    destaque = false,
 }: AulaAlunoCardProps) {
     const icone = getInstrumentIcon(
         aula.instrumento.name
@@ -34,8 +59,30 @@ export function AulaAlunoCard({
     const dataFormatada =
         formatarDataBrasilia(aula.dataHora);
 
+    const diaSemana = formatarDiaSemana(aula.dataHora);
+
+    const corNivel = getCorNivel(aula.nivel.name);
+
     return (
-        <View style={styles.aulaCard}>
+        <View
+            style={[
+                styles.aulaCard,
+                destaque && styles.aulaCardDestaque,
+            ]}
+        >
+            {destaque && (
+                <View style={styles.aulaCardBadge}>
+                    <MaterialCommunityIcons
+                        name="star-four-points"
+                        size={11}
+                        color="#FFFFFF"
+                    />
+                    <Text style={styles.aulaCardBadgeTexto}>
+                        PRÓXIMA
+                    </Text>
+                </View>
+            )}
+
             <View style={styles.aulaTopo}>
                 <View style={styles.aulaIcone}>
                     {icone.familia === 'material' ? (
@@ -58,54 +105,72 @@ export function AulaAlunoCard({
                         {aula.instrumento.name}
                     </Text>
 
-                    <Text style={styles.aulaNivel}>
+                    <Text
+                        style={[
+                            styles.aulaNivel,
+                            {
+                                color: corNivel.cor,
+                                backgroundColor: corNivel.fundo,
+                            },
+                        ]}
+                    >
                         {aula.nivel.name}
                     </Text>
                 </View>
             </View>
 
-            <View style={styles.aulaDetalhes}>
-                <View style={styles.aulaLinha}>
-                    <MaterialCommunityIcons
-                        name="calendar-outline"
-                        size={15}
-                        color="#6B7280"
-                    />
+            <View style={styles.aulaDataChip}>
+                <MaterialCommunityIcons
+                    name="calendar-outline"
+                    size={16}
+                    color="#093373"
+                />
 
-                    <Text style={styles.aulaTexto}>
-                        {dataFormatada.data} às{' '}
-                        {dataFormatada.hora}
-                    </Text>
-                </View>
-
-                <View style={styles.aulaLinha}>
-                    <MaterialCommunityIcons
-                        name="account-outline"
-                        size={15}
-                        color="#6B7280"
-                    />
-
-                    <Text style={styles.aulaTexto}>
-                        {aula.usuario.name}
-                    </Text>
-                </View>
-
-                {aula.usuario.phone && (
-                    <View style={styles.aulaLinha}>
-                        <MaterialCommunityIcons
-                            name="phone-outline"
-                            size={15}
-                            color="#6B7280"
-                        />
-
-                        <Text style={styles.aulaTexto}>
-                            {aula.usuario.phone}
-                        </Text>
-                    </View>
-                )}
+                <Text style={styles.aulaDataChipTexto}>
+                    {dataFormatada.data}{' '}
+                    <Text style={styles.aulaDataChipDia}>
+                        ({diaSemana})
+                    </Text>{' '}
+                    às {dataFormatada.hora}
+                </Text>
             </View>
 
-            {/* CANCELAR AULA */}
+            <View style={styles.aulaDetalhes}>
+                <View style={styles.alunoLinha}>
+                    {aula.usuario.image ? (
+                        <Image
+                            source={{ uri: aula.usuario.image }}
+                            style={styles.alunoAvatar}
+                        />
+                    ) : (
+                        <View style={styles.alunoAvatarFallback}>
+                            <Text style={styles.alunoAvatarIniciais}>
+                                {obterIniciais(aula.usuario.name)}
+                            </Text>
+                        </View>
+                    )}
+
+                    <View style={styles.alunoInfo}>
+                        <Text style={styles.alunoNome}>
+                            {aula.usuario.name}
+                        </Text>
+
+                        {aula.usuario.phone && (
+                            <View style={styles.alunoTelefoneLinha}>
+                                <MaterialCommunityIcons
+                                    name="phone-outline"
+                                    size={13}
+                                    color="#6B7280"
+                                />
+                                <Text style={styles.alunoTelefone}>
+                                    {aula.usuario.phone}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </View>
+
             <TouchableOpacity
                 style={styles.botaoCancelarAula}
                 activeOpacity={0.8}

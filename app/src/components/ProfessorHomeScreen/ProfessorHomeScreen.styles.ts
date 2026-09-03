@@ -138,6 +138,12 @@ export const styles = StyleSheet.create({
         marginBottom: 12,
     },
 
+    secaoContador: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: TEXTO_SECUNDARIO,
+    },
+
     secaoSubtitulo: {
         fontSize: 12,
         color: TEXTO_SECUNDARIO,
@@ -160,6 +166,8 @@ export const styles = StyleSheet.create({
         borderColor: BORDA,
         borderRadius: 16,
         padding: 16,
+        marginTop: 10,
+        overflow: 'visible',
 
         shadowColor: '#0F1B3D',
         shadowOffset: {
@@ -169,6 +177,34 @@ export const styles = StyleSheet.create({
         shadowOpacity: 0.04,
         shadowRadius: 8,
         elevation: 2,
+    },
+
+    aulaCardDestaque: {
+        borderColor: AZUL,
+        borderWidth: 1.5,
+        backgroundColor: '#FBFCFF',
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+    },
+
+    aulaCardBadge: {
+        position: 'absolute',
+        top: -10,
+        left: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        backgroundColor: AZUL,
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+    },
+
+    aulaCardBadgeTexto: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: '#FFFFFF',
+        letterSpacing: 0.6,
     },
 
     aulaTopo: {
@@ -202,11 +238,39 @@ export const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         fontSize: 12,
         fontWeight: '700',
-        color: DOURADO,
-        backgroundColor: DOURADO_FUNDO,
         borderRadius: 20,
         paddingHorizontal: 9,
         paddingVertical: 3,
+    },
+
+    /*
+    ========================================
+    CHIP DE DATA/HORA
+    ========================================
+    */
+
+    aulaDataChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 7,
+        backgroundColor: AZUL_CLARO,
+        borderRadius: 12,
+        paddingVertical: 9,
+        paddingHorizontal: 12,
+        marginBottom: 13,
+    },
+
+    aulaDataChipTexto: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: AZUL,
+        flexShrink: 1,
+    },
+
+    aulaDataChipDia: {
+        fontWeight: '500',
+        color: AZUL,
+        opacity: 0.75,
     },
 
     aulaDetalhes: {
@@ -227,6 +291,7 @@ export const styles = StyleSheet.create({
         color: TEXTO_PRINCIPAL,
         fontWeight: '600',
     },
+
     headerBotoes: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -250,6 +315,7 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
         color: AZUL,
     },
+
     botaoCancelarAula: {
         height: 42,
         marginTop: 14,
@@ -267,5 +333,62 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '700',
         color: '#B42318',
+    },
+
+    /*
+    ========================================
+    ALUNO
+    ========================================
+    */
+
+    alunoLinha: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 11,
+    },
+
+    alunoAvatar: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: BORDA,
+    },
+
+    alunoAvatarFallback: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    alunoAvatarIniciais: {
+        fontSize: 13,
+        fontWeight: '800',
+        color: AZUL,
+    },
+
+    alunoInfo: {
+        flex: 1,
+    },
+
+    alunoNome: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: TEXTO_PRINCIPAL,
+        marginBottom: 2,
+    },
+
+    alunoTelefoneLinha: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+    },
+
+    alunoTelefone: {
+        fontSize: 12.5,
+        color: TEXTO_SECUNDARIO,
+        fontWeight: '500',
     },
 });

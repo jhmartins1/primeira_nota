@@ -224,6 +224,7 @@ export default function ProfessorHomeScreen() {
 
                         <AulaAlunoCard
                             aula={proximaAula}
+                            destaque
                             cancelando={
                                 cancelandoId === proximaAula.id
                             }
@@ -259,6 +260,10 @@ export default function ProfessorHomeScreen() {
                     <View style={styles.secao}>
                         <Text style={styles.secaoTitulo}>
                             Demais aulas
+                            <Text style={styles.secaoContador}>
+                                {'  ·  '}
+                                {demaisAulas.length}
+                            </Text>
                         </Text>
 
                         <View style={styles.listaAulas}>

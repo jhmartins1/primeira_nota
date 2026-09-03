@@ -167,6 +167,15 @@ export default function HomeScreen() {
                         <Text style={styles.semAulaTexto}>
                             Agende uma aula e comece sua próxima evolução musical.
                         </Text>
+
+                        <TouchableOpacity
+                            style={styles.semAulaBotao}
+                            activeOpacity={0.85}
+                            onPress={() => router.push('/agendamento')}
+                        >
+                            <Text style={styles.semAulaBotaoTexto}>Agendar agora</Text>
+                            <MaterialCommunityIcons name="arrow-right" size={16} color="#FFFFFF" />
+                        </TouchableOpacity>
                     </View>
                 )}
 
@@ -196,7 +205,15 @@ export default function HomeScreen() {
                 <View style={styles.secao}>
                     <View style={styles.secaoHeader}>
                         <View>
-                            <Text style={styles.secaoTitulo}>Minhas aulas</Text>
+                            <Text style={styles.secaoTitulo}>
+                                Minhas aulas
+                                {agendamentos.length > 0 && (
+                                    <Text style={styles.secaoContador}>
+                                        {'  ·  '}
+                                        {agendamentos.length}
+                                    </Text>
+                                )}
+                            </Text>
                             <Text style={styles.secaoSubtitulo}>Próximos agendamentos</Text>
                         </View>
 
@@ -224,17 +241,8 @@ export default function HomeScreen() {
                             ))}
                         </View>
                     ) : (
-                        <View
-                            style={{
-                                backgroundColor: '#FFFFFF',
-                                borderRadius: 16,
-                                borderWidth: 1,
-                                borderColor: '#E7EAF0',
-                                padding: 18,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Text style={{ fontSize: 13, color: '#6B7280' }}>
+                        <View style={styles.listaVazia}>
+                            <Text style={styles.listaVaziaTexto}>
                                 Nenhuma outra aula agendada.
                             </Text>
                         </View>
@@ -246,7 +254,15 @@ export default function HomeScreen() {
                 <View style={styles.secao}>
                     <View style={styles.secaoHeader}>
                         <View>
-                            <Text style={styles.secaoTitulo}>Meus instrumentos</Text>
+                            <Text style={styles.secaoTitulo}>
+                                Meus instrumentos
+                                {usuario?.instrumentos?.length ? (
+                                    <Text style={styles.secaoContador}>
+                                        {'  ·  '}
+                                        {usuario.instrumentos.length}
+                                    </Text>
+                                ) : null}
+                            </Text>
                             <Text style={styles.secaoSubtitulo}>Seus níveis atuais</Text>
                         </View>
 

@@ -2,6 +2,7 @@ import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ActivityIndicator, Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
+import { getCorNivel } from '../../constants/NivelColors';
 import { formatarDataBrasilia, formatarDiaSemana } from './formatters';
 import { styles } from './HomeScreen.styles';
 import { Agendamento } from './types';
@@ -15,6 +16,7 @@ interface ProximaAulaCardProps {
 export function ProximaAulaCard({ aula, cancelando, onCancelar }: ProximaAulaCardProps) {
     const icone = getInstrumentIcon(aula.instrumento.name);
     const dataFormatada = formatarDataBrasilia(aula.dataHora);
+    const corNivel = getCorNivel(aula.nivel.name);
 
     function verDetalhes() {
         Alert.alert(
@@ -46,9 +48,11 @@ export function ProximaAulaCard({ aula, cancelando, onCancelar }: ProximaAulaCar
                 <View style={styles.proximaAulaInfo}>
                     <Text style={styles.proximaAulaInstrumento}>{aula.instrumento.name}</Text>
 
-                    <View style={styles.proximaAulaNivel}>
-                        <Text style={{ color: '#B8842E', fontSize: 12, fontWeight: '800' }}>★</Text>
-                        <Text style={styles.proximaAulaNivelTexto}>{aula.nivel.name}</Text>
+                    <View style={[styles.proximaAulaNivel, { backgroundColor: corNivel.fundo }]}>
+                        <Text style={{ color: corNivel.cor, fontSize: 12, fontWeight: '800' }}>★</Text>
+                        <Text style={[styles.proximaAulaNivelTexto, { color: corNivel.cor }]}>
+                            {aula.nivel.name}
+                        </Text>
                     </View>
                 </View>
             </View>

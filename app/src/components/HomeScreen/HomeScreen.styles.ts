@@ -65,7 +65,9 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         color: TEXTO_SECUNDARIO,
         marginTop: 5,
-    }, proximaAulaCard: {
+    },
+
+    proximaAulaCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         borderWidth: 1,
@@ -274,6 +276,23 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
+    semAulaBotao: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginTop: 16,
+        backgroundColor: AZUL,
+        borderRadius: 12,
+        paddingHorizontal: 18,
+        paddingVertical: 11,
+    },
+
+    semAulaBotaoTexto: {
+        color: '#FFFFFF',
+        fontSize: 13,
+        fontWeight: '700',
+    },
+
     /*
     ========================================
     SEÇÕES
@@ -295,6 +314,12 @@ export const styles = StyleSheet.create({
         fontSize: 19,
         fontWeight: '800',
         color: TEXTO_PRINCIPAL,
+    },
+
+    secaoContador: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: TEXTO_SECUNDARIO,
     },
 
     secaoSubtitulo: {
@@ -344,6 +369,7 @@ export const styles = StyleSheet.create({
         fontWeight: '800',
         color: TEXTO_PRINCIPAL,
     },
+
     aulaDataLinha: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -357,16 +383,75 @@ export const styles = StyleSheet.create({
         fontWeight: '600',
     },
 
+    /*
+    ========================================
+    CHIP DE DATA/HORA (AulaCard)
+    ========================================
+    */
+
+    aulaDataChip: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 7,
+        backgroundColor: AZUL_CLARO,
+        borderRadius: 12,
+        paddingVertical: 9,
+        paddingHorizontal: 12,
+        marginBottom: 12,
+    },
+
+    aulaDataChipTexto: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: AZUL,
+        flexShrink: 1,
+    },
+
+    aulaDataChipDia: {
+        fontWeight: '500',
+        color: AZUL,
+        opacity: 0.75,
+    },
+
     aulaProfessorLinha: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
     },
 
     aulaProfessor: {
         fontSize: 13,
         color: TEXTO_SECUNDARIO,
     },
+
+    /*
+    ========================================
+    PROFESSOR (avatar pequeno no AulaCard)
+    ========================================
+    */
+
+    professorAvatarPequeno: {
+        width: 26,
+        height: 26,
+        borderRadius: 13,
+        backgroundColor: BORDA,
+    },
+
+    professorAvatarPequenoFallback: {
+        width: 26,
+        height: 26,
+        borderRadius: 13,
+        backgroundColor: AZUL_CLARO,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    professorAvatarPequenoIniciais: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: AZUL,
+    },
+
     aulaDetalhes: {
         borderTopWidth: 1,
         borderTopColor: BORDA,
@@ -511,13 +596,16 @@ export const styles = StyleSheet.create({
     instrumentoNivel: {
         flexDirection: 'row',
         alignItems: 'center',
+        alignSelf: 'flex-start',
         gap: 4,
+        borderRadius: 20,
+        paddingHorizontal: 9,
+        paddingVertical: 4,
     },
 
     instrumentoNivelTexto: {
         fontSize: 12,
         fontWeight: '600',
-        color: DOURADO,
     },
 
     instrumentosVazio: {
