@@ -6,11 +6,18 @@ import {
   View,
 } from 'react-native';
 
+import { useContaAutenticada } from '../hooks/useContaAutenticada';
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export default function Index() {
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
+
+  const {
+    tipoConta,
+    carregandoConta,
+  } = useContaAutenticada();
 
   const [carregando, setCarregando] = useState(true);
   const [telefonePreenchido, setTelefonePreenchido] =
@@ -19,7 +26,7 @@ export default function Index() {
     useState(false);
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (!isLoaded || carregandoConta) {
       return;
     }
 
@@ -28,14 +35,35 @@ export default function Index() {
       return;
     }
 
-    async function carregarDados() {
+    // Professor não passa pelo onboarding do aluno.
+    if (tipoConta === 'professor') {
+      setCarregando(false);
+      return;
+    }
+
+    // Se ainda não conseguimos identificar a conta,
+    // não fazemos nenhuma chamada específica de usuário.
+    if (tipoConta === null) {
+      setCarregando(false);
+      return;
+    }
+
+    async function carregarDadosUsuario() {
       try {
-        const token = await getToken();
-        if (!token) {
+        if (!API_URL) {
           throw new Error(
-            'Token de autenticação não encontrado'
+            'EXPO_PUBLIC_API_URL não configurada.'
           );
         }
+
+        const token = await getToken();
+
+        if (!token) {
+          throw new Error(
+            'Token de autenticação não encontrado.'
+          );
+        }
+
         const response = await fetch(
           `${API_URL}/usuario/me`,
           {
@@ -63,8 +91,8 @@ export default function Index() {
 
         setTelefonePreenchido(possuiTelefone);
 
-        // Usa diretamente o valor salvo no banco
-        const completo = usuario.onboardingComplete === true;
+        const completo =
+          usuario.onboardingComplete === true;
 
         setOnboardingCompleto(completo);
       } catch (error) {
@@ -80,10 +108,20 @@ export default function Index() {
       }
     }
 
-    carregarDados();
-  }, [isLoaded, user, getToken]);
+    carregarDadosUsuario();
+  }, [
+    isLoaded,
+    carregandoConta,
+    tipoConta,
+    user,
+    getToken,
+  ]);
 
-  if (!isLoaded || carregando) {
+  if (
+    !isLoaded ||
+    carregando ||
+    carregandoConta
+  ) {
     return (
       <View
         style={{
@@ -101,6 +139,12 @@ export default function Index() {
     return null;
   }
 
+  // PROFESSOR
+  if (tipoConta === 'professor') {
+    return <Redirect href="/professor" />;
+  }
+
+  // USUÁRIO
   if (!telefonePreenchido) {
     return <Redirect href="/complete-profile" />;
   }
@@ -111,4 +155,3 @@ export default function Index() {
 
   return <Redirect href="/home" />;
 }
-

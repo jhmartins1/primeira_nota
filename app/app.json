@@ -32,7 +32,10 @@
           "imageWidth": 76
         }
       ],
-      "expo-image"
+      "expo-image",
+      "@clerk/expo",
+      "@clerk/expo-google-signin",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -42,7 +45,9 @@
       "router": {},
       "eas": {
         "projectId": "5d3dc582-4dcb-4716-af08-7b915f13ce2b"
-      }
+      },
+      "EXPO_PUBLIC_CLERK_GOOGLE_WEB_CLIENT_ID": "143371975077-cv405hkff770kd6ksncbnbehig3au6in.apps.googleusercontent.com",
+      "EXPO_PUBLIC_CLERK_GOOGLE_ANDROID_CLIENT_ID": "143371975077-ihdnhh6923lham207vjpvincvnoqq46g.apps.googleusercontent.com"
     },
     "runtimeVersion": {
       "policy": "appVersion"

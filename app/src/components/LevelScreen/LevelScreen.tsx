@@ -1,5 +1,8 @@
 import { useAuth } from '@clerk/expo';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import {
+  useLocalSearchParams,
+  useRouter,
+} from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -16,6 +19,13 @@ import { styles } from './LevelScreen.styles';
 const NIVEIS = LevelConstants.NIVEIS;
 const ESTRELAS = ['★', '★★', '★★★'];
 
+type TipoConta = 'usuario' | 'professor';
+
+type NiveisExistentes = Record<
+  string,
+  string | string[]
+>;
+
 export function LevelScreen() {
   const router = useRouter();
   const { getToken } = useAuth();
@@ -24,16 +34,26 @@ export function LevelScreen() {
     instrumentos,
     niveisExistentes,
     modoEdicao,
+    tipoConta: tipoContaParam,
   } = useLocalSearchParams<{
     instrumentos?: string;
     niveisExistentes?: string;
     modoEdicao?: string;
+    tipoConta?: string;
   }>();
 
+  const tipoConta: TipoConta =
+    tipoContaParam === 'professor'
+      ? 'professor'
+      : 'usuario';
+
+  /*
+   * Lista de instrumentos.
+   *
+   * Também removemos duplicados por segurança.
+   */
   const listaInstrumentos = useMemo<string[]>(() => {
-    if (!instrumentos) {
-      return [];
-    }
+    if (!instrumentos) return [];
 
     try {
       const parsed = JSON.parse(instrumentos);
@@ -42,9 +62,14 @@ export function LevelScreen() {
         return [];
       }
 
-      return parsed.filter(
-        (item): item is string =>
-          typeof item === 'string'
+      const instrumentosValidos =
+        parsed.filter(
+          (item): item is string =>
+            typeof item === 'string'
+        );
+
+      return Array.from(
+        new Set(instrumentosValidos)
       );
     } catch (error) {
       console.error(
@@ -56,44 +81,73 @@ export function LevelScreen() {
     }
   }, [instrumentos]);
 
-  const niveisIniciais = useMemo<
-    Record<string, string>
-  >(() => {
-    if (!niveisExistentes) {
-      return {};
-    }
-
-    try {
-      const parsed = JSON.parse(niveisExistentes);
-
-      if (
-        !parsed ||
-        typeof parsed !== 'object' ||
-        Array.isArray(parsed)
-      ) {
+  const niveisIniciais =
+    useMemo<NiveisExistentes>(() => {
+      if (!niveisExistentes) {
         return {};
       }
 
-      return parsed;
-    } catch (error) {
-      console.error(
-        'Erro ao interpretar níveis existentes:',
-        error
-      );
+      try {
+        const parsed =
+          JSON.parse(niveisExistentes);
 
-      return {};
-    }
-  }, [niveisExistentes]);
+        if (
+          !parsed ||
+          typeof parsed !== 'object' ||
+          Array.isArray(parsed)
+        ) {
+          return {};
+        }
+
+        return parsed;
+      } catch (error) {
+        console.error(
+          'Erro ao interpretar níveis existentes:',
+          error
+        );
+
+        return {};
+      }
+    }, [niveisExistentes]);
 
   const [niveis, setNiveis] =
-    useState<Record<string, string>>(
+    useState<NiveisExistentes>(
       niveisIniciais
     );
 
   const [salvando, setSalvando] =
     useState(false);
 
-  function selecionarNivel(
+  function alternarNivelProfessor(
+    instrumento: string,
+    nivel: string
+  ) {
+    setNiveis((prev) => {
+      const atuais = Array.isArray(
+        prev[instrumento]
+      )
+        ? prev[instrumento]
+        : prev[instrumento]
+          ? [prev[instrumento] as string]
+          : [];
+
+      const jaSelecionado =
+        atuais.includes(nivel);
+
+      const novosNiveis = jaSelecionado
+        ? atuais.filter(
+          (item) => item !== nivel
+        )
+        : [...atuais, nivel];
+
+      return {
+        ...prev,
+        [instrumento]: novosNiveis,
+      };
+    });
+  }
+
+  function selecionarNivelAluno(
     instrumento: string,
     nivel: string
   ) {
@@ -103,12 +157,44 @@ export function LevelScreen() {
     }));
   }
 
+  function nivelSelecionado(
+    instrumento: string,
+    nivel: string
+  ) {
+    const valor = niveis[instrumento];
+
+    if (tipoConta === 'professor') {
+      return (
+        Array.isArray(valor) &&
+        valor.includes(nivel)
+      );
+    }
+
+    return valor === nivel;
+  }
+
+  /*
+   * Verifica se todos os instrumentos possuem
+   * pelo menos um nível.
+   */
   const podeContinuar =
     listaInstrumentos.length > 0 &&
-    listaInstrumentos.every(
-      (instrumento) =>
-        Boolean(niveis[instrumento])
-    );
+    listaInstrumentos.every((instrumento) => {
+      const valor =
+        niveis[instrumento];
+
+      if (tipoConta === 'professor') {
+        return (
+          Array.isArray(valor) &&
+          valor.length > 0
+        );
+      }
+
+      return (
+        typeof valor === 'string' &&
+        valor.length > 0
+      );
+    });
 
   async function handleContinuar() {
     if (!podeContinuar || salvando) {
@@ -118,13 +204,38 @@ export function LevelScreen() {
     setSalvando(true);
 
     try {
-      const selecaoFinal =
-        listaInstrumentos.map(
-          (instrumento) => ({
-            instrumento,
-            nivel: niveis[instrumento],
-          })
-        );
+      const selecaoFinal: {
+        instrumento: string;
+        nivel: string;
+      }[] = [];
+
+      for (const instrumento of listaInstrumentos) {
+        const valor =
+          niveis[instrumento];
+
+        if (tipoConta === 'professor') {
+          const niveisProfessor =
+            Array.isArray(valor)
+              ? valor
+              : valor
+                ? [valor]
+                : [];
+
+          for (const nivel of niveisProfessor) {
+            selecaoFinal.push({
+              instrumento,
+              nivel,
+            });
+          }
+        } else {
+          if (typeof valor === 'string') {
+            selecaoFinal.push({
+              instrumento,
+              nivel: valor,
+            });
+          }
+        }
+      }
 
       const token = await getToken();
 
@@ -134,14 +245,29 @@ export function LevelScreen() {
         );
       }
 
+      const endpoint =
+        tipoConta === 'professor'
+          ? '/professor/instrumentos'
+          : '/usuario/instrumentos';
+
+      const API_URL =
+        process.env.EXPO_PUBLIC_API_URL;
+
+      if (!API_URL) {
+        throw new Error(
+          'EXPO_PUBLIC_API_URL não configurada.'
+        );
+      }
+
       const response = await fetch(
-        'http://10.0.2.2:3333/usuario/instrumentos',
+        `${API_URL}${endpoint}`,
         {
           method: 'POST',
           headers: {
             'Content-Type':
               'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization:
+              `Bearer ${token}`,
           },
           body: JSON.stringify({
             instrumentos:
@@ -159,20 +285,22 @@ export function LevelScreen() {
         );
       }
 
-      let data;
-
       try {
-        data = JSON.parse(texto);
+        JSON.parse(texto);
       } catch {
         throw new Error(
           `Backend não retornou JSON: ${texto}`
         );
       }
 
-      router.replace('/home');
+      if (tipoConta === 'professor') {
+        router.replace('/professor');
+      } else {
+        router.replace('/home');
+      }
     } catch (error) {
       console.error(
-        'Erro ao salvar instrumentos:',
+        `Erro ao salvar instrumentos do ${tipoConta}:`,
         error
       );
     } finally {
@@ -184,9 +312,14 @@ export function LevelScreen() {
     return (
       <SafeAreaView
         style={styles.safeArea}
-        edges={['top', 'bottom']}
+        edges={[
+          'top',
+          'bottom',
+        ]}
       >
-        <View style={styles.container}>
+        <View
+          style={styles.container}
+        >
           <View style={styles.header}>
             <TouchableOpacity
               style={
@@ -198,9 +331,7 @@ export function LevelScreen() {
               activeOpacity={0.7}
             >
               <Text
-                style={
-                  styles.seta
-                }
+                style={styles.seta}
               >
                 ‹
               </Text>
@@ -222,8 +353,7 @@ export function LevelScreen() {
                 'center',
               alignItems:
                 'center',
-              paddingHorizontal:
-                24,
+              paddingHorizontal: 24,
             }}
           >
             <Text
@@ -239,9 +369,16 @@ export function LevelScreen() {
 
             <TouchableOpacity
               onPress={() =>
-                router.replace(
-                  '/instrument'
-                )
+                router.replace({
+                  pathname:
+                    '/instrument',
+                  params: {
+                    modoEdicao:
+                      modoEdicao ??
+                      'false',
+                    tipoConta,
+                  },
+                })
               }
               style={{
                 marginTop: 20,
@@ -268,9 +405,14 @@ export function LevelScreen() {
   return (
     <SafeAreaView
       style={styles.safeArea}
-      edges={['top', 'bottom']}
+      edges={[
+        'top',
+        'bottom',
+      ]}
     >
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+      >
         <View style={styles.header}>
           <TouchableOpacity
             style={
@@ -282,7 +424,9 @@ export function LevelScreen() {
             activeOpacity={0.7}
             disabled={salvando}
           >
-            <Text style={styles.seta}>
+            <Text
+              style={styles.seta}
+            >
               ‹
             </Text>
 
@@ -304,18 +448,19 @@ export function LevelScreen() {
             styles.scrollContent
           }
         >
-          <Text style={styles.titulo}>
+          <Text
+            style={styles.titulo}
+          >
             Qual é o seu nível?
           </Text>
 
           <Text
-            style={
-              styles.subtitulo
-            }
+            style={styles.subtitulo}
           >
-            Selecione o nível que melhor
-            representa sua experiência em
-            cada instrumento.
+            {tipoConta ===
+              'professor'
+              ? 'Selecione um ou mais níveis de experiência em cada instrumento que você ensina.'
+              : 'Selecione o nível que melhor representa sua experiência em cada instrumento.'}
           </Text>
 
           <View
@@ -326,9 +471,7 @@ export function LevelScreen() {
             {listaInstrumentos.map(
               (instrumento) => (
                 <View
-                  key={
-                    instrumento
-                  }
+                  key={instrumento}
                   style={
                     styles.instrumentoCard
                   }
@@ -338,9 +481,7 @@ export function LevelScreen() {
                       styles.instrumentoTitulo
                     }
                   >
-                    {
-                      instrumento
-                    }
+                    {instrumento}
                   </Text>
 
                   <View
@@ -354,10 +495,10 @@ export function LevelScreen() {
                         index
                       ) => {
                         const selecionado =
-                          niveis[
-                          instrumento
-                          ] ===
-                          nivel;
+                          nivelSelecionado(
+                            instrumento,
+                            nivel
+                          );
 
                         const estrelas =
                           ESTRELAS[
@@ -375,12 +516,22 @@ export function LevelScreen() {
                               selecionado &&
                               styles.opcaoSelecionada,
                             ]}
-                            onPress={() =>
-                              selecionarNivel(
-                                instrumento,
-                                nivel
-                              )
-                            }
+                            onPress={() => {
+                              if (
+                                tipoConta ===
+                                'professor'
+                              ) {
+                                alternarNivelProfessor(
+                                  instrumento,
+                                  nivel
+                                );
+                              } else {
+                                selecionarNivelAluno(
+                                  instrumento,
+                                  nivel
+                                );
+                              }
+                            }}
                             activeOpacity={
                               0.8
                             }
@@ -440,7 +591,9 @@ export function LevelScreen() {
           </View>
         </ScrollView>
 
-        <View style={styles.footer}>
+        <View
+          style={styles.footer}
+        >
           <TouchableOpacity
             style={[
               styles.botaoContinuar,
