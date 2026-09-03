@@ -1,4 +1,5 @@
 import { useSignInWithGoogle } from '@clerk/expo/google';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -17,6 +18,7 @@ export function LoginScreen() {
         useSignInWithGoogle();
 
     const router = useRouter();
+
     const [carregando, setCarregando] = useState(false);
 
     async function handleLoginGoogle() {
@@ -47,28 +49,111 @@ export function LoginScreen() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <View style={styles.conteudo}>
-                    <Image
-                        source={require('../../../assets/images/primeira_nota_logo2.png')}
-                        style={styles.logo}
-                        resizeMode="contain"
-                    />
+
+                {/* Elementos decorativos musicais */}
+                <View style={styles.circuloDecorativoGrande} />
+                <View style={styles.circuloDecorativoPequeno} />
+
+                <MaterialCommunityIcons
+                    name="music-note"
+                    size={38}
+                    color="rgba(255,255,255,0.18)"
+                    style={styles.notaMusicalUm}
+                />
+
+                <MaterialCommunityIcons
+                    name="music-note-eighth-dotted"
+                    size={32}
+                    color="rgba(255,255,255,0.14)"
+                    style={styles.notaMusicalDois}
+                />
+
+                <MaterialCommunityIcons
+                    name="music-clef-treble"
+                    size={72}
+                    color="rgba(255,255,255,0.08)"
+                    style={styles.claveMusical}
+                />
+
+                {/* Área superior */}
+                <View style={styles.hero}>
+
+                    <View style={styles.logoContainer}>
+                        <Image
+                            source={require('../../../assets/images/primeira_nota_logo2.png')}
+                            style={styles.logo}
+                            resizeMode="contain"
+                        />
+                    </View>
 
                     <Text style={styles.titulo}>
-                        Bem-vindo à Escola de Música{'\n'}
-                        <Text style={styles.tituloAzul}>
-                            Primeira Nota
-                        </Text>
+                        Sua música começa
+                    </Text>
+
+                    <Text style={styles.tituloDestaque}>
+                        na Primeira Nota
                     </Text>
 
                     <Text style={styles.subtitulo}>
-                        Agende suas aulas de música de forma simples e rápida.
+                        Encontre seu professor, escolha seu instrumento
+                        e agende sua próxima aula.
                     </Text>
+
+                    {/* Indicadores musicais */}
+                    <View style={styles.instrumentos}>
+                        <View style={styles.instrumento}>
+                            <MaterialCommunityIcons
+                                name="guitar-acoustic"
+                                size={20}
+                                color="#FFFFFF"
+                            />
+                        </View>
+
+                        <View style={styles.instrumento}>
+                            <MaterialCommunityIcons
+                                name="piano"
+                                size={20}
+                                color="#FFFFFF"
+                            />
+                        </View>
+
+                        <View style={styles.instrumento}>
+                            <MaterialCommunityIcons
+                                name="music-note"
+                                size={20}
+                                color="#FFFFFF"
+                            />
+                        </View>
+
+                        <View style={styles.instrumento}>
+                            <MaterialCommunityIcons
+                                name="microphone-variant"
+                                size={20}
+                                color="#FFFFFF"
+                            />
+                        </View>
+                    </View>
                 </View>
 
-                <View style={styles.footer}>
+                {/* Card de login */}
+                <View style={styles.loginCard}>
+
+                    <View style={styles.indicador} />
+
+                    <Text style={styles.loginTitulo}>
+                        Vamos começar?
+                    </Text>
+
+                    <Text style={styles.loginSubtitulo}>
+                        Entre para acessar sua conta e continuar
+                        sua jornada musical.
+                    </Text>
+
                     <TouchableOpacity
-                        style={styles.botaoGoogle}
+                        style={[
+                            styles.botaoGoogle,
+                            carregando && styles.botaoDesabilitado,
+                        ]}
                         onPress={handleLoginGoogle}
                         disabled={carregando}
                         activeOpacity={0.85}
@@ -80,21 +165,38 @@ export function LoginScreen() {
                             />
                         ) : (
                             <>
-                                <Text style={styles.googleIcon}>
-                                    G
-                                </Text>
+                                <View style={styles.googleIconContainer}>
+                                    <Text style={styles.googleIcon}>
+                                        G
+                                    </Text>
+                                </View>
 
                                 <Text style={styles.botaoGoogleTexto}>
-                                    Entrar com Google
+                                    Continuar com Google
                                 </Text>
+
+                                <MaterialCommunityIcons
+                                    name="arrow-right"
+                                    size={20}
+                                    color="#093373"
+                                    style={styles.setaGoogle}
+                                />
                             </>
                         )}
                     </TouchableOpacity>
 
-                    <Text style={styles.termos}>
-                        Ao continuar, você concorda com os termos de uso
-                        e a política de privacidade.
-                    </Text>
+                    <View style={styles.linhaTermos}>
+                        <MaterialCommunityIcons
+                            name="shield-check-outline"
+                            size={15}
+                            color="#9CA3AF"
+                        />
+
+                        <Text style={styles.termos}>
+                            Ao continuar, você concorda com os termos de uso
+                            e a política de privacidade.
+                        </Text>
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
