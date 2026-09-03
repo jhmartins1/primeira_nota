@@ -1,16 +1,21 @@
-
 import { prisma } from '../../prisma/client';
 
 interface CancelarAgendamentoDTO {
-    usuarioId: number;
+    usuarioId?: number;
+    professorId?: number;
     agendamentoId: number;
 }
 
 export class CancelarAgendamentoService {
     async execute({
         usuarioId,
+        professorId,
         agendamentoId,
     }: CancelarAgendamentoDTO) {
+        // ----------------------------------------------------
+        // BUSCAR AGENDAMENTO
+        // ----------------------------------------------------
+
         const agendamento =
             await prisma.agendamento.findUnique({
                 where: {
@@ -24,44 +29,61 @@ export class CancelarAgendamentoService {
             );
         }
 
-        /*
-         * Segurança:
-         *
-         * O usuário só pode cancelar uma aula
-         * que pertence à própria conta.
-         */
-        if (agendamento.usuarioId !== usuarioId) {
+        // ----------------------------------------------------
+        // SEGURANÇA
+        // ----------------------------------------------------
+        // O aluno só pode cancelar uma aula dele.
+        //
+        // O professor só pode cancelar uma aula
+        // que esteja vinculada a ele.
+        // ----------------------------------------------------
+
+        const pertenceAoUsuario =
+            usuarioId !== undefined &&
+            agendamento.usuarioId === usuarioId;
+
+        const pertenceAoProfessor =
+            professorId !== undefined &&
+            agendamento.professorId === professorId;
+
+        if (
+            !pertenceAoUsuario &&
+            !pertenceAoProfessor
+        ) {
             throw new Error(
                 'Você não tem permissão para cancelar esta aula.'
             );
         }
 
-        /*
-         * Não permite cancelar novamente
-         * uma aula já cancelada.
-         */
+        // ----------------------------------------------------
+        // VERIFICAR STATUS
+        // ----------------------------------------------------
+
         if (agendamento.status !== 'AGENDADO') {
             throw new Error(
                 'Esta aula não está mais agendada.'
             );
         }
 
-        /*
-         * Não permite cancelar uma aula que
-         * já passou.
-         */
+        // ----------------------------------------------------
+        // VERIFICAR DATA
+        // ----------------------------------------------------
+
         if (agendamento.dataHora <= new Date()) {
             throw new Error(
                 'Não é possível cancelar uma aula que já passou.'
             );
         }
 
-        /*
-         * Mantemos o registro no banco e apenas
-         * alteramos seu status.
-         *
-         * Isso preserva o histórico da aula.
-         */
+        // ----------------------------------------------------
+        // CANCELAR
+        // ----------------------------------------------------
+        // Não deletamos o registro.
+        //
+        // Apenas alteramos o status para CANCELADO,
+        // preservando o histórico da aula.
+        // ----------------------------------------------------
+
         const agendamentoCancelado =
             await prisma.agendamento.update({
                 where: {
@@ -71,6 +93,7 @@ export class CancelarAgendamentoService {
                     status: 'CANCELADO',
                 },
                 include: {
+                    usuario: true,
                     professor: true,
                     instrumento: true,
                     nivel: true,
@@ -80,4 +103,3 @@ export class CancelarAgendamentoService {
         return agendamentoCancelado;
     }
 }
-

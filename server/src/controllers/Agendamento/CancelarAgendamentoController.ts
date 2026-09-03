@@ -1,28 +1,34 @@
 import type { Request, Response } from 'express';
+
 import { CancelarAgendamentoService } from '../../services/Agendamento/CancelarAgendamentoService';
 
 export class CancelarAgendamentoController {
     async handle(req: Request, res: Response) {
         try {
-            if (!req.usuarioId) {
+            // ----------------------------------------------------
+            // AUTENTICAÇÃO
+            // ----------------------------------------------------
+
+            if (!req.usuarioId && !req.professorId) {
                 return res.status(401).json({
                     error: 'Usuário não autenticado.',
                 });
             }
 
-            const agendamentoId = Number(
-                req.params.id
-            );
+            const agendamentoId = Number(req.params.id);
 
             if (
                 !Number.isInteger(agendamentoId) ||
                 agendamentoId <= 0
             ) {
                 return res.status(400).json({
-                    error:
-                        'ID do agendamento inválido.',
+                    error: 'ID do agendamento inválido.',
                 });
             }
+
+            // ----------------------------------------------------
+            // CANCELAMENTO
+            // ----------------------------------------------------
 
             const service =
                 new CancelarAgendamentoService();
@@ -30,6 +36,7 @@ export class CancelarAgendamentoController {
             const agendamento =
                 await service.execute({
                     usuarioId: req.usuarioId,
+                    professorId: req.professorId,
                     agendamentoId,
                 });
 
@@ -57,4 +64,3 @@ export class CancelarAgendamentoController {
         }
     }
 }
-
