@@ -6,6 +6,7 @@ import { NivelRouter } from './routes/nivel.routes';
 import { userRoute } from './routes/usuario.routes';
 import { agendamentoRoutes } from './routes/agentamento.routes';
 import { ClerkWebhookController } from './controllers/Usuario/ClerkWebhookController';
+import { contaRoute } from './routes/conta.routes';
 
 const app = express();
 
@@ -24,6 +25,12 @@ app.post(
 app.use(express.json());
 
 // ROTAS
+app.get('/health', (_req, res) => {
+    res.status(200).json({
+        status: 'ok',
+    });
+});
+
 app.use('/test', testRoute);
 
 app.use('/instrument', instrumentRoutes);
@@ -36,11 +43,11 @@ app.use('/usuario', userRoute);
 
 app.use('/agendamento', agendamentoRoutes);
 
+app.use('/conta', contaRoute);
+
 // SERVER
 const PORT = Number(process.env.PORT) || 3333;
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(
-        `Server is running on http://127.0.0.1:${PORT} 🚀`
-    );
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server is running on http://0.0.0.0:${PORT} 🚀`);
 });

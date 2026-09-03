@@ -6,6 +6,8 @@ declare global {
     namespace Express {
         interface Request {
             usuarioId?: number;
+            professorId?: number;
+            tipoConta?: 'usuario' | 'professor';
         }
     }
 }
@@ -30,21 +32,31 @@ export async function clerkAuthMiddleware(
             secretKey: process.env.CLERK_SECRET_KEY,
         });
 
+        // Tenta primeiro como aluno
         const usuario = await prisma.usuario.findUnique({
-            where: {
-                clerkId: payload.sub,
-            },
+            where: { clerkId: payload.sub },
         });
 
-        if (!usuario) {
-            return res.status(404).json({
-                error: 'Usuário não encontrado',
-            });
+        if (usuario) {
+            req.usuarioId = usuario.id;
+            req.tipoConta = 'usuario';
+            return next();
         }
 
-        req.usuarioId = usuario.id;
+        // Se não é aluno, tenta como professor
+        const professor = await prisma.professor.findUnique({
+            where: { clerkId: payload.sub },
+        });
 
-        next();
+        if (professor) {
+            req.professorId = professor.id;
+            req.tipoConta = 'professor';
+            return next();
+        }
+
+        return res.status(404).json({
+            error: 'Conta não encontrada',
+        });
     } catch (error) {
         console.error('ERRO DETALHADO NA AUTENTICAÇÃO:', error);
 
