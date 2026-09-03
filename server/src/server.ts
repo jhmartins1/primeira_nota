@@ -6,6 +6,7 @@ import { NivelRouter } from './routes/nivel.routes';
 import { userRoute } from './routes/usuario.routes';
 import { agendamentoRoutes } from './routes/agentamento.routes';
 import { ClerkWebhookController } from './controllers/Usuario/ClerkWebhookController';
+import { contaRoute } from './routes/conta.routes';
 
 const app = express();
 
@@ -35,6 +36,8 @@ app.use('/nivel', NivelRouter);
 app.use('/usuario', userRoute);
 
 app.use('/agendamento', agendamentoRoutes);
+
+app.use('/conta', contaRoute);
 
 // SERVER
 const PORT = Number(process.env.PORT) || 3333;
