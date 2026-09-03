@@ -1,32 +1,99 @@
 import { ClerkProvider, useAuth } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
-import { Stack, useRouter, useSegments } from 'expo-router';
+import {
+  Stack,
+  usePathname,
+  useRouter,
+} from 'expo-router';
 import { useEffect } from 'react';
+
+import { useContaAutenticada } from '../hooks/useContaAutenticada';
 
 function AuthGuard() {
   const { isLoaded, isSignedIn } = useAuth();
 
-  const segments = useSegments();
+  const {
+    tipoConta,
+    carregandoConta,
+  } = useContaAutenticada();
+
+  const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
-    const estaNoLogin = segments[0] === 'login';
+    // ROTAS 
+    const estaNoLogin =
+      pathname === '/login';
 
-    // Usuário não autenticado
+    const estaNaAreaProfessor =
+      pathname === '/professor' ||
+      pathname.startsWith('/professor/');
+
+    const estaNaEdicaoInstrumentos =
+      pathname === '/instrument' ||
+      pathname === '/level';
+
+    //USUÁRIO NÃO AUTENTICADO
+
     if (!isSignedIn && !estaNoLogin) {
       router.replace('/login');
       return;
     }
 
-    // Usuário autenticado tentando acessar login
+    // USUÁRIO AUTENTICADO
+
     if (isSignedIn && estaNoLogin) {
       router.replace('/');
+      return;
     }
-  }, [isLoaded, isSignedIn, segments, router]);
 
-  if (!isLoaded) {
+    // USUÁRIO AUTENTICADO, MAS AINDA NÃO CARREGOU A CONTA
+
+    if (isSignedIn && carregandoConta) {
+      return;
+    }
+
+    // PROFESSOR
+    if (
+      isSignedIn &&
+      tipoConta === 'professor'
+    ) {
+      if (
+        estaNaAreaProfessor ||
+        estaNaEdicaoInstrumentos
+      ) {
+        return;
+      }
+      router.replace('/professor');
+      return;
+    }
+
+    // USUÁRIO
+    if (
+      isSignedIn &&
+      tipoConta === 'usuario'
+    ) {
+      if (estaNaAreaProfessor) {
+        router.replace('/');
+        return;
+      }
+    }
+  }, [
+    isLoaded,
+    isSignedIn,
+    tipoConta,
+    carregandoConta,
+    pathname,
+    router,
+  ]);
+  if (
+    !isLoaded ||
+    (isSignedIn && carregandoConta)
+  ) {
     return null;
   }
 
