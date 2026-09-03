@@ -1,5 +1,10 @@
 import { Router } from 'express';
-import { clerkAuthMiddleware } from '../middlewares/clerkAuth';
+
+import {
+    clerkAuthMiddleware,
+} from '../middlewares/clerkAuth';
+import { clerkIdentifyOnly } from '../middlewares/clerkIdentifyOnly';
+
 import { GetOneUsuarioController } from '../controllers/Usuario/GetOneUsuarioController';
 import { UpdateUsuarioController } from '../controllers/Usuario/UpdateUsuarioController';
 import { SaveUsuarioInstrumentosController } from '../controllers/Usuario/SaveUsuarioInstrumentosController';
@@ -15,10 +20,7 @@ const updateUsuarioController =
 const saveUsuarioInstrumentosController =
     new SaveUsuarioInstrumentosController();
 
-// ========================================
 // GET USUÁRIO AUTENTICADO
-// ========================================
-
 userRoute.get(
     '/me',
     clerkAuthMiddleware,
@@ -26,27 +28,20 @@ userRoute.get(
         getOneUsuarioController.handle(req, res)
 );
 
-
-// ========================================
-// ATUALIZAR USUÁRIO AUTENTICADO
-// ========================================
-
+// ATUALIZAR / CRIAR USUÁRIO AUTENTICADO
 userRoute.patch(
     '/me',
-    clerkAuthMiddleware,
+    clerkIdentifyOnly,
     (req, res) =>
         updateUsuarioController.handle(req, res)
 );
 
-// ========================================
 // SALVAR INSTRUMENTOS DO USUÁRIO AUTENTICADO
-// ========================================
 userRoute.post(
     '/instrumentos',
     clerkAuthMiddleware,
     (req, res) =>
         saveUsuarioInstrumentosController.handle(req, res)
 );
-
 
 export { userRoute };
