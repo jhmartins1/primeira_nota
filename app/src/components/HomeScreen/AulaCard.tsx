@@ -1,8 +1,8 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
-import { formatarDataBrasilia } from './formatters';
+import { formatarDataBrasilia, formatarDiaSemana } from './formatters';
 import { styles } from './HomeScreen.styles';
 import { Agendamento } from './types';
 
@@ -12,9 +12,19 @@ interface AulaCardProps {
     onCancelar: () => void;
 }
 
+function obterIniciais(nome: string): string {
+    const partes = nome.trim().split(/\s+/);
+
+    const primeira = partes[0]?.[0] ?? '';
+    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+
+    return (primeira + ultima).toUpperCase();
+}
+
 export function AulaCard({ aula, cancelando, onCancelar }: AulaCardProps) {
     const icone = getInstrumentIcon(aula.instrumento.name);
     const dataFormatada = formatarDataBrasilia(aula.dataHora);
+    const diaSemana = formatarDiaSemana(aula.dataHora);
 
     return (
         <View style={styles.aulaCard}>
@@ -32,16 +42,31 @@ export function AulaCard({ aula, cancelando, onCancelar }: AulaCardProps) {
                 </View>
             </View>
 
-            <View style={styles.aulaDetalhes}>
-                <View style={styles.aulaDataLinha}>
-                    <MaterialCommunityIcons name="calendar-outline" size={15} color="#6B7280" />
-                    <Text style={styles.aulaData}>
-                        {dataFormatada.data} às {dataFormatada.hora}
-                    </Text>
-                </View>
+            <View style={styles.aulaDataChip}>
+                <MaterialCommunityIcons name="calendar-outline" size={16} color="#093373" />
 
+                <Text style={styles.aulaDataChipTexto}>
+                    {dataFormatada.data}{' '}
+                    <Text style={styles.aulaDataChipDia}>({diaSemana})</Text>{' '}
+                    às {dataFormatada.hora}
+                </Text>
+            </View>
+
+            <View style={styles.aulaDetalhes}>
                 <View style={styles.aulaProfessorLinha}>
-                    <MaterialCommunityIcons name="account-outline" size={15} color="#6B7280" />
+                    {aula.professor.image ? (
+                        <Image
+                            source={{ uri: aula.professor.image }}
+                            style={styles.professorAvatarPequeno}
+                        />
+                    ) : (
+                        <View style={styles.professorAvatarPequenoFallback}>
+                            <Text style={styles.professorAvatarPequenoIniciais}>
+                                {obterIniciais(aula.professor.name)}
+                            </Text>
+                        </View>
+                    )}
+
                     <Text style={styles.aulaProfessor}>{aula.professor.name}</Text>
                 </View>
             </View>

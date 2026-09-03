@@ -2,6 +2,7 @@ import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
+import { getCorNivel } from '../../constants/NivelColors';
 import { styles } from './HomeScreen.styles';
 import { InstrumentoUsuario } from './types';
 
@@ -12,6 +13,7 @@ interface InstrumentoCardProps {
 
 export function InstrumentoCard({ instrumento, onPress }: InstrumentoCardProps) {
     const icone = getInstrumentIcon(instrumento.instrumento);
+    const corNivel = getCorNivel(instrumento.nivel);
 
     return (
         <TouchableOpacity style={styles.instrumentoCard} activeOpacity={0.8} onPress={onPress}>
@@ -26,9 +28,11 @@ export function InstrumentoCard({ instrumento, onPress }: InstrumentoCardProps) 
             <View style={styles.instrumentoInfo}>
                 <Text style={styles.instrumentoNome}>{instrumento.instrumento}</Text>
 
-                <View style={styles.instrumentoNivel}>
-                    <Text style={{ color: '#B8842E', fontSize: 12 }}>★</Text>
-                    <Text style={styles.instrumentoNivelTexto}>{instrumento.nivel}</Text>
+                <View style={[styles.instrumentoNivel, { backgroundColor: corNivel.fundo }]}>
+                    <Text style={{ color: corNivel.cor, fontSize: 12 }}>★</Text>
+                    <Text style={[styles.instrumentoNivelTexto, { color: corNivel.cor }]}>
+                        {instrumento.nivel}
+                    </Text>
                 </View>
             </View>
 
