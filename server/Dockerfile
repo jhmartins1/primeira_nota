@@ -13,6 +13,8 @@ COPY tsconfig.json ./
 
 RUN bunx prisma generate
 
+RUN ls -la /app/src/generated/prisma && ls -la /app/src/generated/prisma/client.ts
+
 EXPOSE 10000
 
 CMD ["bun", "src/server.ts"]
