@@ -391,4 +391,20 @@ export const styles = StyleSheet.create({
         color: TEXTO_SECUNDARIO,
         fontWeight: '500',
     },
+    botaoVerEndereco: {
+        height: 42,
+        marginTop: 12,
+        borderRadius: 11,
+        backgroundColor: AZUL,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 7,
+    },
+
+    botaoVerEnderecoTexto: {
+        fontSize: 13,
+        fontWeight: '700',
+        color: '#FFFFFF',
+    },
 });

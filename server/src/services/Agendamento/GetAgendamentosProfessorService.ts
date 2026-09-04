@@ -6,7 +6,18 @@ export class GetAgendamentosProfessorService {
             where: { professorId },
             include: {
                 usuario: {
-                    select: { id: true, name: true, image: true, phone: true },
+                    select: {
+                        id: true,
+                        name: true,
+                        image: true,
+                        phone: true,
+                        logradouro: true,
+                        numero: true,
+                        complemento: true,
+                        bairro: true,
+                        cidade: true,
+                        uf: true,
+                    },
                 },
                 instrumento: { select: { id: true, name: true } },
                 nivel: { select: { id: true, name: true } },

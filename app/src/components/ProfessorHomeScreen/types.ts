@@ -3,6 +3,12 @@ export interface Aluno {
     name: string;
     image?: string | null;
     phone?: string | null;
+    logradouro?: string | null;
+    numero?: string | null;
+    complemento?: string | null;
+    bairro?: string | null;
+    cidade?: string | null;
+    uf?: string | null;
 }
 
 export interface AgendamentoProfessor {

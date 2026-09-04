@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
+import { getCorNivel } from '../../constants/NivelColors';
 import { styles } from './AgendamentoScreen.styles';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
@@ -73,7 +74,6 @@ function criarDiasDisponiveis(
 
     return datasUnicas.map((data) => {
         const [ano, mes, dia] = data.split('-').map(Number);
-
         const dataLocal = new Date(ano, mes - 1, dia);
 
         const diaSemana = dataLocal
@@ -94,19 +94,34 @@ function criarDiasDisponiveis(
 
 function formatarData(data: string) {
     const [ano, mes, dia] = data.split('-');
-
     return `${dia}/${mes}/${ano}`;
+}
+
+function obterEstrelasNivel(nivel: string): string {
+    const nivelNormalizado = nivel
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+
+    switch (nivelNormalizado) {
+        case 'iniciante':
+            return '★';
+
+        case 'intermediario':
+            return '★★';
+
+        case 'avancado':
+            return '★★★';
+
+        default:
+            return '★';
+    }
 }
 
 export default function AgendamentoScreen() {
     const router = useRouter();
     const { getToken } = useAuth();
-
-    /*
-     * ============================================================
-     * INSTRUMENTOS
-     * ============================================================
-     */
 
     const [instrumentos, setInstrumentos] = useState<
         InstrumentoUsuario[]
@@ -114,12 +129,6 @@ export default function AgendamentoScreen() {
 
     const [instrumentoSelecionado, setInstrumentoSelecionado] =
         useState<InstrumentoUsuario | null>(null);
-
-    /*
-     * ============================================================
-     * DISPONIBILIDADE
-     * ============================================================
-     */
 
     const [disponibilidade, setDisponibilidade] = useState<
         DisponibilidadeAPI[]
@@ -134,12 +143,6 @@ export default function AgendamentoScreen() {
     const [horarioSelecionado, setHorarioSelecionado] =
         useState<string | null>(null);
 
-    /*
-     * ============================================================
-     * ESTADOS
-     * ============================================================
-     */
-
     const [carregandoInstrumentos, setCarregandoInstrumentos] =
         useState(true);
 
@@ -149,12 +152,6 @@ export default function AgendamentoScreen() {
     const [erro, setErro] = useState<string | null>(null);
 
     const [confirmando, setConfirmando] = useState(false);
-
-    /*
-     * ============================================================
-     * BUSCAR INSTRUMENTOS DO USUÁRIO
-     * ============================================================
-     */
 
     useEffect(() => {
         let ativo = true;
@@ -177,6 +174,7 @@ export default function AgendamentoScreen() {
                         'Token de autenticação não encontrado.'
                     );
                 }
+
                 const response = await fetch(
                     `${API_URL}/usuario/me`,
                     {
@@ -204,30 +202,22 @@ export default function AgendamentoScreen() {
                             instrumentoId:
                                 item.instrumentoId ??
                                 item.instrumento?.id,
+
                             instrumento:
-                                item.instrumento ??
-                                item.instrumento?.name,
+                                typeof item.instrumento === 'string'
+                                    ? item.instrumento
+                                    : item.instrumento?.name,
+
                             nivelId:
                                 item.nivelId ??
                                 item.nivel?.id,
+
                             nivel:
-                                item.nivel ??
-                                item.nivel?.name,
+                                typeof item.nivel === 'string'
+                                    ? item.nivel
+                                    : item.nivel?.name,
                         })
                     );
-
-                /*
-                 * Caso o backend já esteja retornando:
-                 *
-                 * {
-                 *   instrumento: "Guitarra",
-                 *   nivel: "Iniciante"
-                 * }
-                 *
-                 * ainda precisamos descobrir os IDs.
-                 *
-                 * Por isso buscamos /instrument e /nivel.
-                 */
 
                 const instrumentosResponse = await fetch(
                     `${API_URL}/instrument`,
@@ -248,9 +238,8 @@ export default function AgendamentoScreen() {
                     );
                 }
 
-                const instrumentosAPI = JSON.parse(
-                    instrumentosTexto
-                );
+                const instrumentosAPI =
+                    JSON.parse(instrumentosTexto);
 
                 const niveisResponse = await fetch(
                     `${API_URL}/nivel`,
@@ -290,12 +279,16 @@ export default function AgendamentoScreen() {
                             instrumentoId:
                                 item.instrumentoId ??
                                 instrumentoAPI?.id,
+
                             instrumento:
                                 item.instrumento,
+
                             nivelId:
                                 item.nivelId ??
                                 nivelAPI?.id,
-                            nivel: item.nivel,
+
+                            nivel:
+                                item.nivel,
                         };
                     });
 
@@ -310,7 +303,6 @@ export default function AgendamentoScreen() {
                 if (!ativo) return;
 
                 setInstrumentos(validos);
-
             } catch (error) {
                 console.error(
                     'AGENDAMENTO: erro ao carregar instrumentos:',
@@ -338,12 +330,6 @@ export default function AgendamentoScreen() {
         };
     }, []);
 
-    /*
-     * ============================================================
-     * BUSCAR DISPONIBILIDADE
-     * ============================================================
-     */
-
     useEffect(() => {
         let ativo = true;
 
@@ -359,15 +345,6 @@ export default function AgendamentoScreen() {
 
                 setCarregandoDisponibilidade(true);
                 setErro(null);
-
-                /*
-                 * Limpa as seleções anteriores.
-                 *
-                 * Isso é importante porque, se o usuário trocar
-                 * Guitarra por Bateria, não podemos manter professor,
-                 * dia e horário da Guitarra.
-                 */
-
                 setProfessorSelecionado(null);
                 setDiaSelecionado(null);
                 setHorarioSelecionado(null);
@@ -408,11 +385,6 @@ export default function AgendamentoScreen() {
                 if (!ativo) return;
 
                 setDisponibilidade(dados);
-
-                /*
-                 * Seleciona automaticamente o primeiro professor
-                 * somente DEPOIS que o instrumento foi escolhido.
-                 */
 
                 const professoresUnicos =
                     dados.filter(
@@ -464,12 +436,6 @@ export default function AgendamentoScreen() {
         };
     }, [instrumentoSelecionado]);
 
-    /*
-     * ============================================================
-     * PROFESSORES
-     * ============================================================
-     */
-
     const professores = useMemo(() => {
         const mapa = new Map<number, ProfessorAPI>();
 
@@ -481,12 +447,6 @@ export default function AgendamentoScreen() {
 
         return Array.from(mapa.values());
     }, [disponibilidade]);
-
-    /*
-     * ============================================================
-     * DIAS
-     * ============================================================
-     */
 
     const dias = useMemo(() => {
         return criarDiasDisponiveis(disponibilidade).filter(
@@ -500,12 +460,6 @@ export default function AgendamentoScreen() {
                 )
         );
     }, [disponibilidade, professorSelecionado]);
-
-    /*
-     * ============================================================
-     * HORÁRIOS
-     * ============================================================
-     */
 
     const horarios = useMemo(() => {
         if (!professorSelecionado || !diaSelecionado) {
@@ -526,23 +480,11 @@ export default function AgendamentoScreen() {
         diaSelecionado,
     ]);
 
-    /*
-     * ============================================================
-     * SELECIONAR INSTRUMENTO
-     * ============================================================
-     */
-
     function selecionarInstrumento(
         instrumento: InstrumentoUsuario
     ) {
         setInstrumentoSelecionado(instrumento);
     }
-
-    /*
-     * ============================================================
-     * SELECIONAR PROFESSOR
-     * ============================================================
-     */
 
     function selecionarProfessor(professor: ProfessorAPI) {
         setProfessorSelecionado(professor);
@@ -559,22 +501,10 @@ export default function AgendamentoScreen() {
         setHorarioSelecionado(null);
     }
 
-    /*
-     * ============================================================
-     * SELECIONAR DIA
-     * ============================================================
-     */
-
     function selecionarDia(dia: DiaDisponivel) {
         setDiaSelecionado(dia);
         setHorarioSelecionado(null);
     }
-
-    /*
-     * ============================================================
-     * VOLTAR PARA INSTRUMENTOS
-     * ============================================================
-     */
 
     function voltarParaInstrumentos() {
         setInstrumentoSelecionado(null);
@@ -584,12 +514,6 @@ export default function AgendamentoScreen() {
         setHorarioSelecionado(null);
         setErro(null);
     }
-
-    /*
-     * ============================================================
-     * CONFIRMAR AGENDAMENTO
-     * ============================================================
-     */
 
     async function confirmarAgendamento() {
         if (!instrumentoSelecionado) {
@@ -635,18 +559,6 @@ export default function AgendamentoScreen() {
                 );
             }
 
-            /*
-             * Brasília = UTC-3.
-             *
-             * Exemplo:
-             *
-             * 03/09 às 17:00
-             *
-             * será enviado como:
-             *
-             * 2026-09-03T17:00:00-03:00
-             */
-
             const dataHora =
                 `${diaSelecionado.data}T` +
                 `${horarioSelecionado}:00-03:00`;
@@ -662,10 +574,13 @@ export default function AgendamentoScreen() {
                     body: JSON.stringify({
                         professorId:
                             professorSelecionado.id,
+
                         instrumentoId:
                             instrumentoSelecionado.instrumentoId,
+
                         nivelId:
                             instrumentoSelecionado.nivelId,
+
                         dataHora,
                     }),
                 }
@@ -703,7 +618,10 @@ export default function AgendamentoScreen() {
             );
         } catch (error) {
             if (error instanceof Error) {
-                Alert.alert('Horário indisponível', error.message);
+                Alert.alert(
+                    'Horário indisponível',
+                    error.message
+                );
                 return;
             }
 
@@ -715,12 +633,6 @@ export default function AgendamentoScreen() {
             setConfirmando(false);
         }
     }
-
-    /*
-     * ============================================================
-     * LOADING INICIAL
-     * ============================================================
-     */
 
     if (carregandoInstrumentos) {
         return (
@@ -738,12 +650,6 @@ export default function AgendamentoScreen() {
             </SafeAreaView>
         );
     }
-
-    /*
-     * ============================================================
-     * ERRO INICIAL
-     * ============================================================
-     */
 
     if (erro && !instrumentoSelecionado) {
         return (
@@ -775,12 +681,6 @@ export default function AgendamentoScreen() {
             </SafeAreaView>
         );
     }
-
-    /*
-     * ============================================================
-     * TELA DE SELEÇÃO DE INSTRUMENTO
-     * ============================================================
-     */
 
     if (!instrumentoSelecionado) {
         return (
@@ -868,6 +768,12 @@ export default function AgendamentoScreen() {
                                     item.instrumento
                                 ) as IconeInstrumento;
 
+                            const corNivel =
+                                getCorNivel(item.nivel);
+
+                            const estrelas =
+                                obterEstrelasNivel(item.nivel);
+
                             return (
                                 <TouchableOpacity
                                     key={`${item.instrumentoId}-${item.nivelId}`}
@@ -916,22 +822,32 @@ export default function AgendamentoScreen() {
                                         </Text>
 
                                         <View
-                                            style={
-                                                styles.instrumentoNivel
-                                            }
+                                            style={[
+                                                styles.instrumentoNivel,
+                                                {
+                                                    backgroundColor:
+                                                        corNivel.fundo,
+                                                },
+                                            ]}
                                         >
                                             <Text
-                                                style={
-                                                    styles.estrelas
-                                                }
+                                                style={[
+                                                    styles.estrelas,
+                                                    {
+                                                        color: corNivel.cor,
+                                                    },
+                                                ]}
                                             >
-                                                ★
+                                                {estrelas}
                                             </Text>
 
                                             <Text
-                                                style={
-                                                    styles.instrumentoNivelTexto
-                                                }
+                                                style={[
+                                                    styles.instrumentoNivelTexto,
+                                                    {
+                                                        color: corNivel.cor,
+                                                    },
+                                                ]}
                                             >
                                                 {item.nivel}
                                             </Text>
@@ -991,12 +907,6 @@ export default function AgendamentoScreen() {
         );
     }
 
-    /*
-     * ============================================================
-     * LOADING DA DISPONIBILIDADE
-     * ============================================================
-     */
-
     if (carregandoDisponibilidade) {
         return (
             <SafeAreaView style={styles.safeArea}>
@@ -1012,18 +922,13 @@ export default function AgendamentoScreen() {
 
                     <Text style={styles.loadingTexto}>
                         Procurando professores e horários
-                        disponíveis para {instrumentoSelecionado.instrumento}.
+                        disponíveis para{' '}
+                        {instrumentoSelecionado.instrumento}.
                     </Text>
                 </View>
             </SafeAreaView>
         );
     }
-
-    /*
-     * ============================================================
-     * ERRO DE DISPONIBILIDADE
-     * ============================================================
-     */
 
     if (erro) {
         return (
@@ -1056,11 +961,11 @@ export default function AgendamentoScreen() {
         );
     }
 
-    /*
-     * ============================================================
-     * TELA PRINCIPAL DE AGENDAMENTO
-     * ============================================================
-     */
+    const corNivelSelecionado =
+        getCorNivel(instrumentoSelecionado.nivel);
+
+    const estrelasNivelSelecionado =
+        obterEstrelasNivel(instrumentoSelecionado.nivel);
 
     return (
         <SafeAreaView style={styles.safeArea}>
@@ -1137,22 +1042,38 @@ export default function AgendamentoScreen() {
                                 </Text>
 
                                 <View
-                                    style={
-                                        styles.nivelBadge
-                                    }
+                                    style={[
+                                        styles.nivelBadge,
+                                        {
+                                            backgroundColor:
+                                                corNivelSelecionado.fundo,
+                                            borderColor:
+                                                corNivelSelecionado.cor,
+                                        },
+                                    ]}
                                 >
                                     <Text
-                                        style={
-                                            styles.estrelasNivel
-                                        }
+                                        style={[
+                                            styles.estrelasNivel,
+                                            {
+                                                color:
+                                                    corNivelSelecionado.cor,
+                                            },
+                                        ]}
                                     >
-                                        ★
+                                        {
+                                            estrelasNivelSelecionado
+                                        }
                                     </Text>
 
                                     <Text
-                                        style={
-                                            styles.nivelTexto
-                                        }
+                                        style={[
+                                            styles.nivelTexto,
+                                            {
+                                                color:
+                                                    corNivelSelecionado.cor,
+                                            },
+                                        ]}
                                     >
                                         {
                                             instrumentoSelecionado.nivel
@@ -1566,4 +1487,3 @@ export default function AgendamentoScreen() {
         </SafeAreaView>
     );
 }
-
