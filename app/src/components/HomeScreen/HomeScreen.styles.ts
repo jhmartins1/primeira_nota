@@ -33,17 +33,18 @@ export const styles = StyleSheet.create({
     botaoLogout: {
         width: 42,
         height: 42,
-        borderRadius: 21,
+        borderRadius: 13,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: VERMELHO_FUNDO,
+
+        backgroundColor: '#FEF2F2',
+
         borderWidth: 1,
-        borderColor: '#F3D0CC',
-        marginLeft: 12,
+        borderColor: '#FDE2E2',
     },
 
     botaoLogoutCarregando: {
-        backgroundColor: '#F8E3E1',
+        opacity: 0.7,
     },
 
     eyebrow: {
@@ -628,4 +629,29 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
         color: AZUL,
     },
+    // =========================
+    // AÇÕES DO HEADER
+    // =========================
+
+    acoesHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+
+    botaoPerfil: {
+        width: 42,
+        height: 42,
+        borderRadius: 13,
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        backgroundColor: '#EAF0FB',
+
+        borderWidth: 1,
+        borderColor: '#DCE6F5',
+    },
+
+
+
 });

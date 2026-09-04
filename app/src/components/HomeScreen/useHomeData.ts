@@ -37,10 +37,7 @@ export function useHomeData() {
                 throw new Error('Token de autenticação não encontrado.');
             }
 
-            // ----------------------------------------------------
             // USUÁRIO
-            // ----------------------------------------------------
-
             const usuarioResponse = await fetch(`${API_URL}/usuario/me`, {
                 method: 'GET',
                 headers: {
@@ -56,10 +53,7 @@ export function useHomeData() {
             const usuarioData = await usuarioResponse.json();
             setUsuario(usuarioData);
 
-            // ----------------------------------------------------
             // AGENDAMENTOS
-            // ----------------------------------------------------
-
             const agendamentosResponse = await fetch(`${API_URL}/agendamento`, {
                 method: 'GET',
                 headers: {
@@ -113,10 +107,7 @@ export function useHomeData() {
     const proximaAula = agendamentos.length > 0 ? agendamentos[0] : null;
     const demaisAulas = agendamentos.slice(1, 4);
 
-    // ============================================================
     // LOGOUT
-    // ============================================================
-
     function confirmarLogout() {
         Alert.alert('Sair da conta?', 'Você será desconectado da sua conta.', [
             { text: 'Cancelar', style: 'cancel' },
@@ -138,10 +129,7 @@ export function useHomeData() {
         }
     }
 
-    // ============================================================
     // CANCELAR AULA
-    // ============================================================
-
     function confirmarCancelamento(agendamento: Agendamento) {
         const data = formatarDataBrasilia(agendamento.dataHora);
 
