@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LevelConstants } from '../../constants/LevelConstants';
 import { styles } from './LevelScreen.styles';
 
@@ -441,153 +442,194 @@ export function LevelScreen() {
         </View>
 
         <ScrollView
-          showsVerticalScrollIndicator={
-            false
-          }
-          contentContainerStyle={
-            styles.scrollContent
-          }
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Text
-            style={styles.titulo}
-          >
-            Qual é o seu nível?
-          </Text>
+          <View style={styles.tituloContainer}>
+            <Text style={styles.titulo}>
+              Qual é o seu nível?
+            </Text>
 
-          <Text
-            style={styles.subtitulo}
-          >
-            {tipoConta ===
-              'professor'
-              ? 'Selecione um ou mais níveis de experiência em cada instrumento que você ensina.'
-              : 'Selecione o nível que melhor representa sua experiência em cada instrumento.'}
-          </Text>
+            <Text style={styles.subtitulo}>
+              {tipoConta === 'professor'
+                ? 'Selecione os níveis que você domina em cada instrumento.'
+                : 'Escolha o nível que melhor representa sua experiência.'}
+            </Text>
+          </View>
 
-          <View
-            style={
-              styles.listaInstrumentos
-            }
-          >
-            {listaInstrumentos.map(
-              (instrumento) => (
-                <View
-                  key={instrumento}
-                  style={
-                    styles.instrumentoCard
+          <View style={styles.progressoContainer}>
+            <View style={styles.progressoTopo}>
+              <Text style={styles.progressoTexto}>
+                Seus instrumentos
+              </Text>
+
+              <Text style={styles.progressoNumero}>
+                {Object.keys(niveis).filter((instrumento) => {
+                  const valor = niveis[instrumento];
+
+                  if (tipoConta === 'professor') {
+                    return Array.isArray(valor) && valor.length > 0;
                   }
-                >
-                  <Text
-                    style={
-                      styles.instrumentoTitulo
-                    }
-                  >
-                    {instrumento}
-                  </Text>
 
-                  <View
-                    style={
-                      styles.niveisContainer
-                    }
-                  >
-                    {NIVEIS.map(
-                      (
-                        nivel,
-                        index
-                      ) => {
-                        const selecionado =
-                          nivelSelecionado(
-                            instrumento,
-                            nivel
-                          );
+                  return typeof valor === 'string' && valor.length > 0;
+                }).length}/{listaInstrumentos.length}
+              </Text>
+            </View>
 
-                        const estrelas =
-                          ESTRELAS[
-                          index
-                          ] ??
-                          '★';
+            <View style={styles.progressoFundo}>
+              <View
+                style={[
+                  styles.progressoPreenchido,
+                  {
+                    width: `${listaInstrumentos.length > 0
+                      ? (
+                        Object.keys(niveis).filter((instrumento) => {
+                          const valor = niveis[instrumento];
 
-                        return (
-                          <TouchableOpacity
-                            key={
-                              nivel
-                            }
-                            style={[
-                              styles.opcao,
-                              selecionado &&
-                              styles.opcaoSelecionada,
-                            ]}
-                            onPress={() => {
-                              if (
-                                tipoConta ===
-                                'professor'
-                              ) {
-                                alternarNivelProfessor(
-                                  instrumento,
-                                  nivel
-                                );
-                              } else {
-                                selecionarNivelAluno(
-                                  instrumento,
-                                  nivel
-                                );
-                              }
-                            }}
-                            activeOpacity={
-                              0.8
-                            }
-                            disabled={
-                              salvando
-                            }
-                          >
-                            <View
-                              style={
-                                styles.opcaoConteudo
-                              }
-                            >
-                              <View>
-                                <Text
-                                  style={[
-                                    styles.opcaoTexto,
-                                    selecionado &&
-                                    styles.opcaoTextoSelecionado,
-                                  ]}
-                                >
-                                  {
-                                    nivel
-                                  }
-                                </Text>
+                          if (tipoConta === 'professor') {
+                            return Array.isArray(valor) && valor.length > 0;
+                          }
 
-                                <Text
-                                  style={[
-                                    styles.estrelas,
-                                    selecionado &&
-                                    styles.estrelasSelecionadas,
-                                  ]}
-                                >
-                                  {
-                                    estrelas
-                                  }
-                                </Text>
-                              </View>
+                          return typeof valor === 'string' && valor.length > 0;
+                        }).length /
+                        listaInstrumentos.length
+                      ) * 100
+                      : 0
+                      }%`,
+                  },
+                ]}
+              />
+            </View>
+          </View>
 
-                              {selecionado && (
-                                <Text
-                                  style={
-                                    styles.check
-                                  }
-                                >
-                                  ✓
-                                </Text>
-                              )}
-                            </View>
-                          </TouchableOpacity>
-                        );
+          <View style={styles.listaInstrumentos}>
+            {listaInstrumentos.map((instrumento) => (
+              <View
+                key={instrumento}
+                style={styles.instrumentoCard}
+              >
+                <View style={styles.instrumentoHeader}>
+                  <View style={styles.instrumentoIcone}>
+                    <MaterialCommunityIcons
+                      name={
+                        instrumento.toLowerCase().includes('violão') ||
+                          instrumento.toLowerCase().includes('violao')
+                          ? 'guitar-acoustic'
+                          : instrumento.toLowerCase().includes('guitarra')
+                            ? 'guitar-electric'
+                            : instrumento.toLowerCase().includes('teclado') ||
+                              instrumento.toLowerCase().includes('piano')
+                              ? 'piano'
+                              : 'music'
                       }
-                    )}
+                      size={23}
+                      color="#093373"
+                    />
+                  </View>
+
+                  <View style={styles.instrumentoHeaderInfo}>
+                    <Text style={styles.instrumentoLabel}>
+                      Instrumento
+                    </Text>
+
+                    <Text style={styles.instrumentoTitulo}>
+                      {instrumento}
+                    </Text>
+
+                    <Text style={styles.perguntaNivel}>
+                      Qual é o seu nível?
+                    </Text>
                   </View>
                 </View>
-              )
-            )}
+
+                <View style={styles.niveisContainer}>
+                  {NIVEIS.map((nivel, index) => {
+                    const selecionado = nivelSelecionado(
+                      instrumento,
+                      nivel
+                    );
+
+                    const estrelas =
+                      ESTRELAS[index] ?? '★';
+
+                    const descricao =
+                      index === 0
+                        ? 'Estou começando a aprender'
+                        : index === 1
+                          ? 'Já tenho experiência e prática'
+                          : 'Tenho bastante domínio';
+
+                    return (
+                      <TouchableOpacity
+                        key={nivel}
+                        style={[
+                          styles.opcao,
+                          selecionado &&
+                          styles.opcaoSelecionada,
+                        ]}
+                        onPress={() => {
+                          if (tipoConta === 'professor') {
+                            alternarNivelProfessor(
+                              instrumento,
+                              nivel
+                            );
+                          } else {
+                            selecionarNivelAluno(
+                              instrumento,
+                              nivel
+                            );
+                          }
+                        }}
+                        activeOpacity={0.8}
+                        disabled={salvando}
+                      >
+                        <View style={styles.opcaoConteudo}>
+                          <View
+                            style={[
+                              styles.estrelaContainer,
+                              selecionado &&
+                              styles.estrelaContainerSelecionada,
+                            ]}
+                          >
+                            <Text
+                              style={[
+                                styles.estrelas,
+                                selecionado &&
+                                styles.estrelasSelecionadas,
+                              ]}
+                            >
+                              {estrelas}
+                            </Text>
+                          </View>
+
+                          <View style={styles.opcaoInfo}>
+                            <Text
+                              style={[
+                                styles.opcaoTexto,
+                                selecionado &&
+                                styles.opcaoTextoSelecionado,
+                              ]}
+                            >
+                              {nivel}
+                            </Text>
+
+                            <Text style={styles.opcaoDescricao}>
+                              {descricao}
+                            </Text>
+                          </View>
+
+                          {selecionado && (
+                            <Text style={styles.check}>
+                              ✓
+                            </Text>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+            ))}
           </View>
         </ScrollView>
 
@@ -597,34 +639,27 @@ export function LevelScreen() {
           <TouchableOpacity
             style={[
               styles.botaoContinuar,
-              (!podeContinuar ||
-                salvando) &&
+              (!podeContinuar || salvando) &&
               styles.botaoDesabilitado,
             ]}
-            disabled={
-              !podeContinuar ||
-              salvando
-            }
-            onPress={
-              handleContinuar
-            }
+            disabled={!podeContinuar || salvando}
+            onPress={handleContinuar}
             activeOpacity={0.8}
           >
             {salvando ? (
-              <ActivityIndicator
-                color="#fff"
-              />
+              <ActivityIndicator color="#fff" />
             ) : (
-              <Text
-                style={
-                  styles.botaoTexto
-                }
-              >
-                {modoEdicao ===
-                  'true'
-                  ? 'Salvar alterações'
-                  : 'Continuar'}
-              </Text>
+              <>
+                <Text style={styles.botaoTexto}>
+                  {modoEdicao === 'true'
+                    ? 'Salvar alterações'
+                    : 'Continuar'}
+                </Text>
+
+                <Text style={styles.botaoSeta}>
+                  →
+                </Text>
+              </>
             )}
           </TouchableOpacity>
         </View>
