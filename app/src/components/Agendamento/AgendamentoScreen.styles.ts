@@ -2,24 +2,12 @@ import { StyleSheet } from 'react-native';
 
 const AZUL = '#093373';
 const AZUL_CLARO = '#EAF0FB';
-
 const FUNDO = '#F5F6FA';
-
 const BORDA = '#E4E7EC';
-
 const TEXTO_PRINCIPAL = '#1A1E29';
 const TEXTO_SECUNDARIO = '#6B7280';
 
-const DOURADO = '#B8842E';
-const DOURADO_FUNDO = '#FBF1DE';
-
 export const styles = StyleSheet.create({
-    /*
-     * ============================================================
-     * CONTAINER
-     * ============================================================
-     */
-
     safeArea: {
         flex: 1,
         backgroundColor: FUNDO,
@@ -29,12 +17,6 @@ export const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: FUNDO,
     },
-
-    /*
-     * ============================================================
-     * LOADING
-     * ============================================================
-     */
 
     loadingContainer: {
         flex: 1,
@@ -58,12 +40,6 @@ export const styles = StyleSheet.create({
         color: TEXTO_SECUNDARIO,
         textAlign: 'center',
     },
-
-    /*
-     * ============================================================
-     * ERRO
-     * ============================================================
-     */
 
     erroContainer: {
         flex: 1,
@@ -102,23 +78,11 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
     },
 
-    /*
-     * ============================================================
-     * SCROLL DA SELEÇÃO DE INSTRUMENTOS
-     * ============================================================
-     */
-
     instrumentosScroll: {
         paddingHorizontal: 22,
         paddingTop: 12,
         paddingBottom: 30,
     },
-
-    /*
-     * ============================================================
-     * HEADER
-     * ============================================================
-     */
 
     header: {
         paddingTop: 4,
@@ -161,12 +125,6 @@ export const styles = StyleSheet.create({
         marginTop: 7,
     },
 
-    /*
-     * ============================================================
-     * CARD DE INSTRUÇÕES
-     * ============================================================
-     */
-
     instrucoesCard: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -202,12 +160,6 @@ export const styles = StyleSheet.create({
         lineHeight: 18,
         color: TEXTO_SECUNDARIO,
     },
-
-    /*
-     * ============================================================
-     * LISTA DE INSTRUMENTOS
-     * ============================================================
-     */
 
     listaTitulo: {
         fontSize: 19,
@@ -260,18 +212,21 @@ export const styles = StyleSheet.create({
     instrumentoNivel: {
         flexDirection: 'row',
         alignItems: 'center',
+        alignSelf: 'flex-start',
+        borderRadius: 20,
+        paddingHorizontal: 8,
+        paddingVertical: 3,
     },
 
     estrelas: {
         fontSize: 13,
-        color: DOURADO,
+        fontWeight: '800',
         marginRight: 5,
     },
 
     instrumentoNivelTexto: {
         fontSize: 12,
         fontWeight: '700',
-        color: DOURADO,
     },
 
     instrumentoSeta: {
@@ -309,23 +264,11 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
-    /*
-     * ============================================================
-     * CONTEÚDO DA TELA DE AGENDAMENTO
-     * ============================================================
-     */
-
     scrollContent: {
         paddingHorizontal: 22,
         paddingTop: 4,
         paddingBottom: 20,
     },
-
-    /*
-     * ============================================================
-     * INSTRUMENTO SELECIONADO
-     * ============================================================
-     */
 
     instrumentoHeader: {
         flexDirection: 'row',
@@ -351,9 +294,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-start',
-        backgroundColor: DOURADO_FUNDO,
         borderWidth: 1,
-        borderColor: '#F1DDAF',
         borderRadius: 20,
         paddingHorizontal: 9,
         paddingVertical: 4,
@@ -362,21 +303,14 @@ export const styles = StyleSheet.create({
 
     estrelasNivel: {
         fontSize: 12,
-        color: DOURADO,
+        fontWeight: '800',
         marginRight: 5,
     },
 
     nivelTexto: {
         fontSize: 11,
         fontWeight: '800',
-        color: DOURADO,
     },
-
-    /*
-     * ============================================================
-     * SEÇÕES
-     * ============================================================
-     */
 
     secao: {
         marginBottom: 27,
@@ -402,12 +336,6 @@ export const styles = StyleSheet.create({
         color: TEXTO_SECUNDARIO,
         marginTop: 2,
     },
-
-    /*
-     * ============================================================
-     * PROFESSORES
-     * ============================================================
-     */
 
     professoresContainer: {
         flexDirection: 'row',
@@ -486,12 +414,6 @@ export const styles = StyleSheet.create({
         fontWeight: '800',
     },
 
-    /*
-     * ============================================================
-     * DIAS
-     * ============================================================
-     */
-
     diasContainer: {
         gap: 9,
         paddingRight: 5,
@@ -531,12 +453,6 @@ export const styles = StyleSheet.create({
         color: AZUL,
     },
 
-    /*
-     * ============================================================
-     * HORÁRIOS
-     * ============================================================
-     */
-
     horariosContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -572,18 +488,12 @@ export const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
 
-    /*
-     * ============================================================
-     * RESUMO
-     * ============================================================
-     */
-
     resumoCard: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
         borderRadius: 17,
-        backgroundColor: DOURADO_FUNDO,
+        backgroundColor: '#FBF1DE',
         borderWidth: 1,
         borderColor: '#F1DDAF',
     },
@@ -610,7 +520,7 @@ export const styles = StyleSheet.create({
 
     resumoInstrumento: {
         fontSize: 12,
-        color: DOURADO,
+        color: '#B8842E',
         fontWeight: '800',
     },
 
@@ -626,12 +536,6 @@ export const styles = StyleSheet.create({
         color: TEXTO_SECUNDARIO,
         marginTop: 4,
     },
-
-    /*
-     * ============================================================
-     * FOOTER
-     * ============================================================
-     */
 
     espacoFooter: {
         height: 25,
