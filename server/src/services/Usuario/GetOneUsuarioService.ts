@@ -12,20 +12,18 @@ export class GetOneUsuarioService {
                 image: true,
                 createdAt: true,
 
+                cep: true,
+                logradouro: true,
+                numero: true,
+                complemento: true,
+                bairro: true,
+                cidade: true,
+                uf: true,
+
                 instrumentos: {
                     select: {
-                        instrumento: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                        nivel: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
+                        instrumento: { select: { id: true, name: true } },
+                        nivel: { select: { id: true, name: true } },
                     },
                 },
             },
@@ -35,10 +33,10 @@ export class GetOneUsuarioService {
             throw new Error('Usuário não encontrado');
         }
 
-        const profileComplete = !!usuario.phone;
+        const profileComplete =
+            !!usuario.phone && !!usuario.cep && !!usuario.numero;
 
-        const onboardingComplete =
-            usuario.instrumentos.length > 0;
+        const onboardingComplete = usuario.instrumentos.length > 0;
 
         return {
             id: usuario.id,
@@ -48,15 +46,21 @@ export class GetOneUsuarioService {
             image: usuario.image,
             createdAt: usuario.createdAt,
 
+            cep: usuario.cep,
+            logradouro: usuario.logradouro,
+            numero: usuario.numero,
+            complemento: usuario.complemento,
+            bairro: usuario.bairro,
+            cidade: usuario.cidade,
+            uf: usuario.uf,
+
             profileComplete,
             onboardingComplete,
 
-            instrumentos: usuario.instrumentos.map(
-                (item) => ({
-                    instrumento: item.instrumento.name,
-                    nivel: item.nivel.name,
-                })
-            ),
+            instrumentos: usuario.instrumentos.map((item) => ({
+                instrumento: item.instrumento.name,
+                nivel: item.nivel.name,
+            })),
         };
     }
 }

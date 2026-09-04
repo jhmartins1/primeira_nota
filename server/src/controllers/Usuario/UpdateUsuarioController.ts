@@ -10,13 +10,29 @@ export class UpdateUsuarioController {
             });
         }
 
-        const { phone } = req.body;
+        const {
+            phone,
+            cep,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            uf,
+        } = req.body;
 
         const service = new UpdateUsuarioService();
 
         const usuario = await service.execute({
             clerkId: req.clerkId,
             phone,
+            cep,
+            logradouro,
+            numero,
+            complemento,
+            bairro,
+            cidade,
+            uf,
         });
 
         if (usuario instanceof Error) {
