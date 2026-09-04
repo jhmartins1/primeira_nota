@@ -13,30 +13,57 @@ export const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
 
-    // ========================================
-    // CONTEÚDO
-    // ========================================
+    // =========================
+    // HEADER
+    // =========================
 
-    conteudo: {
-        flex: 1,
-        alignItems: 'center',
+    header: {
         paddingHorizontal: 24,
-        paddingTop: 50,
+        paddingTop: 8,
+        paddingBottom: 0,
     },
 
-    // ========================================
-    // LOGO
-    // ========================================
+    botaoVoltar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-start',
+        minHeight: 40,
+    },
+
+    seta: {
+        fontSize: 32,
+        lineHeight: 32,
+        color: AZUL,
+        fontWeight: '400',
+    },
+
+    textoVoltar: {
+        marginLeft: 4,
+        fontSize: 15,
+        color: AZUL,
+        fontWeight: '600',
+    },
+
+    // =========================
+    // CONTEÚDO
+    // =========================
+
+    scrollContent: {
+        flexGrow: 1,
+        justifyContent: 'space-between',
+    },
+
+    conteudo: {
+        alignItems: 'center',
+        paddingHorizontal: 24,
+        paddingTop: 20,
+    },
 
     logo: {
         width: 180,
         height: 180,
         marginBottom: 8,
     },
-
-    // ========================================
-    // TÍTULO
-    // ========================================
 
     titulo: {
         fontSize: 21,
@@ -51,10 +78,6 @@ export const styles = StyleSheet.create({
         color: AZUL,
     },
 
-    // ========================================
-    // SUBTÍTULO
-    // ========================================
-
     subtitulo: {
         width: '90%',
         fontSize: 14,
@@ -64,9 +87,9 @@ export const styles = StyleSheet.create({
         marginBottom: 32,
     },
 
-    // ========================================
+    // =========================
     // INPUT
-    // ========================================
+    // =========================
 
     inputContainer: {
         width: '100%',
@@ -101,9 +124,9 @@ export const styles = StyleSheet.create({
         color: '#e63946',
     },
 
-    // ========================================
+    // =========================
     // FOOTER
-    // ========================================
+    // =========================
 
     footer: {
         width: '100%',
@@ -112,10 +135,6 @@ export const styles = StyleSheet.create({
         paddingTop: 12,
         backgroundColor: '#fff',
     },
-
-    // ========================================
-    // BOTÃO CONTINUAR
-    // ========================================
 
     botaoContinuar: {
         width: '100%',
