@@ -31,7 +31,8 @@ function AuthGuard() {
 
     const estaNaAreaProfessor =
       pathname === '/professor' ||
-      pathname.startsWith('/professor/');
+      pathname.startsWith('/professor/') ||
+      pathname === '/disponibilidade';
 
     const estaNaEdicaoInstrumentos =
       pathname === '/instrument' ||
