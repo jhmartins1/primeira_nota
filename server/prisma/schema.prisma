@@ -88,6 +88,9 @@ model ProfessorInstrumento {
     nivel       Nivel       @relation(fields: [nivelId], references: [id])
 
     @@unique([professorId, instrumentoId, nivelId])
+    @@index([professorId])
+    @@index([instrumentoId])
+    @@index([nivelId])
 }
 
 model Disponibilidade {
@@ -99,7 +102,9 @@ model Disponibilidade {
 
     professor Professor @relation(fields: [professorId], references: [id], onDelete: Cascade)
 
+    @@unique([professorId, horaInicio])
     @@index([professorId, data])
+    @@index([professorId, horaInicio])
 }
 
 model Agendamento {
@@ -120,6 +125,8 @@ model Agendamento {
     createdAt DateTime @default(now())
 
     @@index([usuarioId])
+    @@index([professorId])
+    @@index([professorId, dataHora])
 }
 
 enum StatusAgendamento {
