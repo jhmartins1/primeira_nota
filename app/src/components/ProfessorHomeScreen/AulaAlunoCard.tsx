@@ -1,5 +1,5 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Linking, Text, TouchableOpacity, View } from 'react-native';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
 import { formatarEnderecoCompleto, gerarLinkGoogleMaps } from '../../utils/endereco';
@@ -9,9 +9,17 @@ import { AgendamentoProfessor } from './types';
 
 interface AulaAlunoCardProps {
     aula: AgendamentoProfessor;
+    destaque?: boolean;
+    cancelando?: boolean;
+    onCancelar?: () => void;
 }
 
-export function AulaAlunoCard({ aula }: AulaAlunoCardProps) {
+export function AulaAlunoCard({
+    aula,
+    destaque = false,
+    cancelando = false,
+    onCancelar,
+}: AulaAlunoCardProps) {
     const icone = getInstrumentIcon(aula.instrumento.name);
     const dataFormatada = formatarDataBrasilia(aula.dataHora);
 
@@ -25,7 +33,14 @@ export function AulaAlunoCard({ aula }: AulaAlunoCardProps) {
     }
 
     return (
-        <View style={styles.aulaCard}>
+        <View style={[styles.aulaCard, destaque && styles.aulaCardDestaque]}>
+            {destaque && (
+                <View style={styles.aulaCardBadge}>
+                    <MaterialCommunityIcons name="star" size={11} color="#FFFFFF" />
+                    <Text style={styles.aulaCardBadgeTexto}>PRÓXIMA</Text>
+                </View>
+            )}
+
             <View style={styles.aulaTopo}>
                 <View style={styles.aulaIcone}>
                     {icone.familia === 'material' ? (
@@ -79,6 +94,24 @@ export function AulaAlunoCard({ aula }: AulaAlunoCardProps) {
                 >
                     <MaterialCommunityIcons name="map-marker-radius-outline" size={16} color="#FFFFFF" />
                     <Text style={styles.botaoVerEnderecoTexto}>Ver endereço no mapa</Text>
+                </TouchableOpacity>
+            )}
+
+            {onCancelar && (
+                <TouchableOpacity
+                    style={styles.botaoCancelarAula}
+                    activeOpacity={0.85}
+                    onPress={onCancelar}
+                    disabled={cancelando}
+                >
+                    {cancelando ? (
+                        <ActivityIndicator size="small" color="#B42318" />
+                    ) : (
+                        <>
+                            <MaterialCommunityIcons name="close-circle-outline" size={16} color="#B42318" />
+                            <Text style={styles.botaoCancelarAulaTexto}>Cancelar aula</Text>
+                        </>
+                    )}
                 </TouchableOpacity>
             )}
         </View>

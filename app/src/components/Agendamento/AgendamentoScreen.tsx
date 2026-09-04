@@ -1205,11 +1205,8 @@ export default function AgendamentoScreen() {
                             Escolha o dia
                         </Text>
 
-                        <Text
-                            style={styles.secaoDescricao}
-                        >
-                            Aulas disponíveis entre amanhã e
-                            os próximos 7 dias.
+                        <Text style={styles.secaoDescricao}>
+                            Veja as próximas datas com horários disponíveis.
                         </Text>
 
                         {dias.length === 0 ? (

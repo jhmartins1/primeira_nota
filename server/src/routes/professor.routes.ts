@@ -12,8 +12,15 @@ import { GetOneProfessorMeController } from '../controllers/Professor/GetOneProf
 import { VincularContaProfessorController } from '../controllers/Professor/VincularContaProfessorController';
 import { SaveProfessorInstrumentosController } from '../controllers/Professor/SaveProfessorInstrumentosController';
 
+import { GetDisponibilidadeProfessorController } from '../controllers/Disponibilidade/GetDisponibilidadeProfessorController';
+import { CreateDisponibilidadeController } from '../controllers/Disponibilidade/CreateDisponibilidadeController';
+import { DeleteDisponibilidadeController } from '../controllers/Disponibilidade/DeleteDisponibilidadeController';
+import { DeleteDisponibilidadesDiaController } from '../controllers/Disponibilidade/DeleteDisponibilidadesDiaController';
+import { GetDisponibilidadeController } from '../controllers/Disponibilidade/GetDisponibilidadeController';
+
 const professorRoutes = Router();
 
+// CONTROLLERS
 const getAllProfessorController =
     new GetAllProfessorController();
 
@@ -38,39 +45,118 @@ const vincularContaProfessorController =
 const saveProfessorInstrumentosController =
     new SaveProfessorInstrumentosController();
 
-// Rotas do professor autenticado
-professorRoutes.get('/me', clerkAuthMiddleware, (req, res) =>
-    getOneProfessorMeController.handle(req, res)
+const getDisponibilidadeProfessorController =
+    new GetDisponibilidadeProfessorController();
+
+const createDisponibilidadeController =
+    new CreateDisponibilidadeController();
+
+const deleteDisponibilidadeController =
+    new DeleteDisponibilidadeController();
+
+const deleteDisponibilidadesDiaController =
+    new DeleteDisponibilidadesDiaController();
+
+const getDisponibilidadeController =
+    new GetDisponibilidadeController();
+
+// ROTAS DO PROFESSOR AUTENTICADO
+professorRoutes.get(
+    '/me',
+    clerkAuthMiddleware,
+    (req, res) =>
+        getOneProfessorMeController.handle(
+            req,
+            res
+        )
 );
 
 professorRoutes.post(
     '/instrumentos',
     clerkAuthMiddleware,
     (req, res) =>
-        saveProfessorInstrumentosController.handle(req, res)
+        saveProfessorInstrumentosController.handle(
+            req,
+            res
+        )
 );
 
 professorRoutes.post(
     '/vincular-conta',
     clerkIdentifyOnly,
     (req, res) =>
-        vincularContaProfessorController.handle(req, res)
+        vincularContaProfessorController.handle(
+            req,
+            res
+        )
 );
 
-// Rotas gerais
+// ROTAS DE DISPONIBILIDADE
+professorRoutes.get(
+    '/disponibilidade',
+    clerkAuthMiddleware,
+    (req, res) =>
+        getDisponibilidadeProfessorController.handle(
+            req,
+            res
+        )
+);
+
+// Cria um ou vários horários.
+professorRoutes.post(
+    '/disponibilidade',
+    clerkAuthMiddleware,
+    (req, res) =>
+        createDisponibilidadeController.handle(
+            req,
+            res
+        )
+);
+
+professorRoutes.delete(
+    '/disponibilidade/dia/:data',
+    clerkAuthMiddleware,
+    (req, res) =>
+        deleteDisponibilidadesDiaController.handle(
+            req,
+            res
+        )
+);
+
+professorRoutes.delete(
+    '/disponibilidade/:id',
+    clerkAuthMiddleware,
+    (req, res) =>
+        deleteDisponibilidadeController.handle(
+            req,
+            res
+        )
+);
+
+// ROTAS GERAIS
 professorRoutes.get(
     '/',
     getAllProfessorController.handle
 );
 
-professorRoutes.get(
-    '/:id',
-    getOneProfessorController.handle
-);
-
 professorRoutes.post(
     '/',
     createProfessorController.handle
+);
+
+// ROTAS POR ID
+professorRoutes.get(
+    '/:id/disponibilidade',
+    (req, res) =>
+        getDisponibilidadeController.handle(
+            req,
+            res
+        )
+);
+
+professorRoutes.get(
+    '/:id',
+    getOneProfessorController.handle
 );
 
 professorRoutes.put(

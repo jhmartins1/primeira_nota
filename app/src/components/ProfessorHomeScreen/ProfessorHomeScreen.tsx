@@ -175,6 +175,20 @@ export default function ProfessorHomeScreen() {
                         <TouchableOpacity
                             style={styles.botaoEditarInstrumentos}
                             activeOpacity={0.8}
+                            onPress={() => router.push('/disponibilidade')}
+                        >
+                            <MaterialCommunityIcons
+                                name="calendar-remove-outline"
+                                size={15}
+                                color="#093373"
+                            />
+                            <Text style={styles.botaoEditarInstrumentosTexto}>
+                                Horários
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={styles.botaoEditarInstrumentos}
+                            activeOpacity={0.8}
                             onPress={handleEditarInstrumentos}
                         >
                             <MaterialCommunityIcons

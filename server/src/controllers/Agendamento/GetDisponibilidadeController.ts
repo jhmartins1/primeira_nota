@@ -1,33 +1,90 @@
 import type { Request, Response } from 'express';
+
 import { GetDisponibilidadeService } from '../../services/Agendamento/GetDisponibilidadeService';
 
 export class GetDisponibilidadeController {
-    async handle(req: Request, res: Response) {
-        try {
-            const { instrumentoId, nivelId, professorId } =
-                req.query;
+    private service: GetDisponibilidadeService;
 
-            if (!instrumentoId || !nivelId) {
+    constructor() {
+        this.service =
+            new GetDisponibilidadeService();
+    }
+
+    async handle(
+        req: Request,
+        res: Response
+    ) {
+        try {
+            const {
+                instrumentoId,
+                nivelId,
+                professorId,
+            } = req.query;
+
+            const instrumentoIdNumber =
+                Number(instrumentoId);
+
+            const nivelIdNumber =
+                Number(nivelId);
+
+            const professorIdNumber =
+                professorId !== undefined
+                    ? Number(professorId)
+                    : undefined;
+
+            if (
+                !instrumentoId ||
+                Number.isNaN(instrumentoIdNumber) ||
+                instrumentoIdNumber <= 0
+            ) {
                 return res.status(400).json({
                     error:
-                        'instrumentoId e nivelId são obrigatórios.',
+                        'instrumentoId inválido.',
                 });
             }
 
-            const service =
-                new GetDisponibilidadeService();
+            if (
+                !nivelId ||
+                Number.isNaN(nivelIdNumber) ||
+                nivelIdNumber <= 0
+            ) {
+                return res.status(400).json({
+                    error:
+                        'nivelId inválido.',
+                });
+            }
+
+            if (
+                professorId !== undefined &&
+                (
+                    Number.isNaN(
+                        professorIdNumber
+                    ) ||
+                    !professorIdNumber ||
+                    professorIdNumber <= 0
+                )
+            ) {
+                return res.status(400).json({
+                    error:
+                        'professorId inválido.',
+                });
+            }
 
             const disponibilidade =
-                await service.execute({
-                    instrumentoId: Number(instrumentoId),
-                    nivelId: Number(nivelId),
+                await this.service.execute({
+                    instrumentoId:
+                        instrumentoIdNumber,
 
-                    professorId: professorId
-                        ? Number(professorId)
-                        : undefined,
+                    nivelId:
+                        nivelIdNumber,
+
+                    professorId:
+                        professorIdNumber,
                 });
 
-            return res.status(200).json(disponibilidade);
+            return res.status(200).json(
+                disponibilidade
+            );
         } catch (error) {
             console.error(
                 'Erro ao buscar disponibilidade:',
@@ -41,7 +98,8 @@ export class GetDisponibilidadeController {
             }
 
             return res.status(500).json({
-                error: 'Erro interno do servidor.',
+                error:
+                    'Erro interno do servidor.',
             });
         }
     }
