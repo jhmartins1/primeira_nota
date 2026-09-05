@@ -680,4 +680,29 @@ export const styles = StyleSheet.create({
 
         justifyContent: 'center',
     },
+    botaoRemarcarAula: {
+        height: 42,
+
+        marginTop: 12,
+
+        borderRadius: 11,
+
+        borderWidth: 1,
+        borderColor: '#DCE6F5',
+
+        backgroundColor: '#F5F8FD',
+
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+        gap: 7,
+    },
+
+    botaoRemarcarAulaTexto: {
+        fontSize: 13,
+        fontWeight: '700',
+
+        color: '#093373',
+    },
 });

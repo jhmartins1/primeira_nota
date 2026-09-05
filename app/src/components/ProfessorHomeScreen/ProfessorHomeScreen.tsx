@@ -2,7 +2,9 @@ import {
     FontAwesome5,
     MaterialCommunityIcons,
 } from '@expo/vector-icons';
+
 import { useRouter } from 'expo-router';
+
 import {
     ActivityIndicator,
     RefreshControl,
@@ -11,11 +13,19 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
+
 import { AulaAlunoCard } from './AulaAlunoCard';
+
 import { styles } from './ProfessorHomeScreen.styles';
+
+import {
+    AgendamentoProfessor,
+} from './types';
+
 import { useProfessorHomeData } from './useProfessorHomeData';
 
 export default function ProfessorHomeScreen() {
@@ -36,9 +46,14 @@ export default function ProfessorHomeScreen() {
         confirmarCancelamento,
     } = useProfessorHomeData();
 
+    // ----------------------------------------------------
+    // EDITAR INSTRUMENTOS
+    // ----------------------------------------------------
+
     function handleEditarInstrumentos() {
         router.push({
             pathname: '/instrument',
+
             params: {
                 modoEdicao: 'true',
                 tipoConta: 'professor',
@@ -46,24 +61,90 @@ export default function ProfessorHomeScreen() {
         });
     }
 
-    const instrumentosUnicos = Array.from(
-        new Set(
-            professor?.instrumentos?.map(
-                (item) => item.instrumento
-            ) ?? []
-        )
-    );
+    // ----------------------------------------------------
+    // REMARCAR AULA
+    // ----------------------------------------------------
+
+    function abrirRemarcacao(
+        aula: AgendamentoProfessor
+    ) {
+        router.push({
+            pathname:
+                '/remarcar-agendamento-professor',
+
+            params: {
+                agendamentoId:
+                    String(aula.id),
+
+                professorId:
+                    String(aula.professorId),
+
+                usuarioId:
+                    String(aula.usuarioId),
+
+                instrumentoId:
+                    String(
+                        aula.instrumentoId
+                    ),
+
+                nivelId:
+                    String(aula.nivelId),
+
+                alunoNome:
+                    aula.usuario.name,
+
+                instrumentoNome:
+                    aula.instrumento.name,
+
+                nivelNome:
+                    aula.nivel.name,
+
+                dataHoraAtual:
+                    aula.dataHora,
+            },
+        });
+    }
+
+    // ----------------------------------------------------
+    // INSTRUMENTOS ÚNICOS
+    // ----------------------------------------------------
+
+    const instrumentosUnicos =
+        Array.from(
+            new Set(
+                professor?.instrumentos?.map(
+                    (item) =>
+                        item.instrumento
+                ) ?? []
+            )
+        );
+
+    // ----------------------------------------------------
+    // LOADING
+    // ----------------------------------------------------
 
     if (carregando) {
         return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.loadingContainer}>
+            <SafeAreaView
+                style={
+                    styles.container
+                }
+            >
+                <View
+                    style={
+                        styles.loadingContainer
+                    }
+                >
                     <ActivityIndicator
                         size="large"
                         color="#093373"
                     />
 
-                    <Text style={styles.loadingTexto}>
+                    <Text
+                        style={
+                            styles.loadingTexto
+                        }
+                    >
                         Carregando...
                     </Text>
                 </View>
@@ -71,28 +152,58 @@ export default function ProfessorHomeScreen() {
         );
     }
 
-    if (erro && !professor) {
+    // ----------------------------------------------------
+    // ERRO
+    // ----------------------------------------------------
+
+    if (
+        erro &&
+        !professor
+    ) {
         return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.erroContainer}>
+            <SafeAreaView
+                style={
+                    styles.container
+                }
+            >
+                <View
+                    style={
+                        styles.erroContainer
+                    }
+                >
                     <MaterialCommunityIcons
                         name="alert-circle-outline"
                         size={50}
                         color="#093373"
                     />
 
-                    <Text style={styles.erroTitulo}>
-                        Não foi possível carregar
+                    <Text
+                        style={
+                            styles.erroTitulo
+                        }
+                    >
+                        Não foi possível
+                        carregar
                     </Text>
 
-                    <Text style={styles.erroTexto}>
+                    <Text
+                        style={
+                            styles.erroTexto
+                        }
+                    >
                         {erro}
                     </Text>
 
                     <TouchableOpacity
-                        style={styles.botaoTentarNovamente}
-                        activeOpacity={0.85}
-                        onPress={() => carregarDados()}
+                        style={
+                            styles.botaoTentarNovamente
+                        }
+                        activeOpacity={
+                            0.85
+                        }
+                        onPress={() =>
+                            carregarDados()
+                        }
                     >
                         <Text
                             style={
@@ -108,35 +219,69 @@ export default function ProfessorHomeScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView
+            style={
+                styles.container
+            }
+        >
             <ScrollView
-                showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={
+                    false
+                }
                 contentContainerStyle={
                     styles.scrollContent
                 }
                 refreshControl={
                     <RefreshControl
-                        refreshing={atualizando}
-                        onRefresh={atualizarTela}
+                        refreshing={
+                            atualizando
+                        }
+                        onRefresh={
+                            atualizarTela
+                        }
                         tintColor="#093373"
                     />
                 }
             >
-                {/* ========================= */}
-                {/* HEADER */}
-                {/* ========================= */}
+                {/* ================================= */}
 
-                <View style={styles.header}>
-                    <View style={styles.headerTopo}>
-                        <Text style={styles.eyebrow}>
-                            PRIMEIRA NOTA · PROFESSOR
+                {/* HEADER */}
+
+                {/* ================================= */}
+
+                <View
+                    style={
+                        styles.header
+                    }
+                >
+                    <View
+                        style={
+                            styles.headerTopo
+                        }
+                    >
+                        <Text
+                            style={
+                                styles.eyebrow
+                            }
+                        >
+                            PRIMEIRA NOTA ·
+                            PROFESSOR
                         </Text>
 
-                        <View style={styles.headerBotoes}>
+                        <View
+                            style={
+                                styles.headerBotoes
+                            }
+                        >
                             {/* HORÁRIOS */}
+
                             <TouchableOpacity
-                                style={styles.botaoHorarios}
-                                activeOpacity={0.8}
+                                style={
+                                    styles.botaoHorarios
+                                }
+                                activeOpacity={
+                                    0.8
+                                }
                                 onPress={() =>
                                     router.push(
                                         '/disponibilidade'
@@ -159,11 +304,14 @@ export default function ProfessorHomeScreen() {
                             </TouchableOpacity>
 
                             {/* EDITAR INSTRUMENTOS */}
+
                             <TouchableOpacity
                                 style={
                                     styles.botaoAcaoCircular
                                 }
-                                activeOpacity={0.8}
+                                activeOpacity={
+                                    0.8
+                                }
                                 onPress={
                                     handleEditarInstrumentos
                                 }
@@ -176,12 +324,20 @@ export default function ProfessorHomeScreen() {
                             </TouchableOpacity>
 
                             {/* LOGOUT */}
+
                             <TouchableOpacity
-                                activeOpacity={0.8}
-                                onPress={realizarLogout}
-                                disabled={saindo}
+                                activeOpacity={
+                                    0.8
+                                }
+                                onPress={
+                                    realizarLogout
+                                }
+                                disabled={
+                                    saindo
+                                }
                                 style={[
                                     styles.botaoLogout,
+
                                     saindo &&
                                     styles.botaoLogoutCarregando,
                                 ]}
@@ -203,74 +359,140 @@ export default function ProfessorHomeScreen() {
                     </View>
 
                     {/* SAUDAÇÃO */}
-                    <View style={styles.headerSaudacao}>
-                        <Text style={styles.titulo}>
+
+                    <View
+                        style={
+                            styles.headerSaudacao
+                        }
+                    >
+                        <Text
+                            style={
+                                styles.titulo
+                            }
+                        >
                             Olá,{' '}
-                            {professor?.name?.split(' ')[0] ??
+                            {professor?.name?.split(
+                                ' '
+                            )[0] ??
                                 'Professor'}
                             !
                         </Text>
 
-                        <Text style={styles.subtitulo}>
-                            Confira suas próximas aulas.
+                        <Text
+                            style={
+                                styles.subtitulo
+                            }
+                        >
+                            Confira suas
+                            próximas aulas.
                         </Text>
                     </View>
 
                     {/* INSTRUMENTOS */}
-                    {/* INSTRUMENTOS */}
-                    {instrumentosUnicos.length > 0 && (
-                        <View style={styles.instrumentosContainer}>
-                            <Text style={styles.instrumentosLabel}>
-                                Seus instrumentos
-                            </Text>
 
-                            <View style={styles.instrumentosLista}>
-                                {instrumentosUnicos.map((instrumento) => {
-                                    const icone =
-                                        getInstrumentIcon(instrumento);
+                    {instrumentosUnicos.length >
+                        0 && (
+                            <View
+                                style={
+                                    styles.instrumentosContainer
+                                }
+                            >
+                                <Text
+                                    style={
+                                        styles.instrumentosLabel
+                                    }
+                                >
+                                    Seus
+                                    instrumentos
+                                </Text>
 
-                                    return (
-                                        <View
-                                            key={instrumento}
-                                            style={styles.instrumentoIconeCard}
-                                        >
-                                            {icone.familia === 'material' ? (
-                                                <MaterialCommunityIcons
-                                                    name={icone.nome}
-                                                    size={26}
-                                                    color="#093373"
-                                                />
-                                            ) : (
-                                                <FontAwesome5
-                                                    name={icone.nome}
-                                                    size={23}
-                                                    color="#093373"
-                                                />
-                                            )}
-                                        </View>
-                                    );
-                                })}
+                                <View
+                                    style={
+                                        styles.instrumentosLista
+                                    }
+                                >
+                                    {instrumentosUnicos.map(
+                                        (
+                                            instrumento
+                                        ) => {
+                                            const icone =
+                                                getInstrumentIcon(
+                                                    instrumento
+                                                );
+
+                                            return (
+                                                <View
+                                                    key={
+                                                        instrumento
+                                                    }
+                                                    style={
+                                                        styles.instrumentoIconeCard
+                                                    }
+                                                >
+                                                    {icone.familia ===
+                                                        'material' ? (
+                                                        <MaterialCommunityIcons
+                                                            name={
+                                                                icone.nome
+                                                            }
+                                                            size={
+                                                                26
+                                                            }
+                                                            color="#093373"
+                                                        />
+                                                    ) : (
+                                                        <FontAwesome5
+                                                            name={
+                                                                icone.nome
+                                                            }
+                                                            size={
+                                                                23
+                                                            }
+                                                            color="#093373"
+                                                        />
+                                                    )}
+                                                </View>
+                                            );
+                                        }
+                                    )}
+                                </View>
                             </View>
-                        </View>
-                    )}
+                        )}
                 </View>
 
-                {/* ========================= */}
+                {/* ================================= */}
+
                 {/* PRÓXIMA AULA */}
-                {/* ========================= */}
+
+                {/* ================================= */}
 
                 {proximaAula ? (
-                    <View style={styles.secao}>
-                        <Text style={styles.secaoTitulo}>
+                    <View
+                        style={
+                            styles.secao
+                        }
+                    >
+                        <Text
+                            style={
+                                styles.secaoTitulo
+                            }
+                        >
                             Próxima aula
                         </Text>
 
                         <AulaAlunoCard
-                            aula={proximaAula}
+                            aula={
+                                proximaAula
+                            }
                             destaque
                             cancelando={
                                 cancelandoId ===
                                 proximaAula.id
+                            }
+                            onRemarcar={() =>
+                                abrirRemarcacao(
+                                    proximaAula
+                                )
                             }
                             onCancelar={() =>
                                 confirmarCancelamento(
@@ -280,9 +502,15 @@ export default function ProfessorHomeScreen() {
                         />
                     </View>
                 ) : (
-                    <View style={styles.semAulaCard}>
+                    <View
+                        style={
+                            styles.semAulaCard
+                        }
+                    >
                         <View
-                            style={styles.semAulaIcone}
+                            style={
+                                styles.semAulaIcone
+                            }
                         >
                             <MaterialCommunityIcons
                                 name="calendar-blank-outline"
@@ -292,58 +520,93 @@ export default function ProfessorHomeScreen() {
                         </View>
 
                         <Text
-                            style={styles.semAulaTitulo}
+                            style={
+                                styles.semAulaTitulo
+                            }
                         >
-                            Nenhuma aula agendada
+                            Nenhuma aula
+                            agendada
                         </Text>
 
                         <Text
-                            style={styles.semAulaTexto}
+                            style={
+                                styles.semAulaTexto
+                            }
                         >
-                            Assim que um aluno agendar
-                            uma aula com você, ela
+                            Assim que um aluno
+                            agendar uma aula
+                            com você, ela
                             aparece aqui.
                         </Text>
                     </View>
                 )}
 
-                {/* ========================= */}
-                {/* DEMAIS AULAS */}
-                {/* ========================= */}
+                {/* ================================= */}
 
-                {demaisAulas.length > 0 && (
-                    <View style={styles.secao}>
-                        <Text style={styles.secaoTitulo}>
-                            Demais aulas
+                {/* DEMAIS AULAS */}
+
+                {/* ================================= */}
+
+                {demaisAulas.length >
+                    0 && (
+                        <View
+                            style={
+                                styles.secao
+                            }
+                        >
                             <Text
                                 style={
-                                    styles.secaoContador
+                                    styles.secaoTitulo
                                 }
                             >
-                                {'  ·  '}
-                                {demaisAulas.length}
-                            </Text>
-                        </Text>
+                                Demais aulas
 
-                        <View style={styles.listaAulas}>
-                            {demaisAulas.map((aula) => (
-                                <AulaAlunoCard
-                                    key={aula.id}
-                                    aula={aula}
-                                    cancelando={
-                                        cancelandoId ===
-                                        aula.id
+                                <Text
+                                    style={
+                                        styles.secaoContador
                                     }
-                                    onCancelar={() =>
-                                        confirmarCancelamento(
-                                            aula
-                                        )
+                                >
+                                    {'  ·  '}
+                                    {
+                                        demaisAulas.length
                                     }
-                                />
-                            ))}
+                                </Text>
+                            </Text>
+
+                            <View
+                                style={
+                                    styles.listaAulas
+                                }
+                            >
+                                {demaisAulas.map(
+                                    (aula) => (
+                                        <AulaAlunoCard
+                                            key={
+                                                aula.id
+                                            }
+                                            aula={
+                                                aula
+                                            }
+                                            cancelando={
+                                                cancelandoId ===
+                                                aula.id
+                                            }
+                                            onRemarcar={() =>
+                                                abrirRemarcacao(
+                                                    aula
+                                                )
+                                            }
+                                            onCancelar={() =>
+                                                confirmarCancelamento(
+                                                    aula
+                                                )
+                                            }
+                                        />
+                                    )
+                                )}
+                            </View>
                         </View>
-                    </View>
-                )}
+                    )}
             </ScrollView>
         </SafeAreaView>
     );
