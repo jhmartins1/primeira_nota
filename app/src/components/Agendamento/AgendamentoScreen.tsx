@@ -22,6 +22,7 @@ import { styles } from './AgendamentoScreen.styles';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
+
 type InstrumentoUsuario = {
     instrumentoId: number;
     instrumento: string;
@@ -69,12 +70,31 @@ function criarDiasDisponiveis(
     disponibilidade: DisponibilidadeAPI[]
 ): DiaDisponivel[] {
     const datasUnicas = Array.from(
-        new Set(disponibilidade.map((item) => item.data))
-    );
+        new Set(
+            disponibilidade
+                .filter(
+                    (item) =>
+                        Array.isArray(item.horarios) &&
+                        item.horarios.length > 0
+                )
+                .map((item) => item.data)
+        )
+    ).sort();
 
     return datasUnicas.map((data) => {
-        const [ano, mes, dia] = data.split('-').map(Number);
-        const dataLocal = new Date(ano, mes - 1, dia);
+        const [ano, mes, dia] = data
+            .split('-')
+            .map(Number);
+
+        const dataLocal = new Date(
+            ano,
+            mes - 1,
+            dia,
+            12,
+            0,
+            0,
+            0
+        );
 
         const diaSemana = dataLocal
             .toLocaleDateString('pt-BR', {
@@ -94,10 +114,13 @@ function criarDiasDisponiveis(
 
 function formatarData(data: string) {
     const [ano, mes, dia] = data.split('-');
+
     return `${dia}/${mes}/${ano}`;
 }
 
-function obterEstrelasNivel(nivel: string): string {
+function obterEstrelasNivel(
+    nivel: string
+): string {
     const nivelNormalizado = nivel
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
@@ -121,37 +144,56 @@ function obterEstrelasNivel(nivel: string): string {
 
 export default function AgendamentoScreen() {
     const router = useRouter();
+
     const { getToken } = useAuth();
 
-    const [instrumentos, setInstrumentos] = useState<
-        InstrumentoUsuario[]
-    >([]);
+    const [
+        instrumentos,
+        setInstrumentos,
+    ] = useState<InstrumentoUsuario[]>([]);
 
-    const [instrumentoSelecionado, setInstrumentoSelecionado] =
-        useState<InstrumentoUsuario | null>(null);
+    const [
+        instrumentoSelecionado,
+        setInstrumentoSelecionado,
+    ] = useState<InstrumentoUsuario | null>(
+        null
+    );
 
-    const [disponibilidade, setDisponibilidade] = useState<
-        DisponibilidadeAPI[]
-    >([]);
+    const [
+        disponibilidade,
+        setDisponibilidade,
+    ] = useState<DisponibilidadeAPI[]>([]);
 
-    const [professorSelecionado, setProfessorSelecionado] =
-        useState<ProfessorAPI | null>(null);
+    const [
+        professorSelecionado,
+        setProfessorSelecionado,
+    ] = useState<ProfessorAPI | null>(null);
 
-    const [diaSelecionado, setDiaSelecionado] =
-        useState<DiaDisponivel | null>(null);
+    const [
+        diaSelecionado,
+        setDiaSelecionado,
+    ] = useState<DiaDisponivel | null>(null);
 
-    const [horarioSelecionado, setHorarioSelecionado] =
+    const [
+        horarioSelecionado,
+        setHorarioSelecionado,
+    ] = useState<string | null>(null);
+
+    const [
+        carregandoInstrumentos,
+        setCarregandoInstrumentos,
+    ] = useState(true);
+
+    const [
+        carregandoDisponibilidade,
+        setCarregandoDisponibilidade,
+    ] = useState(false);
+
+    const [erro, setErro] =
         useState<string | null>(null);
 
-    const [carregandoInstrumentos, setCarregandoInstrumentos] =
-        useState(true);
-
-    const [carregandoDisponibilidade, setCarregandoDisponibilidade] =
+    const [confirmando, setConfirmando] =
         useState(false);
-
-    const [erro, setErro] = useState<string | null>(null);
-
-    const [confirmando, setConfirmando] = useState(false);
 
     useEffect(() => {
         let ativo = true;
@@ -167,7 +209,8 @@ export default function AgendamentoScreen() {
                 setCarregandoInstrumentos(true);
                 setErro(null);
 
-                const token = await getToken();
+                const token =
+                    await getToken();
 
                 if (!token) {
                     throw new Error(
@@ -180,13 +223,16 @@ export default function AgendamentoScreen() {
                     {
                         method: 'GET',
                         headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
                         },
                     }
                 );
 
-                const texto = await response.text();
+                const texto =
+                    await response.text();
 
                 if (!response.ok) {
                     throw new Error(
@@ -194,64 +240,81 @@ export default function AgendamentoScreen() {
                     );
                 }
 
-                const usuario = JSON.parse(texto);
+                const usuario =
+                    JSON.parse(texto);
 
                 const instrumentosUsuario: InstrumentoUsuario[] =
-                    (usuario.instrumentos ?? []).map(
-                        (item: any) => ({
-                            instrumentoId:
-                                item.instrumentoId ??
-                                item.instrumento?.id,
+                    (
+                        usuario.instrumentos ??
+                        []
+                    ).map((item: any) => ({
+                        instrumentoId:
+                            item.instrumentoId ??
+                            item.instrumento?.id,
 
-                            instrumento:
-                                typeof item.instrumento === 'string'
-                                    ? item.instrumento
-                                    : item.instrumento?.name,
+                        instrumento:
+                            typeof item.instrumento ===
+                                'string'
+                                ? item.instrumento
+                                : item.instrumento
+                                    ?.name,
 
-                            nivelId:
-                                item.nivelId ??
-                                item.nivel?.id,
+                        nivelId:
+                            item.nivelId ??
+                            item.nivel?.id,
 
-                            nivel:
-                                typeof item.nivel === 'string'
-                                    ? item.nivel
-                                    : item.nivel?.name,
-                        })
+                        nivel:
+                            typeof item.nivel ===
+                                'string'
+                                ? item.nivel
+                                : item.nivel
+                                    ?.name,
+                    }));
+
+                const instrumentosResponse =
+                    await fetch(
+                        `${API_URL}/instrument`,
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`,
+                                'Content-Type':
+                                    'application/json',
+                            },
+                        }
                     );
-
-                const instrumentosResponse = await fetch(
-                    `${API_URL}/instrument`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
 
                 const instrumentosTexto =
                     await instrumentosResponse.text();
 
-                if (!instrumentosResponse.ok) {
+                if (
+                    !instrumentosResponse.ok
+                ) {
                     throw new Error(
                         `Erro ao buscar instrumentos: ${instrumentosResponse.status}`
                     );
                 }
 
                 const instrumentosAPI =
-                    JSON.parse(instrumentosTexto);
+                    JSON.parse(
+                        instrumentosTexto
+                    );
 
-                const niveisResponse = await fetch(
-                    `${API_URL}/nivel`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                );
+                const niveisResponse =
+                    await fetch(
+                        `${API_URL}/nivel`,
+                        {
+                            headers: {
+                                Authorization:
+                                    `Bearer ${token}`,
+                                'Content-Type':
+                                    'application/json',
+                            },
+                        }
+                    );
 
-                const niveisTexto = await niveisResponse.text();
+                const niveisTexto =
+                    await niveisResponse.text();
 
                 if (!niveisResponse.ok) {
                     throw new Error(
@@ -259,46 +322,56 @@ export default function AgendamentoScreen() {
                     );
                 }
 
-                const niveisAPI = JSON.parse(niveisTexto);
+                const niveisAPI =
+                    JSON.parse(niveisTexto);
 
                 const instrumentosComIds =
-                    instrumentosUsuario.map((item) => {
-                        const instrumentoAPI =
-                            instrumentosAPI.find(
-                                (instrumento: any) =>
-                                    instrumento.name ===
-                                    item.instrumento
-                            );
+                    instrumentosUsuario.map(
+                        (item) => {
+                            const instrumentoAPI =
+                                instrumentosAPI.find(
+                                    (
+                                        instrumento: any
+                                    ) =>
+                                        instrumento.name ===
+                                        item.instrumento
+                                );
 
-                        const nivelAPI = niveisAPI.find(
-                            (nivel: any) =>
-                                nivel.name === item.nivel
-                        );
+                            const nivelAPI =
+                                niveisAPI.find(
+                                    (
+                                        nivel: any
+                                    ) =>
+                                        nivel.name ===
+                                        item.nivel
+                                );
 
-                        return {
-                            instrumentoId:
-                                item.instrumentoId ??
-                                instrumentoAPI?.id,
+                            return {
+                                instrumentoId:
+                                    item.instrumentoId ??
+                                    instrumentoAPI?.id,
 
-                            instrumento:
-                                item.instrumento,
+                                instrumento:
+                                    item.instrumento,
 
-                            nivelId:
-                                item.nivelId ??
-                                nivelAPI?.id,
+                                nivelId:
+                                    item.nivelId ??
+                                    nivelAPI?.id,
 
-                            nivel:
-                                item.nivel,
-                        };
-                    });
+                                nivel:
+                                    item.nivel,
+                            };
+                        }
+                    );
 
-                const validos = instrumentosComIds.filter(
-                    (item) =>
-                        item.instrumentoId &&
-                        item.nivelId &&
-                        item.instrumento &&
-                        item.nivel
-                );
+                const validos =
+                    instrumentosComIds.filter(
+                        (item) =>
+                            item.instrumentoId &&
+                            item.nivelId &&
+                            item.instrumento &&
+                            item.nivel
+                    );
 
                 if (!ativo) return;
 
@@ -318,7 +391,9 @@ export default function AgendamentoScreen() {
                 );
             } finally {
                 if (ativo) {
-                    setCarregandoInstrumentos(false);
+                    setCarregandoInstrumentos(
+                        false
+                    );
                 }
             }
         }
@@ -334,7 +409,9 @@ export default function AgendamentoScreen() {
         let ativo = true;
 
         async function carregarDisponibilidade() {
-            if (!instrumentoSelecionado) return;
+            if (!instrumentoSelecionado) {
+                return;
+            }
 
             try {
                 if (!API_URL) {
@@ -343,14 +420,19 @@ export default function AgendamentoScreen() {
                     );
                 }
 
-                setCarregandoDisponibilidade(true);
+                setCarregandoDisponibilidade(
+                    true
+                );
+
                 setErro(null);
+
                 setProfessorSelecionado(null);
                 setDiaSelecionado(null);
                 setHorarioSelecionado(null);
                 setDisponibilidade([]);
 
-                const token = await getToken();
+                const token =
+                    await getToken();
 
                 if (!token) {
                     throw new Error(
@@ -363,15 +445,19 @@ export default function AgendamentoScreen() {
                     `?instrumentoId=${instrumentoSelecionado.instrumentoId}` +
                     `&nivelId=${instrumentoSelecionado.nivelId}`;
 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response =
+                    await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
+                        },
+                    });
 
-                const texto = await response.text();
+                const texto =
+                    await response.text();
 
                 if (!response.ok) {
                     throw new Error(
@@ -384,28 +470,66 @@ export default function AgendamentoScreen() {
 
                 if (!ativo) return;
 
-                setDisponibilidade(dados);
+                const dadosValidos = dados.filter(
+                    (item) =>
+                        Array.isArray(item.horarios) &&
+                        item.horarios.length > 0
+                );
+
+                setDisponibilidade(
+                    dadosValidos
+                );
 
                 const professoresUnicos =
-                    dados.filter(
-                        (item, index, array) =>
+                    dadosValidos.filter(
+                        (
+                            item,
+                            index,
+                            array
+                        ) =>
                             array.findIndex(
                                 (outro) =>
-                                    outro.professor.id ===
-                                    item.professor.id
+                                    outro
+                                        .professor
+                                        .id ===
+                                    item
+                                        .professor
+                                        .id
                             ) === index
                     );
 
-                if (professoresUnicos.length > 0) {
+                if (
+                    professoresUnicos.length >
+                    0
+                ) {
                     setProfessorSelecionado(
-                        professoresUnicos[0].professor
+                        professoresUnicos[0]
+                            .professor
                     );
-                }
 
-                const dias = criarDiasDisponiveis(dados);
+                    const diasProfessor =
+                        criarDiasDisponiveis(
+                            dadosValidos.filter(
+                                (item) =>
+                                    item
+                                        .professor
+                                        .id ===
+                                    professoresUnicos[0]
+                                        .professor
+                                        .id
+                            )
+                        );
 
-                if (dias.length > 0) {
-                    setDiaSelecionado(dias[0]);
+                    setDiaSelecionado(
+                        diasProfessor[0] ??
+                        null
+                    );
+                } else {
+                    setProfessorSelecionado(
+                        null
+                    );
+
+                    setDiaSelecionado(null);
                 }
             } catch (error) {
                 console.error(
@@ -424,7 +548,9 @@ export default function AgendamentoScreen() {
                 setDisponibilidade([]);
             } finally {
                 if (ativo) {
-                    setCarregandoDisponibilidade(false);
+                    setCarregandoDisponibilidade(
+                        false
+                    );
                 }
             }
         }
@@ -437,41 +563,62 @@ export default function AgendamentoScreen() {
     }, [instrumentoSelecionado]);
 
     const professores = useMemo(() => {
-        const mapa = new Map<number, ProfessorAPI>();
+        const mapa =
+            new Map<number, ProfessorAPI>();
 
         disponibilidade.forEach((item) => {
-            if (!mapa.has(item.professor.id)) {
-                mapa.set(item.professor.id, item.professor);
+            if (
+                !mapa.has(
+                    item.professor.id
+                )
+            ) {
+                mapa.set(
+                    item.professor.id,
+                    item.professor
+                );
             }
         });
 
-        return Array.from(mapa.values());
+        return Array.from(
+            mapa.values()
+        );
     }, [disponibilidade]);
 
     const dias = useMemo(() => {
-        return criarDiasDisponiveis(disponibilidade).filter(
-            (dia) =>
-                disponibilidade.some(
-                    (item) =>
-                        item.professor.id ===
-                        professorSelecionado?.id &&
-                        item.data === dia.data &&
-                        item.horarios.length > 0
-                )
+        return criarDiasDisponiveis(
+            disponibilidade
+        ).filter((dia) =>
+            disponibilidade.some(
+                (item) =>
+                    item.professor.id ===
+                    professorSelecionado?.id &&
+                    item.data ===
+                    dia.data &&
+                    item.horarios.length >
+                    0
+            )
         );
-    }, [disponibilidade, professorSelecionado]);
+    }, [
+        disponibilidade,
+        professorSelecionado,
+    ]);
 
     const horarios = useMemo(() => {
-        if (!professorSelecionado || !diaSelecionado) {
+        if (
+            !professorSelecionado ||
+            !diaSelecionado
+        ) {
             return [];
         }
 
-        const item = disponibilidade.find(
-            (item) =>
-                item.professor.id ===
-                professorSelecionado.id &&
-                item.data === diaSelecionado.data
-        );
+        const item =
+            disponibilidade.find(
+                (item) =>
+                    item.professor.id ===
+                    professorSelecionado.id &&
+                    item.data ===
+                    diaSelecionado.data
+            );
 
         return item?.horarios ?? [];
     }, [
@@ -483,25 +630,39 @@ export default function AgendamentoScreen() {
     function selecionarInstrumento(
         instrumento: InstrumentoUsuario
     ) {
-        setInstrumentoSelecionado(instrumento);
+        setInstrumentoSelecionado(
+            instrumento
+        );
     }
 
-    function selecionarProfessor(professor: ProfessorAPI) {
-        setProfessorSelecionado(professor);
+    function selecionarProfessor(
+        professor: ProfessorAPI
+    ) {
+        setProfessorSelecionado(
+            professor
+        );
 
-        const primeiroDia = criarDiasDisponiveis(
-            disponibilidade.filter(
-                (item) =>
-                    item.professor.id === professor.id &&
-                    item.horarios.length > 0
-            )
-        )[0];
+        const primeiroDia =
+            criarDiasDisponiveis(
+                disponibilidade.filter(
+                    (item) =>
+                        item.professor.id ===
+                        professor.id &&
+                        item.horarios
+                            .length > 0
+                )
+            )[0];
 
-        setDiaSelecionado(primeiroDia ?? null);
+        setDiaSelecionado(
+            primeiroDia ?? null
+        );
+
         setHorarioSelecionado(null);
     }
 
-    function selecionarDia(dia: DiaDisponivel) {
+    function selecionarDia(
+        dia: DiaDisponivel
+    ) {
         setDiaSelecionado(dia);
         setHorarioSelecionado(null);
     }
@@ -521,6 +682,7 @@ export default function AgendamentoScreen() {
                 'Instrumento',
                 'Selecione um instrumento.'
             );
+
             return;
         }
 
@@ -529,6 +691,7 @@ export default function AgendamentoScreen() {
                 'Professor',
                 'Selecione um professor.'
             );
+
             return;
         }
 
@@ -537,6 +700,7 @@ export default function AgendamentoScreen() {
                 'Data',
                 'Selecione uma data.'
             );
+
             return;
         }
 
@@ -545,13 +709,15 @@ export default function AgendamentoScreen() {
                 'Horário',
                 'Selecione um horário.'
             );
+
             return;
         }
 
         try {
             setConfirmando(true);
 
-            const token = await getToken();
+            const token =
+                await getToken();
 
             if (!token) {
                 throw new Error(
@@ -563,44 +729,53 @@ export default function AgendamentoScreen() {
                 `${diaSelecionado.data}T` +
                 `${horarioSelecionado}:00-03:00`;
 
-            const response = await fetch(
-                `${API_URL}/agendamento`,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        professorId:
-                            professorSelecionado.id,
+            const response =
+                await fetch(
+                    `${API_URL}/agendamento`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
+                        },
 
-                        instrumentoId:
-                            instrumentoSelecionado.instrumentoId,
+                        body: JSON.stringify({
+                            professorId:
+                                professorSelecionado.id,
 
-                        nivelId:
-                            instrumentoSelecionado.nivelId,
+                            instrumentoId:
+                                instrumentoSelecionado.instrumentoId,
 
-                        dataHora,
-                    }),
-                }
-            );
+                            nivelId:
+                                instrumentoSelecionado.nivelId,
 
-            const texto = await response.text();
+                            dataHora,
+                        }),
+                    }
+                );
+
+            const texto =
+                await response.text();
 
             if (!response.ok) {
                 let mensagem =
                     'Não foi possível realizar o agendamento.';
 
                 try {
-                    const erroAPI = JSON.parse(texto);
+                    const erroAPI =
+                        JSON.parse(texto);
 
                     if (erroAPI.error) {
-                        mensagem = erroAPI.error;
+                        mensagem =
+                            erroAPI.error;
                     }
                 } catch { }
 
-                throw new Error(mensagem);
+                throw new Error(
+                    mensagem
+                );
             }
 
             Alert.alert(
@@ -612,16 +787,21 @@ export default function AgendamentoScreen() {
                     {
                         text: 'OK',
                         onPress: () =>
-                            router.replace('/home'),
+                            router.replace(
+                                '/home'
+                            ),
                     },
                 ]
             );
         } catch (error) {
-            if (error instanceof Error) {
+            if (
+                error instanceof Error
+            ) {
                 Alert.alert(
                     'Horário indisponível',
                     error.message
                 );
+
                 return;
             }
 
@@ -636,44 +816,81 @@ export default function AgendamentoScreen() {
 
     if (carregandoInstrumentos) {
         return (
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.loadingContainer}>
+            <SafeAreaView
+                style={styles.safeArea}
+            >
+                <View
+                    style={
+                        styles.loadingContainer
+                    }
+                >
                     <ActivityIndicator
                         size="large"
                         color="#093373"
                     />
 
-                    <Text style={styles.loadingTexto}>
-                        Carregando seus instrumentos...
+                    <Text
+                        style={
+                            styles.loadingTexto
+                        }
+                    >
+                        Carregando seus
+                        instrumentos...
                     </Text>
                 </View>
             </SafeAreaView>
         );
     }
 
-    if (erro && !instrumentoSelecionado) {
+    if (
+        erro &&
+        !instrumentoSelecionado
+    ) {
         return (
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.erroContainer}>
+            <SafeAreaView
+                style={styles.safeArea}
+            >
+                <View
+                    style={
+                        styles.erroContainer
+                    }
+                >
                     <MaterialCommunityIcons
                         name="alert-circle-outline"
                         size={48}
                         color="#093373"
                     />
 
-                    <Text style={styles.erroTitulo}>
-                        Não foi possível carregar
+                    <Text
+                        style={
+                            styles.erroTitulo
+                        }
+                    >
+                        Não foi possível
+                        carregar
                     </Text>
 
-                    <Text style={styles.erroTexto}>
+                    <Text
+                        style={
+                            styles.erroTexto
+                        }
+                    >
                         {erro}
                     </Text>
 
                     <TouchableOpacity
-                        style={styles.botaoErro}
-                        onPress={() => router.back()}
+                        style={
+                            styles.botaoErro
+                        }
+                        onPress={() =>
+                            router.back()
+                        }
                     >
-                        <Text style={styles.botaoErroTexto}>
+                        <Text
+                            style={
+                                styles.botaoErroTexto
+                            }
+                        >
                             Voltar
                         </Text>
                     </TouchableOpacity>
@@ -684,18 +901,32 @@ export default function AgendamentoScreen() {
 
     if (!instrumentoSelecionado) {
         return (
-            <SafeAreaView style={styles.safeArea}>
+            <SafeAreaView
+                style={styles.safeArea}
+            >
                 <ScrollView
-                    style={styles.container}
+                    style={
+                        styles.container
+                    }
                     contentContainerStyle={
                         styles.instrumentosScroll
                     }
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator={
+                        false
+                    }
                 >
-                    <View style={styles.header}>
+                    <View
+                        style={
+                            styles.header
+                        }
+                    >
                         <TouchableOpacity
-                            style={styles.botaoVoltar}
-                            onPress={() => router.back()}
+                            style={
+                                styles.botaoVoltar
+                            }
+                            onPress={() =>
+                                router.back()
+                            }
                         >
                             <MaterialCommunityIcons
                                 name="arrow-left"
@@ -703,28 +934,55 @@ export default function AgendamentoScreen() {
                                 color="#093373"
                             />
 
-                            <Text style={styles.textoVoltar}>
+                            <Text
+                                style={
+                                    styles.textoVoltar
+                                }
+                            >
                                 Voltar
                             </Text>
                         </TouchableOpacity>
 
-                        <Text style={styles.eyebrow}>
+                        <Text
+                            style={
+                                styles.eyebrow
+                            }
+                        >
                             NOVO AGENDAMENTO
                         </Text>
 
-                        <Text style={styles.titulo}>
-                            Escolha seu instrumento
+                        <Text
+                            style={
+                                styles.titulo
+                            }
+                        >
+                            Escolha seu
+                            instrumento
                         </Text>
 
-                        <Text style={styles.subtitulo}>
-                            Selecione o instrumento que deseja
-                            estudar e encontre um horário
+                        <Text
+                            style={
+                                styles.subtitulo
+                            }
+                        >
+                            Selecione o
+                            instrumento que
+                            deseja estudar e
+                            encontre um horário
                             disponível.
                         </Text>
                     </View>
 
-                    <View style={styles.instrucoesCard}>
-                        <View style={styles.instrucoesIcone}>
+                    <View
+                        style={
+                            styles.instrucoesCard
+                        }
+                    >
+                        <View
+                            style={
+                                styles.instrucoesIcone
+                            }
+                        >
                             <MaterialCommunityIcons
                                 name="calendar"
                                 size={26}
@@ -732,13 +990,18 @@ export default function AgendamentoScreen() {
                             />
                         </View>
 
-                        <View style={styles.instrucoesInfo}>
+                        <View
+                            style={
+                                styles.instrucoesInfo
+                            }
+                        >
                             <Text
                                 style={
                                     styles.instrucoesTitulo
                                 }
                             >
-                                Agende sua próxima aula
+                                Agende sua próxima
+                                aula
                             </Text>
 
                             <Text
@@ -746,184 +1009,252 @@ export default function AgendamentoScreen() {
                                     styles.instrucoesTexto
                                 }
                             >
-                                Você verá apenas os professores
-                                que lecionam o instrumento e
-                                nível escolhidos.
+                                Você verá apenas os
+                                professores que
+                                lecionam o
+                                instrumento e nível
+                                escolhidos.
                             </Text>
                         </View>
                     </View>
 
-                    <Text style={styles.listaTitulo}>
+                    <Text
+                        style={
+                            styles.listaTitulo
+                        }
+                    >
                         Meus instrumentos
                     </Text>
 
-                    <Text style={styles.listaSubtitulo}>
-                        Escolha qual aula deseja agendar
+                    <Text
+                        style={
+                            styles.listaSubtitulo
+                        }
+                    >
+                        Escolha qual aula deseja
+                        agendar
                     </Text>
 
-                    <View style={styles.instrumentosLista}>
-                        {instrumentos.map((item) => {
-                            const icone =
-                                getInstrumentIcon(
-                                    item.instrumento
-                                ) as IconeInstrumento;
+                    <View
+                        style={
+                            styles.instrumentosLista
+                        }
+                    >
+                        {instrumentos.map(
+                            (item) => {
+                                const icone =
+                                    getInstrumentIcon(
+                                        item.instrumento
+                                    ) as IconeInstrumento;
 
-                            const corNivel =
-                                getCorNivel(item.nivel);
+                                const corNivel =
+                                    getCorNivel(
+                                        item.nivel
+                                    );
 
-                            const estrelas =
-                                obterEstrelasNivel(item.nivel);
+                                const estrelas =
+                                    obterEstrelasNivel(
+                                        item.nivel
+                                    );
 
-                            return (
-                                <TouchableOpacity
-                                    key={`${item.instrumentoId}-${item.nivelId}`}
-                                    style={
-                                        styles.instrumentoCard
-                                    }
-                                    activeOpacity={0.8}
-                                    onPress={() =>
-                                        selecionarInstrumento(
-                                            item
-                                        )
-                                    }
-                                >
-                                    <View
+                                return (
+                                    <TouchableOpacity
+                                        key={`${item.instrumentoId}-${item.nivelId}`}
                                         style={
-                                            styles.instrumentoIcone
+                                            styles.instrumentoCard
+                                        }
+                                        activeOpacity={
+                                            0.8
+                                        }
+                                        onPress={() =>
+                                            selecionarInstrumento(
+                                                item
+                                            )
                                         }
                                     >
-                                        {icone.familia ===
-                                            'material' ? (
-                                            <MaterialCommunityIcons
-                                                name={icone.nome}
-                                                size={29}
-                                                color="#093373"
-                                            />
-                                        ) : (
-                                            <FontAwesome5
-                                                name={icone.nome}
-                                                size={27}
-                                                color="#093373"
-                                            />
-                                        )}
-                                    </View>
-
-                                    <View
-                                        style={
-                                            styles.instrumentoInfo
-                                        }
-                                    >
-                                        <Text
+                                        <View
                                             style={
-                                                styles.instrumentoNome
+                                                styles.instrumentoIcone
                                             }
                                         >
-                                            {item.instrumento}
-                                        </Text>
+                                            {icone.familia ===
+                                                'material' ? (
+                                                <MaterialCommunityIcons
+                                                    name={
+                                                        icone.nome
+                                                    }
+                                                    size={
+                                                        29
+                                                    }
+                                                    color="#093373"
+                                                />
+                                            ) : (
+                                                <FontAwesome5
+                                                    name={
+                                                        icone.nome
+                                                    }
+                                                    size={
+                                                        27
+                                                    }
+                                                    color="#093373"
+                                                />
+                                            )}
+                                        </View>
 
                                         <View
-                                            style={[
-                                                styles.instrumentoNivel,
-                                                {
-                                                    backgroundColor:
-                                                        corNivel.fundo,
-                                                },
-                                            ]}
+                                            style={
+                                                styles.instrumentoInfo
+                                            }
                                         >
                                             <Text
-                                                style={[
-                                                    styles.estrelas,
-                                                    {
-                                                        color: corNivel.cor,
-                                                    },
-                                                ]}
+                                                style={
+                                                    styles.instrumentoNome
+                                                }
                                             >
-                                                {estrelas}
+                                                {
+                                                    item.instrumento
+                                                }
                                             </Text>
 
-                                            <Text
+                                            <View
                                                 style={[
-                                                    styles.instrumentoNivelTexto,
+                                                    styles.instrumentoNivel,
                                                     {
-                                                        color: corNivel.cor,
+                                                        backgroundColor:
+                                                            corNivel.fundo,
                                                     },
                                                 ]}
                                             >
-                                                {item.nivel}
-                                            </Text>
+                                                <Text
+                                                    style={[
+                                                        styles.estrelas,
+                                                        {
+                                                            color:
+                                                                corNivel.cor,
+                                                        },
+                                                    ]}
+                                                >
+                                                    {
+                                                        estrelas
+                                                    }
+                                                </Text>
+
+                                                <Text
+                                                    style={[
+                                                        styles.instrumentoNivelTexto,
+                                                        {
+                                                            color:
+                                                                corNivel.cor,
+                                                        },
+                                                    ]}
+                                                >
+                                                    {
+                                                        item.nivel
+                                                    }
+                                                </Text>
+                                            </View>
                                         </View>
-                                    </View>
 
-                                    <View
-                                        style={
-                                            styles.instrumentoSeta
-                                        }
-                                    >
-                                        <MaterialCommunityIcons
-                                            name="chevron-right"
-                                            size={25}
-                                            color="#093373"
-                                        />
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        })}
+                                        <View
+                                            style={
+                                                styles.instrumentoSeta
+                                            }
+                                        >
+                                            <MaterialCommunityIcons
+                                                name="chevron-right"
+                                                size={
+                                                    25
+                                                }
+                                                color="#093373"
+                                            />
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            }
+                        )}
                     </View>
 
-                    {instrumentos.length === 0 && (
-                        <View
-                            style={
-                                styles.instrumentosVazio
-                            }
-                        >
-                            <MaterialCommunityIcons
-                                name="music-off"
-                                size={40}
-                                color="#6B7280"
-                            />
-
-                            <Text
+                    {instrumentos.length ===
+                        0 && (
+                            <View
                                 style={
-                                    styles.instrumentosVazioTitulo
+                                    styles.instrumentosVazio
                                 }
                             >
-                                Nenhum instrumento cadastrado
-                            </Text>
+                                <MaterialCommunityIcons
+                                    name="music-off"
+                                    size={40}
+                                    color="#6B7280"
+                                />
 
-                            <Text
-                                style={
-                                    styles.instrumentosVazioTexto
-                                }
-                            >
-                                Cadastre um instrumento antes
-                                de agendar uma aula.
-                            </Text>
-                        </View>
-                    )}
+                                <Text
+                                    style={
+                                        styles.instrumentosVazioTitulo
+                                    }
+                                >
+                                    Nenhum instrumento
+                                    cadastrado
+                                </Text>
 
-                    <View style={styles.espacoFooter} />
+                                <Text
+                                    style={
+                                        styles.instrumentosVazioTexto
+                                    }
+                                >
+                                    Cadastre um
+                                    instrumento antes
+                                    de agendar uma aula.
+                                </Text>
+                            </View>
+                        )}
+
+                    <View
+                        style={
+                            styles.espacoFooter
+                        }
+                    />
                 </ScrollView>
             </SafeAreaView>
         );
     }
 
-    if (carregandoDisponibilidade) {
+    if (
+        carregandoDisponibilidade
+    ) {
         return (
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.loadingContainer}>
+            <SafeAreaView
+                style={styles.safeArea}
+            >
+                <View
+                    style={
+                        styles.loadingContainer
+                    }
+                >
                     <ActivityIndicator
                         size="large"
                         color="#093373"
                     />
 
-                    <Text style={styles.loadingTitulo}>
+                    <Text
+                        style={
+                            styles.loadingTitulo
+                        }
+                    >
                         Buscando horários
                     </Text>
 
-                    <Text style={styles.loadingTexto}>
-                        Procurando professores e horários
-                        disponíveis para{' '}
-                        {instrumentoSelecionado.instrumento}.
+                    <Text
+                        style={
+                            styles.loadingTexto
+                        }
+                    >
+                        Procurando professores
+                        e horários disponíveis
+                        para{' '}
+                        {
+                            instrumentoSelecionado.instrumento
+                        }
+                        .
                     </Text>
                 </View>
             </SafeAreaView>
@@ -932,28 +1263,52 @@ export default function AgendamentoScreen() {
 
     if (erro) {
         return (
-            <SafeAreaView style={styles.safeArea}>
-                <View style={styles.erroContainer}>
+            <SafeAreaView
+                style={styles.safeArea}
+            >
+                <View
+                    style={
+                        styles.erroContainer
+                    }
+                >
                     <MaterialCommunityIcons
                         name="calendar-remove-outline"
                         size={48}
                         color="#093373"
                     />
 
-                    <Text style={styles.erroTitulo}>
-                        Não foi possível carregar os horários
+                    <Text
+                        style={
+                            styles.erroTitulo
+                        }
+                    >
+                        Não foi possível
+                        carregar os horários
                     </Text>
 
-                    <Text style={styles.erroTexto}>
+                    <Text
+                        style={
+                            styles.erroTexto
+                        }
+                    >
                         {erro}
                     </Text>
 
                     <TouchableOpacity
-                        style={styles.botaoErro}
-                        onPress={voltarParaInstrumentos}
+                        style={
+                            styles.botaoErro
+                        }
+                        onPress={
+                            voltarParaInstrumentos
+                        }
                     >
-                        <Text style={styles.botaoErroTexto}>
-                            Escolher outro instrumento
+                        <Text
+                            style={
+                                styles.botaoErroTexto
+                            }
+                        >
+                            Escolher outro
+                            instrumento
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -962,24 +1317,40 @@ export default function AgendamentoScreen() {
     }
 
     const corNivelSelecionado =
-        getCorNivel(instrumentoSelecionado.nivel);
+        getCorNivel(
+            instrumentoSelecionado.nivel
+        );
 
     const estrelasNivelSelecionado =
-        obterEstrelasNivel(instrumentoSelecionado.nivel);
+        obterEstrelasNivel(
+            instrumentoSelecionado.nivel
+        );
 
     return (
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.container}>
+        <SafeAreaView
+            style={styles.safeArea}
+        >
+            <View
+                style={styles.container}
+            >
                 <ScrollView
                     contentContainerStyle={
                         styles.scrollContent
                     }
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator={
+                        false
+                    }
                 >
-                    <View style={styles.header}>
+                    <View
+                        style={styles.header}
+                    >
                         <TouchableOpacity
-                            style={styles.botaoVoltar}
-                            onPress={voltarParaInstrumentos}
+                            style={
+                                styles.botaoVoltar
+                            }
+                            onPress={
+                                voltarParaInstrumentos
+                            }
                         >
                             <MaterialCommunityIcons
                                 name="arrow-left"
@@ -987,17 +1358,27 @@ export default function AgendamentoScreen() {
                                 color="#093373"
                             />
 
-                            <Text style={styles.textoVoltar}>
+                            <Text
+                                style={
+                                    styles.textoVoltar
+                                }
+                            >
                                 Instrumentos
                             </Text>
                         </TouchableOpacity>
 
-                        <Text style={styles.eyebrow}>
+                        <Text
+                            style={
+                                styles.eyebrow
+                            }
+                        >
                             AGENDAR AULA
                         </Text>
 
                         <View
-                            style={styles.instrumentoHeader}
+                            style={
+                                styles.instrumentoHeader
+                            }
                         >
                             <View
                                 style={
@@ -1013,14 +1394,22 @@ export default function AgendamentoScreen() {
                                     return icone.familia ===
                                         'material' ? (
                                         <MaterialCommunityIcons
-                                            name={icone.nome}
-                                            size={29}
+                                            name={
+                                                icone.nome
+                                            }
+                                            size={
+                                                29
+                                            }
                                             color="#093373"
                                         />
                                     ) : (
                                         <FontAwesome5
-                                            name={icone.nome}
-                                            size={27}
+                                            name={
+                                                icone.nome
+                                            }
+                                            size={
+                                                27
+                                            }
                                             color="#093373"
                                         />
                                     );
@@ -1033,8 +1422,12 @@ export default function AgendamentoScreen() {
                                 }
                             >
                                 <Text
-                                    style={styles.titulo}
-                                    numberOfLines={1}
+                                    style={
+                                        styles.titulo
+                                    }
+                                    numberOfLines={
+                                        1
+                                    }
                                 >
                                     {
                                         instrumentoSelecionado.instrumento
@@ -1047,6 +1440,7 @@ export default function AgendamentoScreen() {
                                         {
                                             backgroundColor:
                                                 corNivelSelecionado.fundo,
+
                                             borderColor:
                                                 corNivelSelecionado.cor,
                                         },
@@ -1084,21 +1478,37 @@ export default function AgendamentoScreen() {
                         </View>
                     </View>
 
-                    <View style={styles.secao}>
-                        <Text style={styles.secaoTitulo}>
-                            Escolha seu professor
+                    <View
+                        style={styles.secao}
+                    >
+                        <Text
+                            style={
+                                styles.secaoTitulo
+                            }
+                        >
+                            Escolha seu
+                            professor
                         </Text>
 
                         <Text
-                            style={styles.secaoDescricao}
+                            style={
+                                styles.secaoDescricao
+                            }
                         >
-                            Professores disponíveis para
-                            este instrumento e nível.
+                            Professores
+                            disponíveis para este
+                            instrumento e nível.
                         </Text>
 
-                        {professores.length === 0 ? (
-                            <Text style={styles.vazioTexto}>
-                                Nenhum professor disponível.
+                        {professores.length ===
+                            0 ? (
+                            <Text
+                                style={
+                                    styles.vazioTexto
+                                }
+                            >
+                                Nenhum professor
+                                disponível.
                             </Text>
                         ) : (
                             <View
@@ -1107,7 +1517,9 @@ export default function AgendamentoScreen() {
                                 }
                             >
                                 {professores.map(
-                                    (professor) => {
+                                    (
+                                        professor
+                                    ) => {
                                         const selecionado =
                                             professorSelecionado?.id ===
                                             professor.id;
@@ -1200,19 +1612,36 @@ export default function AgendamentoScreen() {
                         )}
                     </View>
 
-                    <View style={styles.secao}>
-                        <Text style={styles.secaoTitulo}>
+                    <View
+                        style={styles.secao}
+                    >
+                        <Text
+                            style={
+                                styles.secaoTitulo
+                            }
+                        >
                             Escolha o dia
                         </Text>
 
-                        <Text style={styles.secaoDescricao}>
-                            Veja as próximas datas com horários disponíveis.
+                        <Text
+                            style={
+                                styles.secaoDescricao
+                            }
+                        >
+                            Aulas disponíveis
+                            entre amanhã e os
+                            próximos 14 dias.
                         </Text>
 
                         {dias.length === 0 ? (
-                            <Text style={styles.vazioTexto}>
-                                Nenhum dia disponível para este
-                                professor.
+                            <Text
+                                style={
+                                    styles.vazioTexto
+                                }
+                            >
+                                Nenhum dia
+                                disponível para
+                                este professor.
                             </Text>
                         ) : (
                             <ScrollView
@@ -1224,71 +1653,91 @@ export default function AgendamentoScreen() {
                                     styles.diasContainer
                                 }
                             >
-                                {dias.map((dia) => {
-                                    const selecionado =
-                                        diaSelecionado?.data ===
-                                        dia.data;
+                                {dias.map(
+                                    (dia) => {
+                                        const selecionado =
+                                            diaSelecionado?.data ===
+                                            dia.data;
 
-                                    return (
-                                        <TouchableOpacity
-                                            key={dia.data}
-                                            style={[
-                                                styles.diaCard,
-                                                selecionado &&
-                                                styles.diaCardSelecionado,
-                                            ]}
-                                            activeOpacity={
-                                                0.8
-                                            }
-                                            onPress={() =>
-                                                selecionarDia(
-                                                    dia
-                                                )
-                                            }
-                                        >
-                                            <Text
-                                                style={[
-                                                    styles.diaSemanaTexto,
-                                                    selecionado &&
-                                                    styles.diaTextoSelecionado,
-                                                ]}
-                                            >
-                                                {
-                                                    dia.diaSemana
+                                        return (
+                                            <TouchableOpacity
+                                                key={
+                                                    dia.data
                                                 }
-                                            </Text>
-
-                                            <Text
                                                 style={[
-                                                    styles.diaMesTexto,
+                                                    styles.diaCard,
                                                     selecionado &&
-                                                    styles.diaTextoSelecionado,
+                                                    styles.diaCardSelecionado,
                                                 ]}
+                                                activeOpacity={
+                                                    0.8
+                                                }
+                                                onPress={() =>
+                                                    selecionarDia(
+                                                        dia
+                                                    )
+                                                }
                                             >
-                                                {dia.diaMes}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
+                                                <Text
+                                                    style={[
+                                                        styles.diaSemanaTexto,
+                                                        selecionado &&
+                                                        styles.diaTextoSelecionado,
+                                                    ]}
+                                                >
+                                                    {
+                                                        dia.diaSemana
+                                                    }
+                                                </Text>
+
+                                                <Text
+                                                    style={[
+                                                        styles.diaMesTexto,
+                                                        selecionado &&
+                                                        styles.diaTextoSelecionado,
+                                                    ]}
+                                                >
+                                                    {
+                                                        dia.diaMes
+                                                    }
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    }
+                                )}
                             </ScrollView>
                         )}
                     </View>
 
-                    <View style={styles.secao}>
-                        <Text style={styles.secaoTitulo}>
+                    <View
+                        style={styles.secao}
+                    >
+                        <Text
+                            style={
+                                styles.secaoTitulo
+                            }
+                        >
                             Escolha o horário
                         </Text>
 
                         <Text
-                            style={styles.secaoDescricao}
+                            style={
+                                styles.secaoDescricao
+                            }
                         >
-                            Selecione um dos horários
-                            disponíveis.
+                            Selecione um dos
+                            horários disponíveis.
                         </Text>
 
-                        {horarios.length === 0 ? (
-                            <Text style={styles.vazioTexto}>
-                                Nenhum horário disponível para
+                        {horarios.length ===
+                            0 ? (
+                            <Text
+                                style={
+                                    styles.vazioTexto
+                                }
+                            >
+                                Nenhum horário
+                                disponível para
                                 este dia.
                             </Text>
                         ) : (
@@ -1297,50 +1746,60 @@ export default function AgendamentoScreen() {
                                     styles.horariosContainer
                                 }
                             >
-                                {horarios.map((horario) => {
-                                    const selecionado =
-                                        horarioSelecionado ===
-                                        horario;
+                                {horarios.map(
+                                    (
+                                        horario
+                                    ) => {
+                                        const selecionado =
+                                            horarioSelecionado ===
+                                            horario;
 
-                                    return (
-                                        <TouchableOpacity
-                                            key={horario}
-                                            style={[
-                                                styles.horarioCard,
-                                                selecionado &&
-                                                styles.horarioCardSelecionado,
-                                            ]}
-                                            activeOpacity={
-                                                0.8
-                                            }
-                                            onPress={() =>
-                                                setHorarioSelecionado(
+                                        return (
+                                            <TouchableOpacity
+                                                key={
                                                     horario
-                                                )
-                                            }
-                                        >
-                                            <MaterialCommunityIcons
-                                                name="clock-outline"
-                                                size={17}
-                                                color={
-                                                    selecionado
-                                                        ? '#FFFFFF'
-                                                        : '#093373'
                                                 }
-                                            />
-
-                                            <Text
                                                 style={[
-                                                    styles.horarioTexto,
+                                                    styles.horarioCard,
                                                     selecionado &&
-                                                    styles.horarioTextoSelecionado,
+                                                    styles.horarioCardSelecionado,
                                                 ]}
+                                                activeOpacity={
+                                                    0.8
+                                                }
+                                                onPress={() =>
+                                                    setHorarioSelecionado(
+                                                        horario
+                                                    )
+                                                }
                                             >
-                                                {horario}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    );
-                                })}
+                                                <MaterialCommunityIcons
+                                                    name="clock-outline"
+                                                    size={
+                                                        17
+                                                    }
+                                                    color={
+                                                        selecionado
+                                                            ? '#FFFFFF'
+                                                            : '#093373'
+                                                    }
+                                                />
+
+                                                <Text
+                                                    style={[
+                                                        styles.horarioTexto,
+                                                        selecionado &&
+                                                        styles.horarioTextoSelecionado,
+                                                    ]}
+                                                >
+                                                    {
+                                                        horario
+                                                    }
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    }
+                                )}
                             </View>
                         )}
                     </View>
@@ -1348,7 +1807,11 @@ export default function AgendamentoScreen() {
                     {professorSelecionado &&
                         diaSelecionado &&
                         horarioSelecionado && (
-                            <View style={styles.secao}>
+                            <View
+                                style={
+                                    styles.secao
+                                }
+                            >
                                 <Text
                                     style={
                                         styles.secaoTitulo
@@ -1379,7 +1842,9 @@ export default function AgendamentoScreen() {
                                         >
                                             <FontAwesome5
                                                 name="user"
-                                                size={21}
+                                                size={
+                                                    21
+                                                }
                                                 color="#093373"
                                             />
                                         </View>
@@ -1433,14 +1898,19 @@ export default function AgendamentoScreen() {
                         )}
 
                     <View
-                        style={styles.espacoFooter}
+                        style={
+                            styles.espacoFooter
+                        }
                     />
                 </ScrollView>
 
-                <View style={styles.footer}>
+                <View
+                    style={styles.footer}
+                >
                     <TouchableOpacity
                         style={[
                             styles.botaoConfirmar,
+
                             (!professorSelecionado ||
                                 !diaSelecionado ||
                                 !horarioSelecionado ||
@@ -1453,8 +1923,12 @@ export default function AgendamentoScreen() {
                             !horarioSelecionado ||
                             confirmando
                         }
-                        onPress={confirmarAgendamento}
-                        activeOpacity={0.85}
+                        onPress={
+                            confirmarAgendamento
+                        }
+                        activeOpacity={
+                            0.85
+                        }
                     >
                         {confirmando ? (
                             <ActivityIndicator
@@ -1474,7 +1948,8 @@ export default function AgendamentoScreen() {
                                         styles.botaoConfirmarTexto
                                     }
                                 >
-                                    Confirmar agendamento
+                                    Confirmar
+                                    agendamento
                                 </Text>
                             </>
                         )}
