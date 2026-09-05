@@ -170,6 +170,29 @@ export default function HomeScreen() {
                     </View>
 
                     <View style={styles.acoesHeader}>
+                        {/* [DEV] COMPLETE PROFILE — remover antes de commitar/buildar */}
+
+                        {/* <TouchableOpacity
+                            activeOpacity={0.8}
+                            onPress={() => router.push('/complete-profile')}
+                            style={{
+                                width: 40,
+                                height: 40,
+                                borderRadius: 20,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: '#FFF4E5',
+                                borderWidth: 1,
+                                borderColor: '#F5C177',
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                name="bug-outline"
+                                size={20}
+                                color="#B8842E"
+                            />
+                        </TouchableOpacity> */}
+
                         {/* PERFIL */}
 
                         <TouchableOpacity
@@ -463,4 +486,3 @@ export default function HomeScreen() {
         </SafeAreaView>
     );
 }
-

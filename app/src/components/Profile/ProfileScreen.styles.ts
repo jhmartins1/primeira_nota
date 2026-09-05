@@ -13,10 +13,7 @@ export const styles = StyleSheet.create({
         backgroundColor: '#F5F6FA',
     },
 
-    // =========================
     // LOADING
-    // =========================
-
     loadingContainer: {
         flex: 1,
         alignItems: 'center',
@@ -30,10 +27,7 @@ export const styles = StyleSheet.create({
         color: '#6B7280',
     },
 
-    // =========================
     // HEADER
-    // =========================
-
     header: {
         paddingHorizontal: 24,
         paddingTop: 8,
@@ -55,10 +49,7 @@ export const styles = StyleSheet.create({
         color: AZUL,
     },
 
-    // =========================
     // SCROLL
-    // =========================
-
     scrollContent: {
         flexGrow: 1,
         paddingHorizontal: 24,
@@ -66,10 +57,7 @@ export const styles = StyleSheet.create({
         paddingBottom: 30,
     },
 
-    // =========================
     // TÍTULO
-    // =========================
-
     tituloContainer: {
         alignItems: 'center',
         marginBottom: 28,
@@ -100,10 +88,7 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
-    // =========================
     // CARD
-    // =========================
-
     card: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
@@ -158,10 +143,7 @@ export const styles = StyleSheet.create({
         borderColor: '#B42318',
     },
 
-    // =========================
     // MENSAGENS
-    // =========================
-
     mensagemErro: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -191,10 +173,7 @@ export const styles = StyleSheet.create({
         fontWeight: '600',
     },
 
-    // =========================
     // INFORMAÇÃO
-    // =========================
-
     infoCard: {
         flexDirection: 'row',
         alignItems: 'flex-start',
@@ -214,10 +193,7 @@ export const styles = StyleSheet.create({
         color: '#4B5563',
     },
 
-    // =========================
     // FOOTER
-    // =========================
-
     footer: {
         width: '100%',
         paddingHorizontal: 24,
@@ -256,6 +232,84 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         color: '#FFFFFF',
+    },
+    cardEndereco: {
+        marginTop: 16,
+    },
+
+    inputWrapper: {
+        position: 'relative',
+        justifyContent: 'center',
+    },
+
+    inputLoading: {
+        position: 'absolute',
+        right: 16,
+    },
+
+    enderecoPreview: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 12,
+        padding: 14,
+        borderRadius: 13,
+        backgroundColor: '#EAF0FB',
+        borderWidth: 1,
+        borderColor: '#DCE6F5',
+    },
+
+    enderecoPreviewConteudo: {
+        flex: 1,
+        marginLeft: 10,
+    },
+
+    enderecoRua: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1A1E29',
+    },
+
+    enderecoCidade: {
+        marginTop: 3,
+        fontSize: 12,
+        color: '#6B7280',
+    },
+
+    linhaEndereco: {
+        flexDirection: 'row',
+        gap: 12,
+        marginTop: 16,
+    },
+
+    campoNumero: {
+        flex: 0.7,
+    },
+
+    campoComplemento: {
+        flex: 1.3,
+    },
+
+    mensagemGeralErro: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 14,
+        padding: 14,
+        borderRadius: 13,
+        backgroundColor: '#FFF1F0',
+    },
+
+    mensagemGeralSucesso: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 14,
+        padding: 14,
+        borderRadius: 13,
+        backgroundColor: '#ECFDF3',
+    },
+    campoEndereco: {
+        marginTop: 16,
     },
 });
 

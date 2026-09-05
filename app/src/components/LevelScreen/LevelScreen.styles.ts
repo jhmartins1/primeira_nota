@@ -22,10 +22,8 @@ export const styles = StyleSheet.create({
     backgroundColor: FUNDO,
   },
 
-  // ========================================
-  // HEADER
-  // ========================================
 
+  //HEADER
   header: {
     paddingHorizontal: 22,
     paddingTop: 10,
@@ -36,6 +34,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
+
     paddingVertical: 6,
     paddingRight: 12,
   },
@@ -43,31 +42,30 @@ export const styles = StyleSheet.create({
   seta: {
     fontSize: 30,
     lineHeight: 30,
+
     color: AZUL,
+
     fontWeight: '300',
   },
 
   textoVoltar: {
     marginLeft: 4,
+
     fontSize: 15,
+
     color: AZUL,
+
     fontWeight: '700',
   },
 
-  // ========================================
-  // SCROLL
-  // ========================================
-
+  //SCROLL
   scrollContent: {
     paddingHorizontal: 22,
     paddingTop: 18,
     paddingBottom: 30,
   },
 
-  // ========================================
-  // TÍTULO
-  // ========================================
-
+  //TÍTULO
   tituloContainer: {
     marginBottom: 22,
   },
@@ -75,95 +73,129 @@ export const styles = StyleSheet.create({
   titulo: {
     fontSize: 29,
     lineHeight: 34,
+
     fontWeight: '800',
+
     color: TEXTO,
+
     marginBottom: 8,
   },
 
   subtitulo: {
     fontSize: 14,
     lineHeight: 21,
+
     color: SECUNDARIO,
   },
 
-  // ========================================
-  // PROGRESSO
-  // ========================================
-
+  //PROGRESSO
   progressoContainer: {
     marginBottom: 24,
   },
 
   progressoTopo: {
     flexDirection: 'row',
+
     alignItems: 'center',
-    justifyContent: 'space-between',
+
+    justifyContent:
+      'space-between',
+
     marginBottom: 8,
   },
 
   progressoTexto: {
     fontSize: 12,
+
     fontWeight: '700',
+
     color: SECUNDARIO,
   },
 
   progressoNumero: {
     fontSize: 12,
+
     fontWeight: '800',
+
     color: AZUL,
   },
 
   progressoFundo: {
     height: 6,
-    backgroundColor: '#E2E6ED',
+
+    backgroundColor:
+      '#E2E6ED',
+
     borderRadius: 10,
+
     overflow: 'hidden',
   },
 
   progressoPreenchido: {
     height: '100%',
+
     backgroundColor: AZUL,
+
     borderRadius: 10,
   },
 
-  // ========================================
-  // INSTRUMENTO
-  // ========================================
-
+  //LISTA DE INSTRUMENTOS
   listaInstrumentos: {
     gap: 18,
   },
 
+
+
+  //CARD DO INSTRUMENTO
   instrumentoCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor:
+      '#FFFFFF',
+
     borderRadius: 20,
+
     borderWidth: 1,
+
     borderColor: BORDA,
+
     padding: 18,
 
-    shadowColor: '#0F1B3D',
+    shadowColor:
+      '#0F1B3D',
+
     shadowOffset: {
       width: 0,
       height: 5,
     },
+
     shadowOpacity: 0.05,
+
     shadowRadius: 12,
+
     elevation: 2,
   },
 
   instrumentoHeader: {
     flexDirection: 'row',
+
     alignItems: 'center',
+
     marginBottom: 16,
   },
 
   instrumentoIcone: {
-    width: 44,
-    height: 44,
-    borderRadius: 13,
-    backgroundColor: AZUL_CLARO,
+    width: 48,
+    height: 48,
+
+    borderRadius: 14,
+
+    backgroundColor:
+      AZUL_CLARO,
+
     alignItems: 'center',
-    justifyContent: 'center',
+
+    justifyContent:
+      'center',
+
     marginRight: 12,
   },
 
@@ -173,70 +205,97 @@ export const styles = StyleSheet.create({
 
   instrumentoLabel: {
     fontSize: 11,
+
     fontWeight: '700',
+
     color: SECUNDARIO,
-    textTransform: 'uppercase',
+
+    textTransform:
+      'uppercase',
+
     letterSpacing: 0.8,
+
     marginBottom: 2,
   },
 
   instrumentoTitulo: {
     fontSize: 19,
+
     fontWeight: '800',
+
     color: TEXTO,
   },
 
   perguntaNivel: {
     fontSize: 12,
+
     color: SECUNDARIO,
+
     marginTop: 2,
   },
 
-  // ========================================
-  // NÍVEIS
-  // ========================================
-
+  //NÍVEIS
   niveisContainer: {
     gap: 9,
   },
 
   opcao: {
     borderWidth: 1.5,
+
     borderColor: BORDA,
+
     borderRadius: 15,
-    backgroundColor: '#FFFFFF',
+
+    backgroundColor:
+      '#FFFFFF',
+
     paddingHorizontal: 14,
+
     paddingVertical: 13,
   },
 
   opcaoSelecionada: {
     borderColor: AZUL,
-    backgroundColor: AZUL_CLARO,
+
+    backgroundColor:
+      AZUL_CLARO,
   },
 
   opcaoConteudo: {
     flexDirection: 'row',
+
     alignItems: 'center',
   },
 
   estrelaContainer: {
     width: 42,
     height: 42,
+
     borderRadius: 12,
-    backgroundColor: DOURADO_CLARO,
+
+    backgroundColor:
+      DOURADO_CLARO,
+
     alignItems: 'center',
-    justifyContent: 'center',
+
+    justifyContent:
+      'center',
+
     marginRight: 12,
   },
 
   estrelaContainerSelecionada: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor:
+      '#FFFFFF',
   },
 
   estrelas: {
     fontSize: 16,
+
     letterSpacing: 1,
+
     color: DOURADO,
+
     fontWeight: '800',
   },
 
@@ -250,8 +309,11 @@ export const styles = StyleSheet.create({
 
   opcaoTexto: {
     fontSize: 15,
+
     fontWeight: '800',
+
     color: TEXTO,
+
     marginBottom: 3,
   },
 
@@ -261,70 +323,159 @@ export const styles = StyleSheet.create({
 
   opcaoDescricao: {
     fontSize: 12,
+
     lineHeight: 17,
+
     color: SECUNDARIO,
   },
 
   check: {
     width: 25,
     height: 25,
+
     borderRadius: 13,
-    backgroundColor: AZUL,
+
+    backgroundColor:
+      AZUL,
+
     color: '#FFFFFF',
+
     textAlign: 'center',
-    textAlignVertical: 'center',
+
+    textAlignVertical:
+      'center',
+
     fontSize: 14,
+
     fontWeight: '800',
+
     overflow: 'hidden',
   },
 
-  // ========================================
-  // FOOTER
-  // ========================================
+  //TELA VAZIA
+  vazioContainer: {
+    flex: 1,
 
+    justifyContent:
+      'center',
+
+    alignItems: 'center',
+
+    paddingHorizontal: 28,
+  },
+
+  vazioTitulo: {
+    marginTop: 16,
+
+    fontSize: 19,
+
+    fontWeight: '800',
+
+    color: TEXTO,
+
+    textAlign: 'center',
+  },
+
+  vazioTexto: {
+    marginTop: 8,
+
+    fontSize: 14,
+
+    lineHeight: 21,
+
+    color: SECUNDARIO,
+
+    textAlign: 'center',
+  },
+
+  botaoSelecionarInstrumentos: {
+    marginTop: 22,
+
+    backgroundColor: AZUL,
+
+    paddingHorizontal: 20,
+
+    paddingVertical: 13,
+
+    borderRadius: 13,
+  },
+
+  botaoSelecionarInstrumentosTexto: {
+    fontSize: 14,
+
+    fontWeight: '700',
+
+    color: '#FFFFFF',
+  },
+  //FOOTER
   footer: {
     paddingHorizontal: 22,
+
     paddingTop: 10,
+
     paddingBottom: 12,
-    backgroundColor: FUNDO,
+
+    backgroundColor:
+      FUNDO,
+
     borderTopWidth: 1,
-    borderTopColor: '#E7EAF0',
+
+    borderTopColor:
+      '#E7EAF0',
   },
 
   botaoContinuar: {
     height: 54,
+
     borderRadius: 15,
+
     backgroundColor: AZUL,
+
     flexDirection: 'row',
+
     alignItems: 'center',
-    justifyContent: 'center',
+
+    justifyContent:
+      'center',
 
     shadowColor: AZUL,
+
     shadowOffset: {
       width: 0,
       height: 5,
     },
+
     shadowOpacity: 0.18,
+
     shadowRadius: 10,
+
     elevation: 4,
   },
 
   botaoDesabilitado: {
-    backgroundColor: '#C7CBD3',
+    backgroundColor:
+      '#C7CBD3',
+
     shadowOpacity: 0,
+
     elevation: 0,
   },
 
   botaoTexto: {
     color: '#FFFFFF',
+
     fontSize: 15,
+
     fontWeight: '800',
   },
 
   botaoSeta: {
     color: '#FFFFFF',
+
     fontSize: 20,
+
     marginLeft: 8,
+
     marginTop: -1,
   },
 });

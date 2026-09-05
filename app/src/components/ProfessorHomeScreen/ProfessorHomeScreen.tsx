@@ -1,6 +1,8 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import {
+    FontAwesome5,
+    MaterialCommunityIcons,
+} from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
 import {
     ActivityIndicator,
     RefreshControl,
@@ -9,9 +11,9 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { getInstrumentIcon } from '../../constants/InstrumentIcons';
 import { AulaAlunoCard } from './AulaAlunoCard';
 import { styles } from './ProfessorHomeScreen.styles';
 import { useProfessorHomeData } from './useProfessorHomeData';
@@ -44,28 +46,24 @@ export default function ProfessorHomeScreen() {
         });
     }
 
+    const instrumentosUnicos = Array.from(
+        new Set(
+            professor?.instrumentos?.map(
+                (item) => item.instrumento
+            ) ?? []
+        )
+    );
+
     if (carregando) {
         return (
             <SafeAreaView style={styles.container}>
-                <View
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
+                <View style={styles.loadingContainer}>
                     <ActivityIndicator
                         size="large"
                         color="#093373"
                     />
 
-                    <Text
-                        style={{
-                            marginTop: 12,
-                            color: '#6B7280',
-                            fontSize: 14,
-                        }}
-                    >
+                    <Text style={styles.loadingTexto}>
                         Carregando...
                     </Text>
                 </View>
@@ -76,59 +74,30 @@ export default function ProfessorHomeScreen() {
     if (erro && !professor) {
         return (
             <SafeAreaView style={styles.container}>
-                <View
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingHorizontal: 30,
-                    }}
-                >
+                <View style={styles.erroContainer}>
                     <MaterialCommunityIcons
                         name="alert-circle-outline"
                         size={50}
                         color="#093373"
                     />
 
-                    <Text
-                        style={{
-                            marginTop: 15,
-                            fontSize: 19,
-                            fontWeight: '800',
-                            color: '#1A1E29',
-                            textAlign: 'center',
-                        }}
-                    >
+                    <Text style={styles.erroTitulo}>
                         Não foi possível carregar
                     </Text>
 
-                    <Text
-                        style={{
-                            marginTop: 8,
-                            fontSize: 14,
-                            lineHeight: 21,
-                            color: '#6B7280',
-                            textAlign: 'center',
-                        }}
-                    >
+                    <Text style={styles.erroTexto}>
                         {erro}
                     </Text>
 
                     <TouchableOpacity
-                        style={{
-                            marginTop: 20,
-                            backgroundColor: '#093373',
-                            paddingHorizontal: 25,
-                            paddingVertical: 13,
-                            borderRadius: 12,
-                        }}
+                        style={styles.botaoTentarNovamente}
+                        activeOpacity={0.85}
                         onPress={() => carregarDados()}
                     >
                         <Text
-                            style={{
-                                color: '#FFFFFF',
-                                fontWeight: '700',
-                            }}
+                            style={
+                                styles.botaoTentarNovamenteTexto
+                            }
                         >
                             Tentar novamente
                         </Text>
@@ -142,7 +111,9 @@ export default function ProfessorHomeScreen() {
         <SafeAreaView style={styles.container}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
+                contentContainerStyle={
+                    styles.scrollContent
+                }
                 refreshControl={
                     <RefreshControl
                         refreshing={atualizando}
@@ -151,14 +122,88 @@ export default function ProfessorHomeScreen() {
                     />
                 }
             >
+                {/* ========================= */}
                 {/* HEADER */}
+                {/* ========================= */}
 
                 <View style={styles.header}>
-                    <View style={{ flex: 1 }}>
+                    <View style={styles.headerTopo}>
                         <Text style={styles.eyebrow}>
                             PRIMEIRA NOTA · PROFESSOR
                         </Text>
 
+                        <View style={styles.headerBotoes}>
+                            {/* HORÁRIOS */}
+                            <TouchableOpacity
+                                style={styles.botaoHorarios}
+                                activeOpacity={0.8}
+                                onPress={() =>
+                                    router.push(
+                                        '/disponibilidade'
+                                    )
+                                }
+                            >
+                                <MaterialCommunityIcons
+                                    name="calendar-clock-outline"
+                                    size={17}
+                                    color="#093373"
+                                />
+
+                                <Text
+                                    style={
+                                        styles.botaoHorariosTexto
+                                    }
+                                >
+                                    Horários
+                                </Text>
+                            </TouchableOpacity>
+
+                            {/* EDITAR INSTRUMENTOS */}
+                            <TouchableOpacity
+                                style={
+                                    styles.botaoAcaoCircular
+                                }
+                                activeOpacity={0.8}
+                                onPress={
+                                    handleEditarInstrumentos
+                                }
+                            >
+                                <MaterialCommunityIcons
+                                    name="pencil-outline"
+                                    size={19}
+                                    color="#093373"
+                                />
+                            </TouchableOpacity>
+
+                            {/* LOGOUT */}
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={realizarLogout}
+                                disabled={saindo}
+                                style={[
+                                    styles.botaoLogout,
+                                    saindo &&
+                                    styles.botaoLogoutCarregando,
+                                ]}
+                            >
+                                {saindo ? (
+                                    <ActivityIndicator
+                                        size="small"
+                                        color="#B42318"
+                                    />
+                                ) : (
+                                    <MaterialCommunityIcons
+                                        name="logout"
+                                        size={20}
+                                        color="#B42318"
+                                    />
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    {/* SAUDAÇÃO */}
+                    <View style={styles.headerSaudacao}>
                         <Text style={styles.titulo}>
                             Olá,{' '}
                             {professor?.name?.split(' ')[0] ??
@@ -171,64 +216,48 @@ export default function ProfessorHomeScreen() {
                         </Text>
                     </View>
 
-                    <View style={styles.headerBotoes}>
-                        <TouchableOpacity
-                            style={styles.botaoEditarInstrumentos}
-                            activeOpacity={0.8}
-                            onPress={() => router.push('/disponibilidade')}
-                        >
-                            <MaterialCommunityIcons
-                                name="calendar-remove-outline"
-                                size={15}
-                                color="#093373"
-                            />
-                            <Text style={styles.botaoEditarInstrumentosTexto}>
-                                Horários
+                    {/* INSTRUMENTOS */}
+                    {/* INSTRUMENTOS */}
+                    {instrumentosUnicos.length > 0 && (
+                        <View style={styles.instrumentosContainer}>
+                            <Text style={styles.instrumentosLabel}>
+                                Seus instrumentos
                             </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.botaoEditarInstrumentos}
-                            activeOpacity={0.8}
-                            onPress={handleEditarInstrumentos}
-                        >
-                            <MaterialCommunityIcons
-                                name="pencil-outline"
-                                size={15}
-                                color="#093373"
-                            />
 
-                            <Text
-                                style={
-                                    styles.botaoEditarInstrumentosTexto
-                                }
-                            >
-                                Editar
-                            </Text>
-                        </TouchableOpacity>
+                            <View style={styles.instrumentosLista}>
+                                {instrumentosUnicos.map((instrumento) => {
+                                    const icone =
+                                        getInstrumentIcon(instrumento);
 
-                        <TouchableOpacity
-                            activeOpacity={0.8}
-                            onPress={realizarLogout}
-                            disabled={saindo}
-                            style={styles.botaoLogout}
-                        >
-                            {saindo ? (
-                                <ActivityIndicator
-                                    size="small"
-                                    color="#B42318"
-                                />
-                            ) : (
-                                <MaterialCommunityIcons
-                                    name="logout"
-                                    size={21}
-                                    color="#B42318"
-                                />
-                            )}
-                        </TouchableOpacity>
-                    </View>
+                                    return (
+                                        <View
+                                            key={instrumento}
+                                            style={styles.instrumentoIconeCard}
+                                        >
+                                            {icone.familia === 'material' ? (
+                                                <MaterialCommunityIcons
+                                                    name={icone.nome}
+                                                    size={26}
+                                                    color="#093373"
+                                                />
+                                            ) : (
+                                                <FontAwesome5
+                                                    name={icone.nome}
+                                                    size={23}
+                                                    color="#093373"
+                                                />
+                                            )}
+                                        </View>
+                                    );
+                                })}
+                            </View>
+                        </View>
+                    )}
                 </View>
 
+                {/* ========================= */}
                 {/* PRÓXIMA AULA */}
+                {/* ========================= */}
 
                 {proximaAula ? (
                     <View style={styles.secao}>
@@ -240,16 +269,21 @@ export default function ProfessorHomeScreen() {
                             aula={proximaAula}
                             destaque
                             cancelando={
-                                cancelandoId === proximaAula.id
+                                cancelandoId ===
+                                proximaAula.id
                             }
                             onCancelar={() =>
-                                confirmarCancelamento(proximaAula)
+                                confirmarCancelamento(
+                                    proximaAula
+                                )
                             }
                         />
                     </View>
                 ) : (
                     <View style={styles.semAulaCard}>
-                        <View style={styles.semAulaIcone}>
+                        <View
+                            style={styles.semAulaIcone}
+                        >
                             <MaterialCommunityIcons
                                 name="calendar-blank-outline"
                                 size={30}
@@ -257,24 +291,35 @@ export default function ProfessorHomeScreen() {
                             />
                         </View>
 
-                        <Text style={styles.semAulaTitulo}>
+                        <Text
+                            style={styles.semAulaTitulo}
+                        >
                             Nenhuma aula agendada
                         </Text>
 
-                        <Text style={styles.semAulaTexto}>
-                            Assim que um aluno agendar uma aula com
-                            você, ela aparece aqui.
+                        <Text
+                            style={styles.semAulaTexto}
+                        >
+                            Assim que um aluno agendar
+                            uma aula com você, ela
+                            aparece aqui.
                         </Text>
                     </View>
                 )}
 
+                {/* ========================= */}
                 {/* DEMAIS AULAS */}
+                {/* ========================= */}
 
                 {demaisAulas.length > 0 && (
                     <View style={styles.secao}>
                         <Text style={styles.secaoTitulo}>
                             Demais aulas
-                            <Text style={styles.secaoContador}>
+                            <Text
+                                style={
+                                    styles.secaoContador
+                                }
+                            >
                                 {'  ·  '}
                                 {demaisAulas.length}
                             </Text>
@@ -286,10 +331,13 @@ export default function ProfessorHomeScreen() {
                                     key={aula.id}
                                     aula={aula}
                                     cancelando={
-                                        cancelandoId === aula.id
+                                        cancelandoId ===
+                                        aula.id
                                     }
                                     onCancelar={() =>
-                                        confirmarCancelamento(aula)
+                                        confirmarCancelamento(
+                                            aula
+                                        )
                                     }
                                 />
                             ))}

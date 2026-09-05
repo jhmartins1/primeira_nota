@@ -96,8 +96,20 @@ export function CompleteScreen() {
             return;
         }
 
-        if (!logradouro || !cidade || !uf) {
-            setErro('Não foi possível confirmar o endereço pelo CEP');
+        if (!logradouro.trim()) {
+            setErro('Digite o endereço.');
+            return;
+        }
+
+        if (!bairro.trim()) {
+            setErro('Digite o bairro.');
+            return;
+        }
+
+        if (!cidade || !uf) {
+            setErro(
+                'Não foi possível confirmar a cidade e o estado pelo CEP.'
+            );
             return;
         }
 
@@ -296,16 +308,91 @@ export function CompleteScreen() {
                                 ) : null}
 
                                 {!!logradouro && (
-                                    <View style={styles.enderecoPreview}>
-                                        <MaterialCommunityIcons
-                                            name="check-circle-outline"
-                                            size={16}
-                                            color="#8A661F"
-                                        />
-                                        <Text style={styles.enderecoPreviewTexto}>
-                                            {logradouro}, {bairro} — {cidade}/{uf}
-                                        </Text>
-                                    </View>
+                                    <>
+                                        <View
+                                            style={[
+                                                styles.inputContainer,
+                                                { marginTop: 14 },
+                                            ]}
+                                        >
+                                            <Text style={styles.label}>
+                                                Endereço
+                                            </Text>
+
+                                            <View style={styles.inputWrapper}>
+                                                <MaterialCommunityIcons
+                                                    name="road-variant"
+                                                    size={18}
+                                                    color="#6B7280"
+                                                    style={styles.inputIcone}
+                                                />
+
+                                                <TextInput
+                                                    style={styles.input}
+                                                    placeholder="Rua, avenida..."
+                                                    placeholderTextColor="#999"
+                                                    value={logradouro}
+                                                    onChangeText={(valor) => {
+                                                        setLogradouro(valor);
+
+                                                        if (erro) {
+                                                            setErro('');
+                                                        }
+                                                    }}
+                                                    editable={!carregando}
+                                                    returnKeyType="next"
+                                                />
+                                            </View>
+                                        </View>
+
+                                        <View
+                                            style={[
+                                                styles.inputContainer,
+                                                { marginTop: 14 },
+                                            ]}
+                                        >
+                                            <Text style={styles.label}>
+                                                Bairro
+                                            </Text>
+
+                                            <View style={styles.inputWrapper}>
+                                                <MaterialCommunityIcons
+                                                    name="map-marker-radius-outline"
+                                                    size={18}
+                                                    color="#6B7280"
+                                                    style={styles.inputIcone}
+                                                />
+
+                                                <TextInput
+                                                    style={styles.input}
+                                                    placeholder="Bairro"
+                                                    placeholderTextColor="#999"
+                                                    value={bairro}
+                                                    onChangeText={(valor) => {
+                                                        setBairro(valor);
+
+                                                        if (erro) {
+                                                            setErro('');
+                                                        }
+                                                    }}
+                                                    editable={!carregando}
+                                                    returnKeyType="next"
+                                                />
+                                            </View>
+                                        </View>
+
+                                        <View style={styles.enderecoPreview}>
+                                            <MaterialCommunityIcons
+                                                name="map-marker-check-outline"
+                                                size={16}
+                                                color="#8A661F"
+                                            />
+
+                                            <Text style={styles.enderecoPreviewTexto}>
+                                                {cidade}/{uf}
+                                            </Text>
+                                        </View>
+                                    </>
                                 )}
                             </View>
 
