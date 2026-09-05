@@ -24,6 +24,7 @@ interface AulaCardProps {
     aula: Agendamento;
     cancelando: boolean;
     onCancelar: () => void;
+    onRemarcar: () => void;
 }
 
 function obterIniciais(
@@ -51,6 +52,7 @@ export function AulaCard({
     aula,
     cancelando,
     onCancelar,
+    onRemarcar,
 }: AulaCardProps) {
     const icone = getInstrumentIcon(
         aula.instrumento.name
@@ -261,6 +263,27 @@ export function AulaCard({
                     </Text>
                 </TouchableOpacity>
             )}
+
+            <TouchableOpacity
+                style={styles.botaoRemarcarAula}
+                activeOpacity={0.8}
+                disabled={cancelando}
+                onPress={onRemarcar}
+            >
+                <MaterialCommunityIcons
+                    name="calendar-sync-outline"
+                    size={18}
+                    color="#093373"
+                />
+
+                <Text
+                    style={
+                        styles.botaoRemarcarAulaTexto
+                    }
+                >
+                    Remarcar aula
+                </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
                 style={

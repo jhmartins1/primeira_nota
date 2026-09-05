@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+
 import {
     ActivityIndicator,
     RefreshControl,
@@ -8,12 +9,14 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AulaCard } from './AulaCard';
 import { styles } from './HomeScreen.styles';
 import { InstrumentoCard } from './InstrumentoCard';
 import { ProximaAulaCard } from './ProximaAulaCard';
+import { Agendamento } from './types';
 import { useHomeData } from './useHomeData';
 
 export default function HomeScreen() {
@@ -35,18 +38,63 @@ export default function HomeScreen() {
         confirmarCancelamento,
     } = useHomeData();
 
+    function abrirRemarcacao(
+        aula: Agendamento
+    ) {
+        router.push({
+            pathname:
+                '/remarcar-agendamento',
+
+            params: {
+                agendamentoId:
+                    String(aula.id),
+
+                professorId:
+                    String(
+                        aula.professorId
+                    ),
+
+                instrumentoId:
+                    String(
+                        aula.instrumentoId
+                    ),
+
+                nivelId:
+                    String(
+                        aula.nivelId
+                    ),
+
+                professorNome:
+                    aula.professor.name,
+
+                instrumentoNome:
+                    aula.instrumento.name,
+
+                nivelNome:
+                    aula.nivel.name,
+
+                dataHoraAtual:
+                    aula.dataHora,
+            },
+        });
+    }
+
     // =========================
     // LOADING
     // =========================
 
     if (carregando) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView
+                style={styles.container}
+            >
                 <View
                     style={{
                         flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        alignItems:
+                            'center',
+                        justifyContent:
+                            'center',
                     }}
                 >
                     <ActivityIndicator
@@ -57,7 +105,8 @@ export default function HomeScreen() {
                     <Text
                         style={{
                             marginTop: 12,
-                            color: '#6B7280',
+                            color:
+                                '#6B7280',
                             fontSize: 14,
                         }}
                     >
@@ -74,13 +123,18 @@ export default function HomeScreen() {
 
     if (erro && !usuario) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView
+                style={styles.container}
+            >
                 <View
                     style={{
                         flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingHorizontal: 30,
+                        alignItems:
+                            'center',
+                        justifyContent:
+                            'center',
+                        paddingHorizontal:
+                            30,
                     }}
                 >
                     <MaterialCommunityIcons
@@ -93,12 +147,16 @@ export default function HomeScreen() {
                         style={{
                             marginTop: 15,
                             fontSize: 19,
-                            fontWeight: '800',
-                            color: '#1A1E29',
-                            textAlign: 'center',
+                            fontWeight:
+                                '800',
+                            color:
+                                '#1A1E29',
+                            textAlign:
+                                'center',
                         }}
                     >
-                        Não foi possível carregar
+                        Não foi possível
+                        carregar
                     </Text>
 
                     <Text
@@ -106,8 +164,10 @@ export default function HomeScreen() {
                             marginTop: 8,
                             fontSize: 14,
                             lineHeight: 21,
-                            color: '#6B7280',
-                            textAlign: 'center',
+                            color:
+                                '#6B7280',
+                            textAlign:
+                                'center',
                         }}
                     >
                         {erro}
@@ -116,17 +176,25 @@ export default function HomeScreen() {
                     <TouchableOpacity
                         style={{
                             marginTop: 20,
-                            backgroundColor: '#093373',
-                            paddingHorizontal: 25,
-                            paddingVertical: 13,
-                            borderRadius: 12,
+                            backgroundColor:
+                                '#093373',
+                            paddingHorizontal:
+                                25,
+                            paddingVertical:
+                                13,
+                            borderRadius:
+                                12,
                         }}
-                        onPress={() => carregarDados()}
+                        onPress={() =>
+                            carregarDados()
+                        }
                     >
                         <Text
                             style={{
-                                color: '#FFFFFF',
-                                fontWeight: '700',
+                                color:
+                                    '#FFFFFF',
+                                fontWeight:
+                                    '700',
                             }}
                         >
                             Tentar novamente
@@ -138,14 +206,24 @@ export default function HomeScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView
+            style={styles.container}
+        >
             <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={
+                    false
+                }
+                contentContainerStyle={
+                    styles.scrollContent
+                }
                 refreshControl={
                     <RefreshControl
-                        refreshing={atualizando}
-                        onRefresh={atualizarTela}
+                        refreshing={
+                            atualizando
+                        }
+                        onRefresh={
+                            atualizarTela
+                        }
                         tintColor="#093373"
                     />
                 }
@@ -154,51 +232,63 @@ export default function HomeScreen() {
                     HEADER
                 ========================= */}
 
-                <View style={styles.header}>
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.eyebrow}>
+                <View
+                    style={styles.header}
+                >
+                    <View
+                        style={{ flex: 1 }}
+                    >
+                        <Text
+                            style={
+                                styles.eyebrow
+                            }
+                        >
                             PRIMEIRA NOTA
                         </Text>
 
-                        <Text style={styles.titulo}>
-                            Olá, {usuario?.name?.split(' ')[0] ?? 'Aluno'}!
+                        <Text
+                            style={
+                                styles.titulo
+                            }
+                        >
+                            Olá,{' '}
+                            {usuario?.name?.split(
+                                ' '
+                            )[0] ??
+                                'Aluno'}
+                            !
                         </Text>
 
-                        <Text style={styles.subtitulo}>
-                            Acompanhe suas aulas e continue evoluindo.
+                        <Text
+                            style={
+                                styles.subtitulo
+                            }
+                        >
+                            Acompanhe suas
+                            aulas e continue
+                            evoluindo.
                         </Text>
                     </View>
 
-                    <View style={styles.acoesHeader}>
-                        {/* [DEV] COMPLETE PROFILE — remover antes de commitar/buildar */}
-
-                        {/* <TouchableOpacity
-                            activeOpacity={0.8}
-                            onPress={() => router.push('/complete-profile')}
-                            style={{
-                                width: 40,
-                                height: 40,
-                                borderRadius: 20,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                backgroundColor: '#FFF4E5',
-                                borderWidth: 1,
-                                borderColor: '#F5C177',
-                            }}
-                        >
-                            <MaterialCommunityIcons
-                                name="bug-outline"
-                                size={20}
-                                color="#B8842E"
-                            />
-                        </TouchableOpacity> */}
-
+                    <View
+                        style={
+                            styles.acoesHeader
+                        }
+                    >
                         {/* PERFIL */}
 
                         <TouchableOpacity
-                            activeOpacity={0.8}
-                            onPress={() => router.push('/profile')}
-                            style={styles.botaoPerfil}
+                            activeOpacity={
+                                0.8
+                            }
+                            onPress={() =>
+                                router.push(
+                                    '/profile'
+                                )
+                            }
+                            style={
+                                styles.botaoPerfil
+                            }
                         >
                             <MaterialCommunityIcons
                                 name="account-outline"
@@ -210,9 +300,15 @@ export default function HomeScreen() {
                         {/* LOGOUT */}
 
                         <TouchableOpacity
-                            activeOpacity={0.8}
-                            onPress={confirmarLogout}
-                            disabled={saindo}
+                            activeOpacity={
+                                0.8
+                            }
+                            onPress={
+                                confirmarLogout
+                            }
+                            disabled={
+                                saindo
+                            }
                             style={[
                                 styles.botaoLogout,
                                 saindo &&
@@ -241,17 +337,35 @@ export default function HomeScreen() {
 
                 {proximaAula ? (
                     <ProximaAulaCard
-                        aula={proximaAula}
+                        aula={
+                            proximaAula
+                        }
                         cancelando={
-                            cancelandoId === proximaAula.id
+                            cancelandoId ===
+                            proximaAula.id
+                        }
+                        onRemarcar={() =>
+                            abrirRemarcacao(
+                                proximaAula
+                            )
                         }
                         onCancelar={() =>
-                            confirmarCancelamento(proximaAula)
+                            confirmarCancelamento(
+                                proximaAula
+                            )
                         }
                     />
                 ) : (
-                    <View style={styles.semAulaCard}>
-                        <View style={styles.semAulaIcone}>
+                    <View
+                        style={
+                            styles.semAulaCard
+                        }
+                    >
+                        <View
+                            style={
+                                styles.semAulaIcone
+                            }
+                        >
                             <MaterialCommunityIcons
                                 name="calendar-plus"
                                 size={30}
@@ -259,23 +373,43 @@ export default function HomeScreen() {
                             />
                         </View>
 
-                        <Text style={styles.semAulaTitulo}>
-                            Você não tem aulas agendadas
+                        <Text
+                            style={
+                                styles.semAulaTitulo
+                            }
+                        >
+                            Você não tem aulas
+                            agendadas
                         </Text>
 
-                        <Text style={styles.semAulaTexto}>
-                            Agende uma aula e comece sua próxima
+                        <Text
+                            style={
+                                styles.semAulaTexto
+                            }
+                        >
+                            Agende uma aula e
+                            comece sua próxima
                             evolução musical.
                         </Text>
 
                         <TouchableOpacity
-                            style={styles.semAulaBotao}
-                            activeOpacity={0.85}
+                            style={
+                                styles.semAulaBotao
+                            }
+                            activeOpacity={
+                                0.85
+                            }
                             onPress={() =>
-                                router.push('/agendamento')
+                                router.push(
+                                    '/agendamento'
+                                )
                             }
                         >
-                            <Text style={styles.semAulaBotaoTexto}>
+                            <Text
+                                style={
+                                    styles.semAulaBotaoTexto
+                                }
+                            >
                                 Agendar agora
                             </Text>
 
@@ -293,11 +427,21 @@ export default function HomeScreen() {
                 ========================= */}
 
                 <TouchableOpacity
-                    style={styles.botaoAgendar}
+                    style={
+                        styles.botaoAgendar
+                    }
                     activeOpacity={0.85}
-                    onPress={() => router.push('/agendamento')}
+                    onPress={() =>
+                        router.push(
+                            '/agendamento'
+                        )
+                    }
                 >
-                    <View style={styles.botaoAgendarIcone}>
+                    <View
+                        style={
+                            styles.botaoAgendarIcone
+                        }
+                    >
                         <MaterialCommunityIcons
                             name="calendar-plus"
                             size={24}
@@ -305,13 +449,26 @@ export default function HomeScreen() {
                         />
                     </View>
 
-                    <View style={styles.botaoAgendarInfo}>
-                        <Text style={styles.botaoAgendarTitulo}>
+                    <View
+                        style={
+                            styles.botaoAgendarInfo
+                        }
+                    >
+                        <Text
+                            style={
+                                styles.botaoAgendarTitulo
+                            }
+                        >
                             Agendar nova aula
                         </Text>
 
-                        <Text style={styles.botaoAgendarSubtitulo}>
-                            Escolha instrumento, professor, dia e
+                        <Text
+                            style={
+                                styles.botaoAgendarSubtitulo
+                            }
+                        >
+                            Escolha instrumento,
+                            professor, dia e
                             horário
                         </Text>
                     </View>
@@ -327,60 +484,119 @@ export default function HomeScreen() {
                     MINHAS AULAS
                 ========================= */}
 
-                <View style={styles.secao}>
-                    <View style={styles.secaoHeader}>
+                <View
+                    style={styles.secao}
+                >
+                    <View
+                        style={
+                            styles.secaoHeader
+                        }
+                    >
                         <View>
-                            <Text style={styles.secaoTitulo}>
-                                Minhas aulas
-
-                                {agendamentos.length > 0 && (
-                                    <Text
-                                        style={styles.secaoContador}
-                                    >
-                                        {'  ·  '}
-                                        {agendamentos.length}
-                                    </Text>
-                                )}
-                            </Text>
-
-                            <Text style={styles.secaoSubtitulo}>
-                                Próximos agendamentos
-                            </Text>
-                        </View>
-
-                        {agendamentos.length > 3 && (
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={() =>
-                                    router.push('/agendamentos')
+                            <Text
+                                style={
+                                    styles.secaoTitulo
                                 }
                             >
-                                <Text style={styles.verTodas}>
-                                    Ver todas
-                                </Text>
-                            </TouchableOpacity>
-                        )}
+                                Minhas aulas
+
+                                {agendamentos.length >
+                                    0 && (
+                                        <Text
+                                            style={
+                                                styles.secaoContador
+                                            }
+                                        >
+                                            {
+                                                '  ·  '
+                                            }
+                                            {
+                                                agendamentos.length
+                                            }
+                                        </Text>
+                                    )}
+                            </Text>
+
+                            <Text
+                                style={
+                                    styles.secaoSubtitulo
+                                }
+                            >
+                                Próximos
+                                agendamentos
+                            </Text>
+                        </View>
+
+                        {agendamentos.length >
+                            3 && (
+                                <TouchableOpacity
+                                    activeOpacity={
+                                        0.7
+                                    }
+                                    onPress={() =>
+                                        router.push(
+                                            '/agendamentos'
+                                        )
+                                    }
+                                >
+                                    <Text
+                                        style={
+                                            styles.verTodas
+                                        }
+                                    >
+                                        Ver todas
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
                     </View>
 
-                    {demaisAulas.length > 0 ? (
-                        <View style={styles.listaAulas}>
-                            {demaisAulas.map((aula) => (
-                                <AulaCard
-                                    key={aula.id}
-                                    aula={aula}
-                                    cancelando={
-                                        cancelandoId === aula.id
-                                    }
-                                    onCancelar={() =>
-                                        confirmarCancelamento(aula)
-                                    }
-                                />
-                            ))}
+                    {demaisAulas.length >
+                        0 ? (
+                        <View
+                            style={
+                                styles.listaAulas
+                            }
+                        >
+                            {demaisAulas.map(
+                                (aula) => (
+                                    <AulaCard
+                                        key={
+                                            aula.id
+                                        }
+                                        aula={
+                                            aula
+                                        }
+                                        cancelando={
+                                            cancelandoId ===
+                                            aula.id
+                                        }
+                                        onRemarcar={() =>
+                                            abrirRemarcacao(
+                                                aula
+                                            )
+                                        }
+                                        onCancelar={() =>
+                                            confirmarCancelamento(
+                                                aula
+                                            )
+                                        }
+                                    />
+                                )
+                            )}
                         </View>
                     ) : (
-                        <View style={styles.listaVazia}>
-                            <Text style={styles.listaVaziaTexto}>
-                                Nenhuma outra aula agendada.
+                        <View
+                            style={
+                                styles.listaVazia
+                            }
+                        >
+                            <Text
+                                style={
+                                    styles.listaVaziaTexto
+                                }
+                            >
+                                Nenhuma outra
+                                aula agendada.
                             </Text>
                         </View>
                     )}
@@ -390,37 +606,71 @@ export default function HomeScreen() {
                     MEUS INSTRUMENTOS
                 ========================= */}
 
-                <View style={styles.secao}>
-                    <View style={styles.secaoHeader}>
+                <View
+                    style={styles.secao}
+                >
+                    <View
+                        style={
+                            styles.secaoHeader
+                        }
+                    >
                         <View>
-                            <Text style={styles.secaoTitulo}>
+                            <Text
+                                style={
+                                    styles.secaoTitulo
+                                }
+                            >
                                 Meus instrumentos
 
-                                {usuario?.instrumentos?.length ? (
+                                {usuario
+                                    ?.instrumentos
+                                    ?.length ? (
                                     <Text
-                                        style={styles.secaoContador}
+                                        style={
+                                            styles.secaoContador
+                                        }
                                     >
-                                        {'  ·  '}
-                                        {usuario.instrumentos.length}
+                                        {
+                                            '  ·  '
+                                        }
+                                        {
+                                            usuario
+                                                .instrumentos
+                                                .length
+                                        }
                                     </Text>
                                 ) : null}
                             </Text>
 
-                            <Text style={styles.secaoSubtitulo}>
-                                Seus níveis atuais
+                            <Text
+                                style={
+                                    styles.secaoSubtitulo
+                                }
+                            >
+                                Seus níveis
+                                atuais
                             </Text>
                         </View>
 
                         <TouchableOpacity
-                            style={styles.botaoEditarInstrumentos}
-                            activeOpacity={0.8}
+                            style={
+                                styles.botaoEditarInstrumentos
+                            }
+                            activeOpacity={
+                                0.8
+                            }
                             onPress={() =>
-                                router.push({
-                                    pathname: '/instrument',
-                                    params: {
-                                        modoEdicao: 'true',
-                                    },
-                                })
+                                router.push(
+                                    {
+                                        pathname:
+                                            '/instrument',
+
+                                        params: {
+                                            modoEdicao:
+                                                'true',
+                                        },
+                                    }
+                                )
                             }
                         >
                             <MaterialCommunityIcons
@@ -439,13 +689,23 @@ export default function HomeScreen() {
                         </TouchableOpacity>
                     </View>
 
-                    {usuario?.instrumentos?.length ? (
-                        <View style={styles.instrumentosLista}>
+                    {usuario?.instrumentos
+                        ?.length ? (
+                        <View
+                            style={
+                                styles.instrumentosLista
+                            }
+                        >
                             {usuario.instrumentos.map(
-                                (instrumento, index) => (
+                                (
+                                    instrumento,
+                                    index
+                                ) => (
                                     <InstrumentoCard
                                         key={`${instrumento.instrumento}-${index}`}
-                                        instrumento={instrumento}
+                                        instrumento={
+                                            instrumento
+                                        }
                                         onPress={() =>
                                             router.push(
                                                 '/agendamento'
@@ -456,19 +716,27 @@ export default function HomeScreen() {
                             )}
                         </View>
                     ) : (
-                        <View style={styles.instrumentosVazio}>
+                        <View
+                            style={
+                                styles.instrumentosVazio
+                            }
+                        >
                             <Text
                                 style={
                                     styles.instrumentosVazioTexto
                                 }
                             >
-                                Você ainda não possui instrumentos
+                                Você ainda não
+                                possui
+                                instrumentos
                                 cadastrados.
                             </Text>
 
                             <TouchableOpacity
                                 onPress={() =>
-                                    router.push('/instrument')
+                                    router.push(
+                                        '/instrument'
+                                    )
                                 }
                             >
                                 <Text
@@ -476,7 +744,8 @@ export default function HomeScreen() {
                                         styles.instrumentosVazioLink
                                     }
                                 >
-                                    Adicionar instrumento
+                                    Adicionar
+                                    instrumento
                                 </Text>
                             </TouchableOpacity>
                         </View>

@@ -12,18 +12,29 @@ import {
 } from 'react-native';
 
 import { getInstrumentIcon } from '../../constants/InstrumentIcons';
+
 import {
     formatarEnderecoCompleto,
     gerarLinkGoogleMaps,
 } from '../../utils/endereco';
+
 import { formatarDataBrasilia } from '../HomeScreen/formatters';
+
 import { styles } from './ProfessorHomeScreen.styles';
-import { AgendamentoProfessor } from './types';
+
+import {
+    AgendamentoProfessor,
+} from './types';
 
 interface AulaAlunoCardProps {
     aula: AgendamentoProfessor;
+
     destaque?: boolean;
+
     cancelando?: boolean;
+
+    onRemarcar?: () => void;
+
     onCancelar?: () => void;
 }
 
@@ -31,11 +42,13 @@ export function AulaAlunoCard({
     aula,
     destaque = false,
     cancelando = false,
+    onRemarcar,
     onCancelar,
 }: AulaAlunoCardProps) {
-    const icone = getInstrumentIcon(
-        aula.instrumento.name
-    );
+    const icone =
+        getInstrumentIcon(
+            aula.instrumento.name
+        );
 
     const dataFormatada =
         formatarDataBrasilia(
@@ -52,14 +65,26 @@ export function AulaAlunoCard({
             aula.usuario
         );
 
+    // ----------------------------------------------------
+    // MAPA
+    // ----------------------------------------------------
+
     function handleAbrirMapa() {
         if (linkMaps) {
-            Linking.openURL(linkMaps);
+            Linking.openURL(
+                linkMaps
+            );
         }
     }
 
+    // ----------------------------------------------------
+    // WHATSAPP
+    // ----------------------------------------------------
+
     async function falarComAluno() {
-        if (!aula.usuario.phone) {
+        if (
+            !aula.usuario.phone
+        ) {
             return;
         }
 
@@ -70,7 +95,9 @@ export function AulaAlunoCard({
             );
 
         const telefoneWhatsApp =
-            telefone.startsWith('55')
+            telefone.startsWith(
+                '55'
+            )
                 ? telefone
                 : `55${telefone}`;
 
@@ -92,7 +119,9 @@ export function AulaAlunoCard({
             )}`;
 
         try {
-            await Linking.openURL(url);
+            await Linking.openURL(
+                url
+            );
         } catch (error) {
             console.error(
                 'Erro ao abrir WhatsApp:',
@@ -105,10 +134,13 @@ export function AulaAlunoCard({
         <View
             style={[
                 styles.aulaCard,
+
                 destaque &&
                 styles.aulaCardDestaque,
             ]}
         >
+            {/* BADGE */}
+
             {destaque && (
                 <View
                     style={
@@ -131,24 +163,36 @@ export function AulaAlunoCard({
                 </View>
             )}
 
+            {/* ================================= */}
+
             {/* INSTRUMENTO */}
 
+            {/* ================================= */}
+
             <View
-                style={styles.aulaTopo}
+                style={
+                    styles.aulaTopo
+                }
             >
                 <View
-                    style={styles.aulaIcone}
+                    style={
+                        styles.aulaIcone
+                    }
                 >
                     {icone.familia ===
                         'material' ? (
                         <MaterialCommunityIcons
-                            name={icone.nome}
+                            name={
+                                icone.nome
+                            }
                             size={24}
                             color="#093373"
                         />
                     ) : (
                         <FontAwesome5
-                            name={icone.nome}
+                            name={
+                                icone.nome
+                            }
                             size={22}
                             color="#093373"
                         />
@@ -156,7 +200,9 @@ export function AulaAlunoCard({
                 </View>
 
                 <View
-                    style={styles.aulaInfo}
+                    style={
+                        styles.aulaInfo
+                    }
                 >
                     <Text
                         style={
@@ -164,7 +210,8 @@ export function AulaAlunoCard({
                         }
                     >
                         {
-                            aula.instrumento
+                            aula
+                                .instrumento
                                 .name
                         }
                     </Text>
@@ -174,12 +221,20 @@ export function AulaAlunoCard({
                             styles.aulaNivel
                         }
                     >
-                        {aula.nivel.name}
+                        {
+                            aula
+                                .nivel
+                                .name
+                        }
                     </Text>
                 </View>
             </View>
 
+            {/* ================================= */}
+
             {/* DETALHES */}
+
+            {/* ================================= */}
 
             <View
                 style={
@@ -204,9 +259,13 @@ export function AulaAlunoCard({
                             styles.aulaTexto
                         }
                     >
-                        {dataFormatada.data}{' '}
+                        {
+                            dataFormatada.data
+                        }{' '}
                         às{' '}
-                        {dataFormatada.hora}
+                        {
+                            dataFormatada.hora
+                        }
                     </Text>
                 </View>
 
@@ -228,7 +287,10 @@ export function AulaAlunoCard({
                             styles.aulaTexto
                         }
                     >
-                        {aula.usuario.name}
+                        {
+                            aula.usuario
+                                .name
+                        }
                     </Text>
                 </View>
 
@@ -252,7 +314,8 @@ export function AulaAlunoCard({
                             }
                         >
                             {
-                                aula.usuario
+                                aula
+                                    .usuario
                                     .phone
                             }
                         </Text>
@@ -295,15 +358,23 @@ export function AulaAlunoCard({
                             style={
                                 styles.aulaTexto
                             }
-                            numberOfLines={2}
+                            numberOfLines={
+                                2
+                            }
                         >
-                            {enderecoTexto}
+                            {
+                                enderecoTexto
+                            }
                         </Text>
                     </View>
                 )}
             </View>
 
+            {/* ================================= */}
+
             {/* MAPA */}
+
+            {/* ================================= */}
 
             {linkMaps && (
                 <TouchableOpacity
@@ -334,7 +405,48 @@ export function AulaAlunoCard({
                 </TouchableOpacity>
             )}
 
+            {/* ================================= */}
+
+            {/* REMARCAR */}
+
+            {/* ================================= */}
+
+            {onRemarcar && (
+                <TouchableOpacity
+                    style={
+                        styles.botaoRemarcarAula
+                    }
+                    activeOpacity={
+                        0.85
+                    }
+                    onPress={
+                        onRemarcar
+                    }
+                    disabled={
+                        cancelando
+                    }
+                >
+                    <MaterialCommunityIcons
+                        name="calendar-sync-outline"
+                        size={17}
+                        color="#093373"
+                    />
+
+                    <Text
+                        style={
+                            styles.botaoRemarcarAulaTexto
+                        }
+                    >
+                        Remarcar aula
+                    </Text>
+                </TouchableOpacity>
+            )}
+
+            {/* ================================= */}
+
             {/* CANCELAR */}
+
+            {/* ================================= */}
 
             {onCancelar && (
                 <TouchableOpacity
@@ -360,7 +472,9 @@ export function AulaAlunoCard({
                         <>
                             <MaterialCommunityIcons
                                 name="close-circle-outline"
-                                size={16}
+                                size={
+                                    16
+                                }
                                 color="#B42318"
                             />
 

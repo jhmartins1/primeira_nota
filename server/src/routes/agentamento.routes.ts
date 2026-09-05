@@ -3,12 +3,25 @@ import { Router } from 'express';
 import { clerkAuthMiddleware } from '../middlewares/clerkAuth';
 
 import { CreateAgendamentoController } from '../controllers/Agendamento/CreateAgendamentoController';
+
 import { GetAgendamentosController } from '../controllers/Agendamento/GetAgendamentosController';
+
 import { GetDisponibilidadeController } from '../controllers/Agendamento/GetDisponibilidadeController';
+
 import { CancelarAgendamentoController } from '../controllers/Agendamento/CancelarAgendamentoController';
+
 import { GetAgendamentosProfessorController } from '../controllers/Agendamento/GetAgendamentosProfessorController';
 
-const agendamentoRoutes = Router();
+import { RemarcarAgendamentoController } from '../controllers/Agendamento/RemarcarAgendamentoController';
+
+import { RemarcarAgendamentoProfessorController } from '../controllers/Agendamento/RemarcarAgendamentoProfessorController';
+
+const agendamentoRoutes =
+    Router();
+
+// ----------------------------------------------------
+// CONTROLLERS
+// ----------------------------------------------------
 
 const getAgendamentosProfessorController =
     new GetAgendamentosProfessorController();
@@ -25,44 +38,114 @@ const getAgendamentosController =
 const cancelarAgendamentoController =
     new CancelarAgendamentoController();
 
-// Buscar horários disponíveis
+const remarcarAgendamentoController =
+    new RemarcarAgendamentoController();
+
+const remarcarAgendamentoProfessorController =
+    new RemarcarAgendamentoProfessorController();
+
+// ----------------------------------------------------
+// DISPONIBILIDADE
+// ----------------------------------------------------
+
 agendamentoRoutes.get(
     '/disponibilidade',
     clerkAuthMiddleware,
     (req, res) =>
-        getDisponibilidadeController.handle(req, res)
+        getDisponibilidadeController.handle(
+            req,
+            res
+        )
 );
 
-// Buscar agendamentos do professor logado
+// ----------------------------------------------------
+// AGENDAMENTOS DO PROFESSOR
+// ----------------------------------------------------
+
 agendamentoRoutes.get(
     '/professor',
     clerkAuthMiddleware,
-    (req, res) => getAgendamentosProfessorController.handle(req, res)
+    (req, res) =>
+        getAgendamentosProfessorController.handle(
+            req,
+            res
+        )
 );
 
+// ----------------------------------------------------
+// AGENDAMENTOS DO ALUNO
+// ----------------------------------------------------
 
-// Buscar agendamentos
 agendamentoRoutes.get(
     '/',
     clerkAuthMiddleware,
     (req, res) =>
-        getAgendamentosController.handle(req, res)
+        getAgendamentosController.handle(
+            req,
+            res
+        )
 );
 
-// Criar agendamento
+// ----------------------------------------------------
+// CRIAR AGENDAMENTO
+// ----------------------------------------------------
+
 agendamentoRoutes.post(
     '/',
     clerkAuthMiddleware,
     (req, res) =>
-        createAgendamentoController.handle(req, res)
+        createAgendamentoController.handle(
+            req,
+            res
+        )
 );
 
-// Cancelar agendamento
+// ----------------------------------------------------
+// REMARCAR AGENDAMENTO - ALUNO
+// ----------------------------------------------------
+
+agendamentoRoutes.patch(
+    '/:id/remarcar',
+    clerkAuthMiddleware,
+    (req, res) =>
+        remarcarAgendamentoController.handle(
+            req,
+            res
+        )
+);
+
+// ----------------------------------------------------
+// REMARCAR AGENDAMENTO - PROFESSOR
+// ----------------------------------------------------
+
+agendamentoRoutes.patch(
+    '/:id/remarcar-professor',
+    clerkAuthMiddleware,
+    (req, res) =>
+        remarcarAgendamentoProfessorController.handle(
+            req,
+            res
+        )
+);
+
+// ----------------------------------------------------
+// CANCELAR AGENDAMENTO
+// ----------------------------------------------------
+
 agendamentoRoutes.patch(
     '/:id/cancelar',
     clerkAuthMiddleware,
     (req, res) =>
-        cancelarAgendamentoController.handle(req, res)
+        cancelarAgendamentoController.handle(
+            req,
+            res
+        )
 );
 
-export { agendamentoRoutes };
+// ----------------------------------------------------
+// EXPORT
+// ----------------------------------------------------
+
+export {
+    agendamentoRoutes,
+};

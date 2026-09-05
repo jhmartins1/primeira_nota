@@ -25,12 +25,14 @@ interface ProximaAulaCardProps {
     aula: Agendamento;
     cancelando: boolean;
     onCancelar: () => void;
+    onRemarcar: () => void;
 }
 
 export function ProximaAulaCard({
     aula,
     cancelando,
     onCancelar,
+    onRemarcar,
 }: ProximaAulaCardProps) {
     const icone = getInstrumentIcon(
         aula.instrumento.name
@@ -379,6 +381,27 @@ export function ProximaAulaCard({
                     </Text>
                 </TouchableOpacity>
             )}
+
+            <TouchableOpacity
+                style={styles.botaoRemarcarAula}
+                activeOpacity={0.8}
+                disabled={cancelando}
+                onPress={onRemarcar}
+            >
+                <MaterialCommunityIcons
+                    name="calendar-sync-outline"
+                    size={18}
+                    color="#093373"
+                />
+
+                <Text
+                    style={
+                        styles.botaoRemarcarAulaTexto
+                    }
+                >
+                    Remarcar aula
+                </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
                 style={
