@@ -51,10 +51,11 @@ model Nivel {
 }
 
 model UsuarioInstrumento {
-    id            Int @id @default(autoincrement())
-    usuarioId     Int
-    instrumentoId Int
-    nivelId       Int
+    id                Int     @id @default(autoincrement())
+    usuarioId         Int
+    instrumentoId     Int
+    nivelId           Int
+    possuiInstrumento Boolean @default(false)
 
     usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
     instrumento Instrumento @relation(fields: [instrumentoId], references: [id])

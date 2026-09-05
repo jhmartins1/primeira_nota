@@ -1,8 +1,12 @@
 export const instrumentConstants = {
     INSTRUMENTOS: [
         'Violão',
-        'Teclado',
         'Guitarra',
+        'Teclado',
+        'Piano',
         'Bateria',
+        'Baixo',
+        'Ukulele',
+        'Flauta',
     ],
 };

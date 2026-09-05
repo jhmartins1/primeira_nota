@@ -5,7 +5,10 @@ import {
   useRouter,
 } from 'expo-router';
 
-import { useMemo, useState } from 'react';
+import {
+  useMemo,
+  useState,
+} from 'react';
 
 import {
   ActivityIndicator,
@@ -29,94 +32,153 @@ import { styles } from './LevelScreen.styles';
 
 const NIVEIS = LevelConstants.NIVEIS;
 
-const ESTRELAS = ['★', '★★', '★★★'];
+const ESTRELAS = [
+  '★',
+  '★★',
+  '★★★',
+];
 
-type TipoConta = 'usuario' | 'professor';
+type TipoConta =
+  | 'usuario'
+  | 'professor';
 
 type NiveisExistentes = Record<
   string,
   string | string[]
 >;
 
-export function LevelScreen() {
-  const router = useRouter();
+type InstrumentosPossuidos = Record<
+  string,
+  boolean
+>;
 
-  const { getToken } = useAuth();
+export function LevelScreen() {
+  const router =
+    useRouter();
+
+  const {
+    getToken,
+  } =
+    useAuth();
 
   const {
     instrumentos,
     niveisExistentes,
+    instrumentosPossuidos,
     modoEdicao,
-    tipoConta: tipoContaParam,
-  } = useLocalSearchParams<{
-    instrumentos?: string;
-    niveisExistentes?: string;
-    modoEdicao?: string;
-    tipoConta?: string;
-  }>();
+    tipoConta:
+    tipoContaParam,
+  } =
+    useLocalSearchParams<{
+      instrumentos?: string;
 
-  const tipoConta: TipoConta =
-    tipoContaParam === 'professor'
+      niveisExistentes?: string;
+
+      instrumentosPossuidos?: string;
+
+      modoEdicao?: string;
+
+      tipoConta?: string;
+    }>();
+
+  const tipoConta:
+    TipoConta =
+    tipoContaParam ===
+      'professor'
       ? 'professor'
       : 'usuario';
 
-  /*
-  ========================================
-  LISTA DE INSTRUMENTOS
-  ========================================
-  */
+  // ========================================
+  // LISTA DE INSTRUMENTOS
+  // ========================================
 
-  const listaInstrumentos = useMemo<string[]>(() => {
-    if (!instrumentos) {
-      return [];
-    }
-
-    try {
-      const parsed = JSON.parse(instrumentos);
-
-      if (!Array.isArray(parsed)) {
+  const listaInstrumentos =
+    useMemo<
+      string[]
+    >(() => {
+      if (
+        !instrumentos
+      ) {
         return [];
       }
 
-      const instrumentosValidos = parsed.filter(
-        (item): item is string =>
-          typeof item === 'string'
-      );
+      try {
+        const parsed =
+          JSON.parse(
+            instrumentos
+          );
 
-      return Array.from(
-        new Set(instrumentosValidos)
-      );
-    } catch (error) {
-      console.error(
-        'Erro ao interpretar instrumentos:',
-        error
-      );
+        if (
+          !Array.isArray(
+            parsed
+          )
+        ) {
+          return [];
+        }
 
-      return [];
-    }
-  }, [instrumentos]);
+        const instrumentosValidos =
+          parsed.filter(
+            (
+              item
+            ): item is string =>
+              typeof item ===
+              'string'
+          );
 
-  //NÍVEIS INICIAIS
+        return Array.from(
+          new Set(
+            instrumentosValidos
+          )
+        );
+      } catch (
+      error
+      ) {
+        console.error(
+          'Erro ao interpretar instrumentos:',
+          error
+        );
+
+        return [];
+      }
+    }, [
+      instrumentos,
+    ]);
+
+  // ========================================
+  // NÍVEIS INICIAIS
+  // ========================================
+
   const niveisIniciais =
-    useMemo<NiveisExistentes>(() => {
-      if (!niveisExistentes) {
+    useMemo<
+      NiveisExistentes
+    >(() => {
+      if (
+        !niveisExistentes
+      ) {
         return {};
       }
 
       try {
         const parsed =
-          JSON.parse(niveisExistentes);
+          JSON.parse(
+            niveisExistentes
+          );
 
         if (
           !parsed ||
-          typeof parsed !== 'object' ||
-          Array.isArray(parsed)
+          typeof parsed !==
+          'object' ||
+          Array.isArray(
+            parsed
+          )
         ) {
           return {};
         }
 
         return parsed;
-      } catch (error) {
+      } catch (
+      error
+      ) {
         console.error(
           'Erro ao interpretar níveis existentes:',
           error
@@ -124,183 +186,410 @@ export function LevelScreen() {
 
         return {};
       }
-    }, [niveisExistentes]);
+    }, [
+      niveisExistentes,
+    ]);
 
-  const [niveis, setNiveis] =
-    useState<NiveisExistentes>(
+  // ========================================
+  // INSTRUMENTOS QUE O ALUNO POSSUI
+  // ========================================
+
+  const instrumentosPossuidosParseados =
+    useMemo<
+      InstrumentosPossuidos
+    >(() => {
+      // Professor não possui essa informação.
+      if (
+        tipoConta !==
+        'usuario' ||
+        !instrumentosPossuidos
+      ) {
+        return {};
+      }
+
+      try {
+        const parsed =
+          JSON.parse(
+            instrumentosPossuidos
+          );
+
+        if (
+          !parsed ||
+          typeof parsed !==
+          'object' ||
+          Array.isArray(
+            parsed
+          )
+        ) {
+          return {};
+        }
+
+        const resultado:
+          InstrumentosPossuidos =
+          {};
+
+        for (
+          const [
+            instrumento,
+            possui,
+          ] of Object.entries(
+            parsed
+          )
+        ) {
+          if (
+            typeof possui ===
+            'boolean'
+          ) {
+            resultado[
+              instrumento
+            ] =
+              possui;
+          }
+        }
+
+        return resultado;
+      } catch (
+      error
+      ) {
+        console.error(
+          'Erro ao interpretar instrumentos possuídos:',
+          error
+        );
+
+        return {};
+      }
+    }, [
+      instrumentosPossuidos,
+      tipoConta,
+    ]);
+
+  // ========================================
+  // ESTADOS
+  // ========================================
+
+  const [
+    niveis,
+    setNiveis,
+  ] =
+    useState<
+      NiveisExistentes
+    >(
       niveisIniciais
     );
 
-  const [salvando, setSalvando] =
-    useState(false);
+  const [
+    salvando,
+    setSalvando,
+  ] =
+    useState(
+      false
+    );
 
-  //PROFESSOR
+  // ========================================
+  // PROFESSOR
+  // ========================================
+
   function alternarNivelProfessor(
     instrumento: string,
     nivel: string
   ) {
-    setNiveis((prev) => {
-      const atuais = Array.isArray(
-        prev[instrumento]
-      )
-        ? prev[instrumento]
-        : prev[instrumento]
-          ? [prev[instrumento] as string]
-          : [];
+    setNiveis(
+      (
+        prev
+      ) => {
+        const valorAtual =
+          prev[
+          instrumento
+          ];
 
-      const jaSelecionado =
-        atuais.includes(nivel);
+        const atuais =
+          Array.isArray(
+            valorAtual
+          )
+            ? valorAtual
+            : valorAtual
+              ? [
+                valorAtual,
+              ]
+              : [];
 
-      const novosNiveis = jaSelecionado
-        ? atuais.filter(
-          (item) => item !== nivel
-        )
-        : [...atuais, nivel];
+        const jaSelecionado =
+          atuais.includes(
+            nivel
+          );
 
-      return {
-        ...prev,
-        [instrumento]: novosNiveis,
-      };
-    });
+        const novosNiveis =
+          jaSelecionado
+            ? atuais.filter(
+              (
+                item
+              ) =>
+                item !==
+                nivel
+            )
+            : [
+              ...atuais,
+              nivel,
+            ];
+
+        return {
+          ...prev,
+
+          [instrumento]:
+            novosNiveis,
+        };
+      }
+    );
   }
 
-  //ALUNO
+  // ========================================
+  // ALUNO
+  // ========================================
+
   function selecionarNivelAluno(
     instrumento: string,
     nivel: string
   ) {
-    setNiveis((prev) => ({
-      ...prev,
-      [instrumento]: nivel,
-    }));
+    setNiveis(
+      (
+        prev
+      ) => ({
+        ...prev,
+
+        [instrumento]:
+          nivel,
+      })
+    );
   }
 
-  //VERIFICA SE NÍVEL ESTÁ SELECIONADO
+  // ========================================
+  // VERIFICA SE NÍVEL ESTÁ SELECIONADO
+  // ========================================
+
   function nivelSelecionado(
     instrumento: string,
     nivel: string
   ) {
-    const valor = niveis[instrumento];
+    const valor =
+      niveis[
+      instrumento
+      ];
 
-    if (tipoConta === 'professor') {
+    if (
+      tipoConta ===
+      'professor'
+    ) {
       return (
-        Array.isArray(valor) &&
-        valor.includes(nivel)
+        Array.isArray(
+          valor
+        ) &&
+        valor.includes(
+          nivel
+        )
       );
     }
 
-    return valor === nivel;
+    return (
+      valor ===
+      nivel
+    );
   }
 
-  //QUANTIDADE DE INSTRUMENTOS PREENCHIDOS
+  // ========================================
+  // QUANTIDADE PREENCHIDA
+  // ========================================
+
   const quantidadePreenchida =
     listaInstrumentos.filter(
-      (instrumento) => {
+      (
+        instrumento
+      ) => {
         const valor =
-          niveis[instrumento];
+          niveis[
+          instrumento
+          ];
 
         if (
-          tipoConta === 'professor'
+          tipoConta ===
+          'professor'
         ) {
           return (
-            Array.isArray(valor) &&
-            valor.length > 0
+            Array.isArray(
+              valor
+            ) &&
+            valor.length >
+            0
           );
         }
 
         return (
-          typeof valor === 'string' &&
-          valor.length > 0
+          typeof valor ===
+          'string' &&
+          valor.length >
+          0
         );
       }
     ).length;
 
-  /*
-  ========================================
-  PODE CONTINUAR
-  ========================================
-  */
+  // ========================================
+  // PODE CONTINUAR
+  // ========================================
 
   const podeContinuar =
-    listaInstrumentos.length > 0 &&
+    listaInstrumentos.length >
+    0 &&
     listaInstrumentos.every(
-      (instrumento) => {
+      (
+        instrumento
+      ) => {
         const valor =
-          niveis[instrumento];
+          niveis[
+          instrumento
+          ];
 
         if (
-          tipoConta === 'professor'
+          tipoConta ===
+          'professor'
         ) {
           return (
-            Array.isArray(valor) &&
-            valor.length > 0
+            Array.isArray(
+              valor
+            ) &&
+            valor.length >
+            0
           );
         }
 
         return (
-          typeof valor === 'string' &&
-          valor.length > 0
+          typeof valor ===
+          'string' &&
+          valor.length >
+          0
         );
       }
     );
 
+  // ========================================
+  // SALVAR
+  // ========================================
 
-  //SALVAR
   async function handleContinuar() {
-    if (!podeContinuar || salvando) {
+    if (
+      !podeContinuar ||
+      salvando
+    ) {
       return;
     }
 
-    setSalvando(true);
+    setSalvando(
+      true
+    );
 
     try {
       const selecaoFinal: {
-        instrumento: string;
-        nivel: string;
-      }[] = [];
+        instrumento:
+        string;
 
-      for (const instrumento of listaInstrumentos) {
+        nivel:
+        string;
+
+        possuiInstrumento?:
+        boolean;
+      }[] =
+        [];
+
+      for (
+        const instrumento of
+        listaInstrumentos
+      ) {
         const valor =
-          niveis[instrumento];
+          niveis[
+          instrumento
+          ];
+
+        // ========================================
+        // PROFESSOR
+        // ========================================
 
         if (
-          tipoConta === 'professor'
+          tipoConta ===
+          'professor'
         ) {
           const niveisProfessor =
-            Array.isArray(valor)
+            Array.isArray(
+              valor
+            )
               ? valor
               : valor
-                ? [valor]
+                ? [
+                  valor,
+                ]
                 : [];
 
-          for (const nivel of niveisProfessor) {
-            selecaoFinal.push({
-              instrumento,
-              nivel,
-            });
-          }
-        } else {
-          if (
-            typeof valor === 'string'
+          for (
+            const nivel of
+            niveisProfessor
           ) {
-            selecaoFinal.push({
-              instrumento,
-              nivel: valor,
-            });
+            selecaoFinal.push(
+              {
+                instrumento,
+
+                nivel,
+              }
+            );
+          }
+        }
+
+        // ========================================
+        // ALUNO
+        // ========================================
+
+        else {
+          if (
+            typeof valor ===
+            'string'
+          ) {
+            selecaoFinal.push(
+              {
+                instrumento,
+
+                nivel:
+                  valor,
+
+                possuiInstrumento:
+                  instrumentosPossuidosParseados[
+                  instrumento
+                  ] ===
+                  true,
+              }
+            );
           }
         }
       }
 
-      const token = await getToken();
+      console.log(
+        'INSTRUMENTOS PARA SALVAR:',
+        JSON.stringify(
+          selecaoFinal,
+          null,
+          2
+        )
+      );
 
-      if (!token) {
+      const token =
+        await getToken();
+
+      if (
+        !token
+      ) {
         throw new Error(
           'Token não encontrado'
         );
       }
 
       const endpoint =
-        tipoConta === 'professor'
+        tipoConta ===
+          'professor'
           ? '/professor/instrumentos'
           : '/usuario/instrumentos';
 
@@ -308,82 +597,118 @@ export function LevelScreen() {
         process.env
           .EXPO_PUBLIC_API_URL;
 
-      if (!API_URL) {
+      if (
+        !API_URL
+      ) {
         throw new Error(
           'EXPO_PUBLIC_API_URL não configurada.'
         );
       }
 
-      const response = await fetch(
-        `${API_URL}${endpoint}`,
-        {
-          method: 'POST',
+      const response =
+        await fetch(
+          `${API_URL}${endpoint}`,
+          {
+            method:
+              'POST',
 
-          headers: {
-            'Content-Type':
-              'application/json',
+            headers:
+            {
+              'Content-Type':
+                'application/json',
 
-            Authorization:
-              `Bearer ${token}`,
-          },
+              Authorization:
+                `Bearer ${token}`,
+            },
 
-          body: JSON.stringify({
-            instrumentos:
-              selecaoFinal,
-          }),
-        }
-      );
+            body:
+              JSON.stringify(
+                {
+                  instrumentos:
+                    selecaoFinal,
+                }
+              ),
+          }
+        );
 
       const texto =
         await response.text();
 
-      if (!response.ok) {
+      if (
+        !response.ok
+      ) {
         throw new Error(
           `Erro ${response.status}: ${texto}`
         );
       }
 
-      try {
-        JSON.parse(texto);
-      } catch {
-        throw new Error(
-          `Backend não retornou JSON: ${texto}`
-        );
+      if (
+        texto
+      ) {
+        try {
+          JSON.parse(
+            texto
+          );
+        } catch {
+          throw new Error(
+            `Backend não retornou JSON: ${texto}`
+          );
+        }
       }
 
       if (
-        tipoConta === 'professor'
+        tipoConta ===
+        'professor'
       ) {
         router.replace(
           '/professor'
         );
       } else {
-        router.replace('/home');
+        router.replace(
+          '/home'
+        );
       }
-    } catch (error) {
+    } catch (
+    error
+    ) {
       console.error(
         `Erro ao salvar instrumentos do ${tipoConta}:`,
         error
       );
     } finally {
-      setSalvando(false);
+      setSalvando(
+        false
+      );
     }
   }
 
-  //NENHUM INSTRUMENTO
+  // ========================================
+  // NENHUM INSTRUMENTO
+  // ========================================
+
   if (
-    listaInstrumentos.length === 0
+    listaInstrumentos.length ===
+    0
   ) {
     return (
       <SafeAreaView
-        style={styles.safeArea}
-        edges={['top', 'bottom']}
+        style={
+          styles.safeArea
+        }
+        edges={[
+          'top',
+          'bottom',
+        ]}
       >
         <View
-          style={styles.container}
+          style={
+            styles.container
+          }
         >
           <View
-            style={styles.header}
+            style={
+              styles.header
+            }
           >
             <TouchableOpacity
               style={
@@ -392,7 +717,9 @@ export function LevelScreen() {
               onPress={() =>
                 router.back()
               }
-              activeOpacity={0.7}
+              activeOpacity={
+                0.7
+              }
             >
               <Text
                 style={
@@ -428,7 +755,8 @@ export function LevelScreen() {
                 styles.vazioTitulo
               }
             >
-              Nenhum instrumento
+              Nenhum
+              instrumento
               selecionado
             </Text>
 
@@ -437,37 +765,48 @@ export function LevelScreen() {
                 styles.vazioTexto
               }
             >
-              Selecione pelo menos um
-              instrumento para escolher
-              seus níveis.
+              Selecione
+              pelo menos
+              um
+              instrumento
+              para
+              escolher
+              seus
+              níveis.
             </Text>
 
             <TouchableOpacity
               onPress={() =>
-                router.replace({
-                  pathname:
-                    '/instrument',
+                router.replace(
+                  {
+                    pathname:
+                      '/instrument',
 
-                  params: {
-                    modoEdicao:
-                      modoEdicao ??
-                      'false',
+                    params:
+                    {
+                      modoEdicao:
+                        modoEdicao ??
+                        'false',
 
-                    tipoConta,
-                  },
-                })
+                      tipoConta,
+                    },
+                  }
+                )
               }
               style={
                 styles.botaoSelecionarInstrumentos
               }
-              activeOpacity={0.8}
+              activeOpacity={
+                0.8
+              }
             >
               <Text
                 style={
                   styles.botaoSelecionarInstrumentosTexto
                 }
               >
-                Selecionar instrumentos
+                Selecionar
+                instrumentos
               </Text>
             </TouchableOpacity>
           </View>
@@ -476,25 +815,50 @@ export function LevelScreen() {
     );
   }
 
+  // ========================================
+  // TELA PRINCIPAL
+  // ========================================
+
   return (
     <SafeAreaView
-      style={styles.safeArea}
-      edges={['top', 'bottom']}
+      style={
+        styles.safeArea
+      }
+      edges={[
+        'top',
+        'bottom',
+      ]}
     >
-      <View style={styles.container}>
+      <View
+        style={
+          styles.container
+        }
+      >
         {/* HEADER */}
 
-        <View style={styles.header}>
+        <View
+          style={
+            styles.header
+          }
+        >
           <TouchableOpacity
-            style={styles.botaoVoltar}
+            style={
+              styles.botaoVoltar
+            }
             onPress={() =>
               router.back()
             }
-            activeOpacity={0.7}
-            disabled={salvando}
+            activeOpacity={
+              0.7
+            }
+            disabled={
+              salvando
+            }
           >
             <Text
-              style={styles.seta}
+              style={
+                styles.seta
+              }
             >
               ‹
             </Text>
@@ -527,9 +891,12 @@ export function LevelScreen() {
             }
           >
             <Text
-              style={styles.titulo}
+              style={
+                styles.titulo
+              }
             >
-              Qual é o seu nível?
+              Qual é o
+              seu nível?
             </Text>
 
             <Text
@@ -561,7 +928,8 @@ export function LevelScreen() {
                   styles.progressoTexto
                 }
               >
-                Seus instrumentos
+                Seus
+                instrumentos
               </Text>
 
               <Text
@@ -587,13 +955,17 @@ export function LevelScreen() {
               <View
                 style={[
                   styles.progressoPreenchido,
+
                   {
-                    width: `${listaInstrumentos.length >
-                      0
-                      ? (quantidadePreenchida /
-                        listaInstrumentos.length) *
-                      100
-                      : 0
+                    width:
+                      `${listaInstrumentos.length >
+                        0
+                        ? (
+                          quantidadePreenchida /
+                          listaInstrumentos.length
+                        ) *
+                        100
+                        : 0
                       }%`,
                   },
                 ]}
@@ -609,7 +981,9 @@ export function LevelScreen() {
             }
           >
             {listaInstrumentos.map(
-              (instrumento) => {
+              (
+                instrumento
+              ) => {
                 const icone =
                   getInstrumentIcon(
                     instrumento
@@ -736,6 +1110,7 @@ export function LevelScreen() {
                               }
                               style={[
                                 styles.opcao,
+
                                 selecionado &&
                                 styles.opcaoSelecionada,
                               ]}
@@ -770,6 +1145,7 @@ export function LevelScreen() {
                                 <View
                                   style={[
                                     styles.estrelaContainer,
+
                                     selecionado &&
                                     styles.estrelaContainerSelecionada,
                                   ]}
@@ -777,6 +1153,7 @@ export function LevelScreen() {
                                   <Text
                                     style={[
                                       styles.estrelas,
+
                                       selecionado &&
                                       styles.estrelasSelecionadas,
                                     ]}
@@ -795,6 +1172,7 @@ export function LevelScreen() {
                                   <Text
                                     style={[
                                       styles.opcaoTexto,
+
                                       selecionado &&
                                       styles.opcaoTextoSelecionado,
                                     ]}
@@ -839,7 +1217,11 @@ export function LevelScreen() {
 
         {/* FOOTER */}
 
-        <View style={styles.footer}>
+        <View
+          style={
+            styles.footer
+          }
+        >
           <TouchableOpacity
             style={[
               styles.botaoContinuar,
@@ -855,7 +1237,9 @@ export function LevelScreen() {
             onPress={
               handleContinuar
             }
-            activeOpacity={0.8}
+            activeOpacity={
+              0.8
+            }
           >
             {salvando ? (
               <ActivityIndicator
