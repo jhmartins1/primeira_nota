@@ -28,17 +28,9 @@ interface HorarioDisponivel {
     horarios: string[];
 }
 
-const TIME_ZONE =
-    'America/Sao_Paulo';
+const TIME_ZONE = 'America/Sao_Paulo';
 
-// Procuramos disponibilidade em até 30 dias.
-// Depois retornamos somente as primeiras
-// 7 datas que realmente possuem horários.
-const LIMITE_BUSCA_DIAS =
-    30;
-
-const LIMITE_DATAS =
-    7;
+const DIAS_MAXIMOS_AGENDAMENTO = 14;
 
 export class GetDisponibilidadeService {
     async execute({
@@ -48,10 +40,7 @@ export class GetDisponibilidadeService {
     }: GetDisponibilidadeDTO): Promise<
         HorarioDisponivel[]
     > {
-        // ==========================================
-        // INSTRUMENTO
-        // ==========================================
-
+        // 1. INSTRUMENTO
         const instrumento =
             await prisma.instrumento.findUnique({
                 where: {
@@ -65,10 +54,7 @@ export class GetDisponibilidadeService {
             );
         }
 
-        // ==========================================
-        // NÍVEL
-        // ==========================================
-
+        // 2. NÍVEL
         const nivel =
             await prisma.nivel.findUnique({
                 where: {
@@ -82,11 +68,7 @@ export class GetDisponibilidadeService {
             );
         }
 
-        // ==========================================
-        // PROFESSORES QUE ENSINAM
-        // O INSTRUMENTO + NÍVEL
-        // ==========================================
-
+        // 3. PROFESSORES
         const professores =
             await prisma.professorInstrumento.findMany({
                 where: {
@@ -105,10 +87,7 @@ export class GetDisponibilidadeService {
                 },
             });
 
-        if (
-            professores.length ===
-            0
-        ) {
+        if (professores.length === 0) {
             return [];
         }
 
@@ -118,100 +97,77 @@ export class GetDisponibilidadeService {
                     item.professorId
             );
 
-        // ==========================================
-        // PERÍODO
-        // ==========================================
+        // 4. JANELA DE 14 DIAS
+        const agora = new Date();
 
-        const agora =
-            new Date();
-
-        const dataHoje =
+        const hoje =
             formatarDataSaoPaulo(
                 agora
             );
 
-        // Começa amanhã.
-        const dataAmanha =
+        const inicioData =
             adicionarDias(
-                dataHoje,
+                hoje,
+                1
+            );
+
+        const fimData =
+            adicionarDias(
+                hoje,
+                DIAS_MAXIMOS_AGENDAMENTO +
                 1
             );
 
         const inicioPeriodo =
             criarDataSaoPaulo(
-                dataAmanha,
+                inicioData,
                 '00:00'
-            );
-
-        const dataLimite =
-            adicionarDias(
-                dataAmanha,
-                LIMITE_BUSCA_DIAS
             );
 
         const fimPeriodo =
             criarDataSaoPaulo(
-                dataLimite,
+                fimData,
                 '00:00'
             );
 
-        // ==========================================
-        // DISPONIBILIDADES REAIS
-        // ==========================================
-
+        // 5. DISPONIBILIDADES
         const disponibilidades =
             await prisma.disponibilidade.findMany({
                 where: {
                     professorId: {
-                        in:
-                            professorIds,
+                        in: professorIds,
                     },
 
                     horaInicio: {
-                        gte:
-                            inicioPeriodo,
-
-                        lt:
-                            fimPeriodo,
+                        gte: inicioPeriodo,
+                        lt: fimPeriodo,
                     },
                 },
 
                 orderBy: {
-                    horaInicio:
-                        'asc',
+                    horaInicio: 'asc',
                 },
             });
 
-        // ==========================================
-        // AGENDAMENTOS JÁ OCUPADOS
-        // ==========================================
-
+        // 6. AGENDAMENTOS OCUPADOS
         const agendamentos =
             await prisma.agendamento.findMany({
                 where: {
                     professorId: {
-                        in:
-                            professorIds,
+                        in: professorIds,
                     },
 
-                    status:
-                        'AGENDADO',
+                    status: 'AGENDADO',
 
                     dataHora: {
-                        gte:
-                            inicioPeriodo,
-
-                        lt:
-                            fimPeriodo,
+                        gte: inicioPeriodo,
+                        lt: fimPeriodo,
                     },
                 },
 
                 select: {
-                    professorId:
-                        true,
-
-                    dataHora:
-                        true,
+                    professorId: true,
+                    dataHora: true,
                 },
             });
 
@@ -225,46 +181,31 @@ export class GetDisponibilidadeService {
                 )
             );
 
-        // ==========================================
-        // AGRUPA PROFESSOR + DATA
-        // ==========================================
-
+        // 7. AGRUPAR
         const mapaHorarios =
             new Map<
                 string,
                 {
-                    professorId:
-                    number;
-
-                    data:
-                    string;
-
-                    horarios:
-                    Set<string>;
+                    professorId: number;
+                    data: string;
+                    horarios: Set<string>;
                 }
             >();
 
         for (
-            const disponibilidade
-            of disponibilidades
+            const disponibilidade of
+            disponibilidades
         ) {
             const inicio =
-                new Date(
-                    disponibilidade.horaInicio
-                );
+                disponibilidade.horaInicio;
 
-            // Segurança extra.
-            if (
-                inicio <= agora
-            ) {
+            if (inicio <= agora) {
                 continue;
             }
 
             const chaveOcupado =
                 `${disponibilidade.professorId}_${inicio.getTime()}`;
 
-            // Se já existe aula neste horário,
-            // não mostra para o aluno.
             if (
                 horariosOcupados.has(
                     chaveOcupado
@@ -291,56 +232,14 @@ export class GetDisponibilidadeService {
             );
         }
 
-        // ==========================================
-        // DESCOBRE AS PRIMEIRAS 7 DATAS
-        // QUE REALMENTE TÊM DISPONIBILIDADE
-        //
-        // NÃO IMPORTA SE É:
-        // SEGUNDA / SÁBADO / DOMINGO
-        // ==========================================
-
-        const datasDisponiveis =
-            Array.from(
-                new Set(
-                    Array.from(
-                        mapaHorarios.values()
-                    ).map(
-                        (grupo) =>
-                            grupo.data
-                    )
-                )
-            )
-                .sort()
-                .slice(
-                    0,
-                    LIMITE_DATAS
-                );
-
-        const datasPermitidas =
-            new Set(
-                datasDisponiveis
-            );
-
-        // ==========================================
-        // MONTA RESPOSTA
-        // ==========================================
-
         const resultado:
             HorarioDisponivel[] =
             [];
 
         for (
-            const grupo
-            of mapaHorarios.values()
+            const grupo of
+            mapaHorarios.values()
         ) {
-            if (
-                !datasPermitidas.has(
-                    grupo.data
-                )
-            ) {
-                continue;
-            }
-
             const professor =
                 professores.find(
                     (item) =>
@@ -353,40 +252,30 @@ export class GetDisponibilidadeService {
             }
 
             resultado.push({
-                data:
-                    grupo.data,
+                data: grupo.data,
 
                 professor: {
                     id:
-                        professor
-                            .professor
-                            .id,
+                        professor.professor.id,
 
                     name:
-                        professor
-                            .professor
+                        professor.professor
                             .name,
 
                     image:
-                        professor
-                            .professor
+                        professor.professor
                             .image,
                 },
 
                 instrumento: {
-                    id:
-                        instrumento.id,
-
+                    id: instrumento.id,
                     name:
                         instrumento.name,
                 },
 
                 nivel: {
-                    id:
-                        nivel.id,
-
-                    name:
-                        nivel.name,
+                    id: nivel.id,
+                    name: nivel.name,
                 },
 
                 horarios:
@@ -396,10 +285,7 @@ export class GetDisponibilidadeService {
             });
         }
 
-        // ==========================================
-        // ORDENA CRONOLOGICAMENTE
-        // ==========================================
-
+        // 9. ORDENAR
         resultado.sort(
             (a, b) => {
                 const horarioA =
@@ -426,33 +312,20 @@ export class GetDisponibilidadeService {
     }
 }
 
-// ==========================================
-// ADICIONA HORÁRIO
-// ==========================================
-
+// ADICIONAR HORÁRIO
 function adicionarHorario(
     mapa: Map<
         string,
         {
-            professorId:
-            number;
-
-            data:
-            string;
-
-            horarios:
-            Set<string>;
+            professorId: number;
+            data: string;
+            horarios: Set<string>;
         }
     >,
 
-    professorId:
-        number,
-
-    data:
-        string,
-
-    horario:
-        string
+    professorId: number,
+    data: string,
+    horario: string
 ) {
     const chave =
         `${professorId}_${data}`;
@@ -482,60 +355,43 @@ function adicionarHorario(
     );
 }
 
-// ==========================================
-// DATA YYYY-MM-DD
-// ==========================================
-
+// FORMATAR DATA
 function formatarDataSaoPaulo(
     data: Date
 ): string {
     return new Intl.DateTimeFormat(
         'en-CA',
         {
-            timeZone:
-                TIME_ZONE,
+            timeZone: TIME_ZONE,
 
-            year:
-                'numeric',
+            year: 'numeric',
 
-            month:
-                '2-digit',
+            month: '2-digit',
 
-            day:
-                '2-digit',
+            day: '2-digit',
         }
     ).format(data);
 }
 
-// ==========================================
-// HORA HH:mm
-// ==========================================
-
+// FORMATAR HORÁRIO
 function formatarHoraSaoPaulo(
     data: Date
 ): string {
     return new Intl.DateTimeFormat(
         'en-GB',
         {
-            timeZone:
-                TIME_ZONE,
+            timeZone: TIME_ZONE,
 
-            hour:
-                '2-digit',
+            hour: '2-digit',
 
-            minute:
-                '2-digit',
+            minute: '2-digit',
 
-            hour12:
-                false,
+            hour12: false,
         }
     ).format(data);
 }
 
-// ==========================================
-// CRIA DATE NO HORÁRIO DE SÃO PAULO
-// ==========================================
-
+// CRIAR DATE EM SÃO PAULO
 function criarDataSaoPaulo(
     data: string,
     horario: string
@@ -545,10 +401,7 @@ function criarDataSaoPaulo(
     );
 }
 
-// ==========================================
-// SOMA DIAS EM UMA STRING YYYY-MM-DD
-// ==========================================
-
+// ADICIONAR DIAS
 function adicionarDias(
     data: string,
     quantidade: number
@@ -556,9 +409,19 @@ function adicionarDias(
     const partes =
         data.split('-');
 
+    const anoTexto =
+        partes[0];
+
+    const mesTexto =
+        partes[1];
+
+    const diaTexto =
+        partes[2];
+
     if (
-        partes.length !==
-        3
+        !anoTexto ||
+        !mesTexto ||
+        !diaTexto
     ) {
         throw new Error(
             'Data inválida.'
@@ -567,27 +430,27 @@ function adicionarDias(
 
     const ano =
         Number(
-            partes[0]
+            anoTexto
         );
 
     const mes =
         Number(
-            partes[1]
+            mesTexto
         );
 
     const dia =
         Number(
-            partes[2]
+            diaTexto
         );
 
     if (
-        Number.isNaN(
+        !Number.isInteger(
             ano
         ) ||
-        Number.isNaN(
+        !Number.isInteger(
             mes
         ) ||
-        Number.isNaN(
+        !Number.isInteger(
             dia
         )
     ) {
@@ -601,13 +464,17 @@ function adicionarDias(
             Date.UTC(
                 ano,
                 mes - 1,
-                dia +
-                quantidade,
+                dia,
                 12,
                 0,
                 0
             )
         );
+
+    dataUTC.setUTCDate(
+        dataUTC.getUTCDate() +
+        quantidade
+    );
 
     const novoAno =
         dataUTC.getUTCFullYear();

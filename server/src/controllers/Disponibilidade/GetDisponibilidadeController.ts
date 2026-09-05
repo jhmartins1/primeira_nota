@@ -19,67 +19,135 @@ export class GetDisponibilidadeController {
         res: Response
     ) {
         try {
-            const idParam =
-                req.params.id;
+            // =====================================================
+            // 1. INSTRUMENTO
+            // =====================================================
 
-            const id =
+            const instrumentoIdRaw =
+                req.query.instrumentoId;
+
+            const instrumentoIdParam =
                 Array.isArray(
-                    idParam
+                    instrumentoIdRaw
                 )
-                    ? idParam[0]
-                    : idParam;
+                    ? instrumentoIdRaw[0]
+                    : instrumentoIdRaw;
 
-            const professorId =
-                Number(id);
+            const instrumentoId =
+                Number(
+                    instrumentoIdParam
+                );
 
             if (
-                !professorId ||
+                !instrumentoId ||
                 Number.isNaN(
-                    professorId
+                    instrumentoId
                 ) ||
-                professorId <= 0
+                instrumentoId <= 0
             ) {
-                return res.status(400).json({
-                    error:
-                        'ID do professor inválido.',
-                });
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'instrumentoId inválido.',
+                    });
             }
 
-            const diasParamRaw =
-                req.query.dias;
+            // =====================================================
+            // 2. NÍVEL
+            // =====================================================
 
-            const diasParam =
+            const nivelIdRaw =
+                req.query.nivelId;
+
+            const nivelIdParam =
                 Array.isArray(
-                    diasParamRaw
+                    nivelIdRaw
                 )
-                    ? diasParamRaw[0]
-                    : diasParamRaw;
+                    ? nivelIdRaw[0]
+                    : nivelIdRaw;
 
-            const dias =
-                diasParam
-                    ? Number(
-                        diasParam
-                    )
-                    : 7;
+            const nivelId =
+                Number(
+                    nivelIdParam
+                );
 
             if (
+                !nivelId ||
                 Number.isNaN(
-                    dias
+                    nivelId
                 ) ||
-                dias < 1 ||
-                dias > 30
+                nivelId <= 0
             ) {
-                return res.status(400).json({
-                    error:
-                        'O parâmetro dias deve estar entre 1 e 30.',
-                });
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'nivelId inválido.',
+                    });
             }
+
+            // =====================================================
+            // 3. PROFESSOR OPCIONAL
+            // =====================================================
+
+            const professorIdRaw =
+                req.query.professorId;
+
+            const professorIdParam =
+                Array.isArray(
+                    professorIdRaw
+                )
+                    ? professorIdRaw[0]
+                    : professorIdRaw;
+
+            let professorId:
+                number | undefined;
+
+            if (
+                professorIdParam !==
+                undefined &&
+                professorIdParam !==
+                null &&
+                professorIdParam !==
+                ''
+            ) {
+                const professorIdConvertido =
+                    Number(
+                        professorIdParam
+                    );
+
+                if (
+                    Number.isNaN(
+                        professorIdConvertido
+                    ) ||
+                    professorIdConvertido <=
+                    0
+                ) {
+                    return res
+                        .status(400)
+                        .json({
+                            error:
+                                'professorId inválido.',
+                        });
+                }
+
+                professorId =
+                    professorIdConvertido;
+            }
+
+            // =====================================================
+            // 4. BUSCA DISPONIBILIDADE
+            // =====================================================
 
             const horarios =
-                await this.service.execute({
-                    professorId,
-                    dias,
-                });
+                await this.service.execute(
+                    {
+                        instrumentoId,
+                        nivelId,
+                        professorId,
+                    }
+                );
 
             return res
                 .status(200)
@@ -92,10 +160,23 @@ export class GetDisponibilidadeController {
                 error
             );
 
-            return res.status(500).json({
-                error:
-                    'Erro interno ao buscar horários disponíveis.',
-            });
+            if (
+                error instanceof Error
+            ) {
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            error.message,
+                    });
+            }
+
+            return res
+                .status(500)
+                .json({
+                    error:
+                        'Erro interno ao buscar horários disponíveis.',
+                });
         }
     }
 }
