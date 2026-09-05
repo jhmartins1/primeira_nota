@@ -14,6 +14,8 @@ const HORARIOS_PERMITIDOS = [
     '16:00',
 ];
 
+const DIAS_REPETICAO = 14;
+
 export class CreateDisponibilidadeController {
     async handle(
         req: Request,
@@ -25,16 +27,19 @@ export class CreateDisponibilidadeController {
                 'professor' ||
                 !req.professorId
             ) {
-                return res.status(403).json({
-                    error:
-                        'Acesso restrito a professores.',
-                });
+                return res
+                    .status(403)
+                    .json({
+                        error:
+                            'Acesso restrito a professores.',
+                    });
             }
 
             const {
                 dataInicial,
                 horarios,
-                repetirSeteDiasUteis = false,
+                repetirProximos14Dias =
+                false,
             } = req.body;
 
             if (
@@ -46,20 +51,37 @@ export class CreateDisponibilidadeController {
                 horarios.length ===
                 0
             ) {
-                return res.status(400).json({
-                    error:
-                        'dataInicial e horarios são obrigatórios.',
-                });
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'dataInicial e horarios são obrigatórios.',
+                    });
             }
 
             if (
-                typeof repetirSeteDiasUteis !==
+                typeof repetirProximos14Dias !==
                 'boolean'
             ) {
-                return res.status(400).json({
-                    error:
-                        'repetirSeteDiasUteis deve ser boolean.',
-                });
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'repetirProximos14Dias deve ser boolean.',
+                    });
+            }
+
+            if (
+                !ehDataValida(
+                    dataInicial
+                )
+            ) {
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'Data inicial inválida.',
+                    });
             }
 
             const horariosInvalidos =
@@ -79,10 +101,12 @@ export class CreateDisponibilidadeController {
                 horariosInvalidos.length >
                 0
             ) {
-                return res.status(400).json({
-                    error:
-                        'Existe um horário inválido.',
-                });
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'Existe um horário inválido.',
+                    });
             }
 
             const horariosUnicos =
@@ -100,17 +124,14 @@ export class CreateDisponibilidadeController {
             }[] = [];
 
             if (
-                repetirSeteDiasUteis
+                repetirProximos14Dias
             ) {
-                let diasUteisCriados =
-                    0;
-
-                let deslocamento =
-                    0;
-
-                while (
-                    diasUteisCriados <
-                    7
+                for (
+                    let deslocamento =
+                        0;
+                    deslocamento <
+                    DIAS_REPETICAO;
+                    deslocamento++
                 ) {
                     const dataDoDia =
                         adicionarDias(
@@ -118,8 +139,11 @@ export class CreateDisponibilidadeController {
                             deslocamento
                         );
 
-                    deslocamento++;
-
+                    /*
+                     * Mantém sua regra:
+                     * repetição somente
+                     * segunda a sexta.
+                     */
                     if (
                         !ehDiaUtil(
                             dataDoDia
@@ -134,8 +158,6 @@ export class CreateDisponibilidadeController {
                         dataDoDia,
                         horariosUnicos
                     );
-
-                    diasUteisCriados++;
                 }
             } else {
                 adicionarHorariosDoDia(
@@ -150,37 +172,60 @@ export class CreateDisponibilidadeController {
                 registros.length ===
                 0
             ) {
-                return res.status(400).json({
-                    error:
-                        'Nenhum horário futuro válido foi informado.',
-                });
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            'Nenhum horário futuro válido foi informado.',
+                    });
             }
 
             const resultado =
-                await prisma.disponibilidade.createMany({
-                    data: registros,
-                    skipDuplicates:
-                        true,
-                });
+                await prisma.disponibilidade.createMany(
+                    {
+                        data:
+                            registros,
 
-            return res.status(201).json({
-                message:
-                    'Horários adicionados com sucesso.',
-                quantidadeCriada:
-                    resultado.count,
-                quantidadeSolicitada:
-                    registros.length,
-            });
+                        skipDuplicates:
+                            true,
+                    }
+                );
+
+            return res
+                .status(201)
+                .json({
+                    message:
+                        'Horários adicionados com sucesso.',
+
+                    quantidadeCriada:
+                        resultado.count,
+
+                    quantidadeSolicitada:
+                        registros.length,
+                });
         } catch (error) {
             console.error(
                 'Erro ao criar disponibilidades:',
                 error
             );
 
-            return res.status(500).json({
-                error:
-                    'Erro interno ao criar disponibilidades.',
-            });
+            if (
+                error instanceof Error
+            ) {
+                return res
+                    .status(400)
+                    .json({
+                        error:
+                            error.message,
+                    });
+            }
+
+            return res
+                .status(500)
+                .json({
+                    error:
+                        'Erro interno ao criar disponibilidades.',
+                });
         }
     }
 }
@@ -196,6 +241,9 @@ function adicionarHorariosDoDia(
     data: string,
     horarios: string[]
 ) {
+    const agora =
+        new Date();
+
     for (
         const horario of horarios
     ) {
@@ -214,18 +262,19 @@ function adicionarHorariosDoDia(
             );
 
         if (
-            inicio <=
-            new Date()
+            inicio <= agora
         ) {
             continue;
         }
 
         registros.push({
             professorId,
-            data: inicio,
+            data:
+                inicio,
             horaInicio:
                 inicio,
-            horaFim: fim,
+            horaFim:
+                fim,
         });
     }
 }
@@ -318,6 +367,56 @@ function adicionarDias(
         );
 
     return `${novoAno}-${novoMes}-${novoDia}`;
+}
+
+function ehDataValida(
+    data: string
+): boolean {
+    const partes =
+        data.split('-');
+
+    if (
+        partes.length !== 3
+    ) {
+        return false;
+    }
+
+    const ano =
+        Number(partes[0]);
+
+    const mes =
+        Number(partes[1]);
+
+    const dia =
+        Number(partes[2]);
+
+    if (
+        Number.isNaN(ano) ||
+        Number.isNaN(mes) ||
+        Number.isNaN(dia)
+    ) {
+        return false;
+    }
+
+    const teste =
+        new Date(
+            ano,
+            mes - 1,
+            dia,
+            12,
+            0,
+            0,
+            0
+        );
+
+    return (
+        teste.getFullYear() ===
+        ano &&
+        teste.getMonth() ===
+        mes - 1 &&
+        teste.getDate() ===
+        dia
+    );
 }
 
 function criarDataHoraSaoPaulo(

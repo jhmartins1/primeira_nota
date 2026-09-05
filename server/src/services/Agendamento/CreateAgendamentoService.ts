@@ -1,4 +1,5 @@
 import { prisma } from '../../prisma/client';
+
 import { HORARIOS_DISPONIVEIS } from '../../utils/horarios';
 
 interface CreateAgendamentoDTO {
@@ -9,6 +10,9 @@ interface CreateAgendamentoDTO {
     dataHora: Date;
 }
 
+const DIAS_MAXIMOS_AGENDAMENTO =
+    14;
+
 export class CreateAgendamentoService {
     async execute({
         usuarioId,
@@ -17,75 +21,78 @@ export class CreateAgendamentoService {
         nivelId,
         dataHora,
     }: CreateAgendamentoDTO) {
-        // =========================================================
         // 1. VERIFICAR USUÁRIO
-        // =========================================================
-
-        const usuario = await prisma.usuario.findUnique({
-            where: {
-                id: usuarioId,
-            },
-        });
+        const usuario =
+            await prisma.usuario.findUnique(
+                {
+                    where: {
+                        id: usuarioId,
+                    },
+                }
+            );
 
         if (!usuario) {
-            throw new Error('Usuário não encontrado.');
+            throw new Error(
+                'Usuário não encontrado.'
+            );
         }
 
-        // =========================================================
         // 2. VERIFICAR PROFESSOR
-        // =========================================================
-
-        const professor = await prisma.professor.findUnique({
-            where: {
-                id: professorId,
-            },
-        });
+        const professor =
+            await prisma.professor.findUnique(
+                {
+                    where: {
+                        id: professorId,
+                    },
+                }
+            );
 
         if (!professor) {
-            throw new Error('Professor não encontrado.');
+            throw new Error(
+                'Professor não encontrado.'
+            );
         }
-
-        // =========================================================
         // 3. VERIFICAR INSTRUMENTO
-        // =========================================================
-
-        const instrumento = await prisma.instrumento.findUnique({
-            where: {
-                id: instrumentoId,
-            },
-        });
+        const instrumento =
+            await prisma.instrumento.findUnique(
+                {
+                    where: {
+                        id: instrumentoId,
+                    },
+                }
+            );
 
         if (!instrumento) {
-            throw new Error('Instrumento não encontrado.');
+            throw new Error(
+                'Instrumento não encontrado.'
+            );
         }
-
-        // =========================================================
         // 4. VERIFICAR NÍVEL
-        // =========================================================
-
-        const nivel = await prisma.nivel.findUnique({
-            where: {
-                id: nivelId,
-            },
-        });
+        const nivel =
+            await prisma.nivel.findUnique(
+                {
+                    where: {
+                        id: nivelId,
+                    },
+                }
+            );
 
         if (!nivel) {
-            throw new Error('Nível não encontrado.');
+            throw new Error(
+                'Nível não encontrado.'
+            );
         }
 
-        // =========================================================
-        // 5. VERIFICAR SE O USUÁRIO POSSUI
-        //    INSTRUMENTO + NÍVEL
-        // =========================================================
-
         const usuarioInstrumento =
-            await prisma.usuarioInstrumento.findFirst({
-                where: {
-                    usuarioId,
-                    instrumentoId,
-                    nivelId,
-                },
-            });
+            await prisma.usuarioInstrumento.findFirst(
+                {
+                    where: {
+                        usuarioId,
+                        instrumentoId,
+                        nivelId,
+                    },
+                }
+            );
 
         if (!usuarioInstrumento) {
             throw new Error(
@@ -93,19 +100,16 @@ export class CreateAgendamentoService {
             );
         }
 
-        // =========================================================
-        // 6. VERIFICAR SE O PROFESSOR LECIONA
-        //    INSTRUMENTO + NÍVEL
-        // =========================================================
-
         const professorInstrumento =
-            await prisma.professorInstrumento.findFirst({
-                where: {
-                    professorId,
-                    instrumentoId,
-                    nivelId,
-                },
-            });
+            await prisma.professorInstrumento.findFirst(
+                {
+                    where: {
+                        professorId,
+                        instrumentoId,
+                        nivelId,
+                    },
+                }
+            );
 
         if (!professorInstrumento) {
             throw new Error(
@@ -113,11 +117,9 @@ export class CreateAgendamentoService {
             );
         }
 
-        // =========================================================
         // 7. VERIFICAR SE A DATA/HORA NÃO PASSOU
-        // =========================================================
-
-        const agora = new Date();
+        const agora =
+            new Date();
 
         if (dataHora <= agora) {
             throw new Error(
@@ -125,118 +127,149 @@ export class CreateAgendamentoService {
             );
         }
 
-        // =========================================================
-        // 8. VERIFICAR INTERVALO DE DATAS
-        //
-        // Permitido:
-        // amanhã até os próximos 7 dias
-        // =========================================================
+        const hoje =
+            new Date();
 
-        const hoje = new Date();
+        hoje.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
-        hoje.setHours(0, 0, 0, 0);
+        const amanha =
+            new Date(hoje);
 
-        const amanha = new Date(hoje);
+        amanha.setDate(
+            amanha.getDate() + 1
+        );
 
-        amanha.setDate(amanha.getDate() + 1);
+        const limite =
+            new Date(hoje);
 
-        const limite = new Date(hoje);
+        limite.setDate(
+            limite.getDate() +
+            DIAS_MAXIMOS_AGENDAMENTO
+        );
 
-        limite.setDate(limite.getDate() + 7);
+        /*
+         * Como estamos comparando somente
+         * a data abaixo, 00:00 já é suficiente.
+         */
+        const dataComparar =
+            new Date(dataHora);
 
-        const dataComparar = new Date(dataHora);
-
-        dataComparar.setHours(0, 0, 0, 0);
+        dataComparar.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
         if (
             dataComparar < amanha ||
             dataComparar > limite
         ) {
             throw new Error(
-                'A aula deve ser agendada entre amanhã e os próximos 7 dias.'
+                `A aula deve ser agendada entre amanhã e os próximos ${DIAS_MAXIMOS_AGENDAMENTO} dias.`
             );
         }
 
-        // =========================================================
         // 9. VERIFICAR HORÁRIO PERMITIDO
-        // =========================================================
+        const horas =
+            dataHora.getHours();
 
-        const horas = dataHora.getHours();
+        const minutos =
+            dataHora.getMinutes();
 
-        const minutos = dataHora.getMinutes();
+        const horario =
+            `${String(
+                horas
+            ).padStart(
+                2,
+                '0'
+            )}:${String(
+                minutos
+            ).padStart(
+                2,
+                '0'
+            )}`;
 
-        const horario = `${String(horas).padStart(2, '0')}:${String(
-            minutos
-        ).padStart(2, '0')}`;
-
-        if (!HORARIOS_DISPONIVEIS.includes(horario)) {
+        if (
+            !HORARIOS_DISPONIVEIS.includes(
+                horario
+            )
+        ) {
             throw new Error(
                 'Horário não permitido para agendamento.'
             );
         }
 
-        // =========================================================
-        // 10. VERIFICAR SE O HORÁRIO ESTÁ OCUPADO
-        //
-        // IMPORTANTE:
-        // Procuramos SOMENTE por AGENDADO.
-        //
-        // CANCELADO não bloqueia o horário.
-        // =========================================================
-
         const agendamentoExistente =
-            await prisma.agendamento.findFirst({
-                where: {
-                    professorId,
-                    dataHora,
-                    status: 'AGENDADO',
-                },
-            });
+            await prisma.agendamento.findFirst(
+                {
+                    where: {
+                        professorId,
+                        dataHora,
+                        status: 'AGENDADO',
+                    },
+                }
+            );
 
-        if (agendamentoExistente) {
+        if (
+            agendamentoExistente
+        ) {
             throw new Error(
                 'Esse horário já está agendado para esse professor.'
             );
         }
-
-        // =========================================================
         // 11. CRIAR AGENDAMENTO
-        // =========================================================
-
         try {
-            return await prisma.agendamento.create({
-                data: {
-                    usuarioId,
-                    professorId,
-                    instrumentoId,
-                    nivelId,
-                    dataHora,
-                    status: 'AGENDADO',
-                },
-                include: {
-                    professor: true,
-                    instrumento: true,
-                    nivel: true,
-                },
-            });
+            return await prisma.agendamento.create(
+                {
+                    data: {
+                        usuarioId,
+                        professorId,
+                        instrumentoId,
+                        nivelId,
+                        dataHora,
+                        status:
+                            'AGENDADO',
+                    },
+
+                    include: {
+                        professor:
+                            true,
+
+                        instrumento:
+                            true,
+
+                        nivel: true,
+                    },
+                }
+            );
         } catch (error: any) {
-            // =====================================================
             // PROTEÇÃO CONTRA CONCORRÊNCIA
-            // =====================================================
-
-            if (error?.code === 'P2002') {
-                const target = error?.meta?.target;
-
-                console.log(
-                    'P2002 - conflito ao criar agendamento:',
-                    target
-                );
+            if (
+                error?.code ===
+                'P2002'
+            ) {
+                const target =
+                    error?.meta
+                        ?.target;
 
                 // Conflito do aluno
+
                 if (
-                    Array.isArray(target) &&
-                    target.includes('usuarioId') &&
-                    target.includes('dataHora')
+                    Array.isArray(
+                        target
+                    ) &&
+                    target.includes(
+                        'usuarioId'
+                    ) &&
+                    target.includes(
+                        'dataHora'
+                    )
                 ) {
                     throw new Error(
                         'Você já tem um agendamento nessa data e horário.'
@@ -244,10 +277,17 @@ export class CreateAgendamentoService {
                 }
 
                 // Conflito do professor
+
                 if (
-                    Array.isArray(target) &&
-                    target.includes('professorId') &&
-                    target.includes('dataHora')
+                    Array.isArray(
+                        target
+                    ) &&
+                    target.includes(
+                        'professorId'
+                    ) &&
+                    target.includes(
+                        'dataHora'
+                    )
                 ) {
                     throw new Error(
                         'Esse horário já está agendado para esse professor.'
