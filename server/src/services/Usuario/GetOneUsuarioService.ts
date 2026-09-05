@@ -4,6 +4,7 @@ export class GetOneUsuarioService {
     async execute(id: number) {
         const usuario = await prisma.usuario.findUnique({
             where: { id },
+
             select: {
                 id: true,
                 name: true,
@@ -22,21 +23,39 @@ export class GetOneUsuarioService {
 
                 instrumentos: {
                     select: {
-                        instrumento: { select: { id: true, name: true } },
-                        nivel: { select: { id: true, name: true } },
+                        possuiInstrumento: true,
+
+                        instrumento: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+
+                        nivel: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
                     },
                 },
             },
         });
 
         if (!usuario) {
-            throw new Error('Usuário não encontrado');
+            throw new Error(
+                'Usuário não encontrado'
+            );
         }
 
         const profileComplete =
-            !!usuario.phone && !!usuario.cep && !!usuario.numero;
+            !!usuario.phone &&
+            !!usuario.cep &&
+            !!usuario.numero;
 
-        const onboardingComplete = usuario.instrumentos.length > 0;
+        const onboardingComplete =
+            usuario.instrumentos.length > 0;
 
         return {
             id: usuario.id,
@@ -57,10 +76,19 @@ export class GetOneUsuarioService {
             profileComplete,
             onboardingComplete,
 
-            instrumentos: usuario.instrumentos.map((item) => ({
-                instrumento: item.instrumento.name,
-                nivel: item.nivel.name,
-            })),
+            instrumentos:
+                usuario.instrumentos.map(
+                    (item) => ({
+                        instrumento:
+                            item.instrumento.name,
+
+                        nivel:
+                            item.nivel.name,
+
+                        possuiInstrumento:
+                            item.possuiInstrumento,
+                    })
+                ),
         };
     }
 }
