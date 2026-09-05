@@ -24,12 +24,26 @@ export interface AgendamentoProfessor {
     nivel: { id: number; name: string };
 }
 
+export interface ProfessorInstrumentoHome {
+    instrumento: {
+        id: number;
+        name: string;
+    };
+}
+
+export interface InstrumentoProfessorHome {
+    instrumento: string;
+    nivel: string;
+}
+
 export interface ProfessorLogado {
     id: number;
     name: string;
     email: string;
     phone?: string | null;
     image?: string | null;
+
+    instrumentos?: InstrumentoProfessorHome[];
 }
 
 export interface DisponibilidadeProfessor {
