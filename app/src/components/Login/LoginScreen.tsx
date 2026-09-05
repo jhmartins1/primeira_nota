@@ -1,11 +1,8 @@
+import { useAuth } from '@clerk/expo';
 import { useSignInWithGoogle } from '@clerk/expo/google';
-
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { useRouter } from 'expo-router';
-
 import { useState } from 'react';
-
 import {
     ActivityIndicator,
     Image,
@@ -14,19 +11,78 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { styles } from './LoginScreen.styles';
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export function LoginScreen() {
     const { startGoogleAuthenticationFlow } =
         useSignInWithGoogle();
 
+    const { getToken } = useAuth();
+
     const router = useRouter();
 
     const [carregando, setCarregando] =
         useState(false);
+
+    async function tentarVincularProfessor(
+        token: string
+    ) {
+        try {
+            const response = await fetch(
+                `${API_URL}/professor/vincular-conta`,
+                {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type':
+                            'application/json',
+                    },
+                }
+            );
+
+            if (response.ok) {
+                const professor =
+                    await response.json();
+                return true;
+            }
+
+            if (response.status === 404) {
+                return false;
+            }
+
+            let mensagemErro =
+                'Erro ao tentar vincular professor.';
+
+            try {
+                const data =
+                    await response.json();
+
+                if (data?.error) {
+                    mensagemErro = data.error;
+                }
+            } catch {
+                // ignora erro de parse
+            }
+
+            console.log(
+                'Erro ao vincular professor:',
+                mensagemErro
+            );
+
+            return false;
+        } catch (error) {
+            console.log(
+                'Erro na requisição de vínculo do professor:',
+                error
+            );
+
+            return false;
+        }
+    }
 
     async function handleLoginGoogle() {
         try {
@@ -39,18 +95,31 @@ export function LoginScreen() {
                 await startGoogleAuthenticationFlow();
 
             if (
-                createdSessionId &&
-                setActive
+                !createdSessionId ||
+                !setActive
             ) {
-                await setActive({
-                    session:
-                        createdSessionId,
-                });
-
-                // O index.tsx vai decidir
-                // para onde o usuário deve ir
-                router.replace('/');
+                return;
             }
+
+            await setActive({
+                session:
+                    createdSessionId,
+            });
+
+            const token =
+                await getToken();
+
+            if (!token) {
+                throw new Error(
+                    'Não foi possível obter o token da sessão.'
+                );
+            }
+
+            await tentarVincularProfessor(
+                token
+            );
+
+            router.replace('/');
         } catch (error: any) {
             console.log(
                 'Erro ao entrar com Google:',
@@ -86,7 +155,6 @@ export function LoginScreen() {
                 style={styles.container}
             >
                 {/* ELEMENTOS DECORATIVOS */}
-
                 <View
                     style={
                         styles.circuloDecorativoGrande
@@ -127,7 +195,6 @@ export function LoginScreen() {
                 />
 
                 {/* HERO */}
-
                 <View
                     style={styles.hero}
                 >
@@ -172,7 +239,6 @@ export function LoginScreen() {
                     </Text>
 
                     {/* ÍCONES DOS INSTRUMENTOS */}
-
                     <View
                         style={
                             styles.instrumentos
@@ -229,7 +295,6 @@ export function LoginScreen() {
                 </View>
 
                 {/* CARD LOGIN */}
-
                 <View
                     style={
                         styles.loginCard
@@ -318,7 +383,6 @@ export function LoginScreen() {
                     </TouchableOpacity>
 
                     {/* TERMOS */}
-
                     <View
                         style={
                             styles.linhaTermos
@@ -344,7 +408,6 @@ export function LoginScreen() {
                     </View>
 
                     {/* ASSINATURA DO DEV */}
-
                     <TouchableOpacity
                         activeOpacity={0.6}
                         onPress={
