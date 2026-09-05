@@ -24,9 +24,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     LOADING
-    ========================================
     */
 
     loadingContainer: {
@@ -42,9 +40,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     ERRO
-    ========================================
     */
 
     erroContainer: {
@@ -84,9 +80,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     HEADER
-    ========================================
     */
 
     header: {
@@ -140,9 +134,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     BOTÕES DO HEADER
-    ========================================
     */
 
     botaoHorarios: {
@@ -187,9 +179,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     INSTRUMENTOS
-    ========================================
     */
 
     instrumentosContainer: {
@@ -227,9 +217,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     SEM AULA
-    ========================================
     */
 
     semAulaCard: {
@@ -295,9 +283,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     SEÇÕES
-    ========================================
     */
 
     secao: {
@@ -333,9 +319,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     LISTA DE AULAS
-    ========================================
     */
 
     listaAulas: {
@@ -343,9 +327,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     CARD DE AULA
-    ========================================
     */
 
     aulaCard: {
@@ -468,9 +450,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     CHIP DATA / HORA
-    ========================================
     */
 
     aulaDataChip: {
@@ -505,9 +485,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     DETALHES DA AULA
-    ========================================
     */
 
     aulaDetalhes: {
@@ -538,9 +516,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     BOTÃO VER ENDEREÇO
-    ========================================
     */
 
     botaoVerEndereco: {
@@ -567,9 +543,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     BOTÃO CANCELAR
-    ========================================
     */
 
     botaoCancelarAula: {
@@ -599,9 +573,7 @@ export const styles = StyleSheet.create({
     },
 
     /*
-    ========================================
     ALUNO
-    ========================================
     */
 
     alunoLinha: {
@@ -704,5 +676,56 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
 
         color: '#093373',
+    },
+
+    possuiInstrumentoLinha: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 8,
+    },
+
+    possuiInstrumentoLabel: {
+        flex: 1,
+        fontSize: 13,
+        lineHeight: 18,
+        color: TEXTO_PRINCIPAL,
+        fontWeight: '600',
+    },
+
+    possuiInstrumentoBadge: {
+        minWidth: 58,
+        height: 26,
+        paddingHorizontal: 8,
+        borderRadius: 13,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        borderWidth: 1,
+    },
+
+    possuiInstrumentoSim: {
+        backgroundColor: '#ECFDF3',
+        borderColor: '#ABEFC6',
+    },
+
+    possuiInstrumentoNao: {
+        backgroundColor: '#FFF1F0',
+        borderColor: '#F3D0CC',
+    },
+
+    possuiInstrumentoTexto: {
+        fontSize: 11.5,
+        fontWeight: '800',
+    },
+
+    possuiInstrumentoTextoSim: {
+        color: '#067647',
+    },
+
+    possuiInstrumentoTextoNao: {
+        color: '#B42318',
     },
 });

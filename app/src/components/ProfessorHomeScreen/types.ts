@@ -19,9 +19,20 @@ export interface AgendamentoProfessor {
     nivelId: number;
     dataHora: string;
     status: 'AGENDADO' | 'CANCELADO' | 'CONCLUIDO';
+
+    possuiInstrumento: boolean;
+
     usuario: Aluno;
-    instrumento: { id: number; name: string };
-    nivel: { id: number; name: string };
+
+    instrumento: {
+        id: number;
+        name: string;
+    };
+
+    nivel: {
+        id: number;
+        name: string;
+    };
 }
 
 export interface ProfessorInstrumentoHome {

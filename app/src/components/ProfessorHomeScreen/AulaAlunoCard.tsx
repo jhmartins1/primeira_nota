@@ -65,10 +65,7 @@ export function AulaAlunoCard({
             aula.usuario
         );
 
-    // ----------------------------------------------------
     // MAPA
-    // ----------------------------------------------------
-
     function handleAbrirMapa() {
         if (linkMaps) {
             Linking.openURL(
@@ -77,10 +74,7 @@ export function AulaAlunoCard({
         }
     }
 
-    // ----------------------------------------------------
     // WHATSAPP
-    // ----------------------------------------------------
-
     async function falarComAluno() {
         if (
             !aula.usuario.phone
@@ -162,13 +156,6 @@ export function AulaAlunoCard({
                     </Text>
                 </View>
             )}
-
-            {/* ================================= */}
-
-            {/* INSTRUMENTO */}
-
-            {/* ================================= */}
-
             <View
                 style={
                     styles.aulaTopo
@@ -230,12 +217,6 @@ export function AulaAlunoCard({
                 </View>
             </View>
 
-            {/* ================================= */}
-
-            {/* DETALHES */}
-
-            {/* ================================= */}
-
             <View
                 style={
                     styles.aulaDetalhes
@@ -267,6 +248,69 @@ export function AulaAlunoCard({
                             dataFormatada.hora
                         }
                     </Text>
+                </View>
+
+                {/* POSSUI O INSTRUMENTO */}
+
+                <View style={styles.aulaLinha}>
+                    <MaterialCommunityIcons
+                        name="music-note-outline"
+                        size={15}
+                        color="#6B7280"
+                    />
+
+                    <View
+                        style={
+                            styles.possuiInstrumentoLinha
+                        }
+                    >
+                        <Text
+                            style={
+                                styles.possuiInstrumentoLabel
+                            }
+                        >
+                            Possui{' '}
+                            {aula.instrumento.name}:
+                        </Text>
+
+                        <View
+                            style={[
+                                styles.possuiInstrumentoBadge,
+
+                                aula.possuiInstrumento
+                                    ? styles.possuiInstrumentoSim
+                                    : styles.possuiInstrumentoNao,
+                            ]}
+                        >
+                            <MaterialCommunityIcons
+                                name={
+                                    aula.possuiInstrumento
+                                        ? 'check-circle-outline'
+                                        : 'close-circle-outline'
+                                }
+                                size={14}
+                                color={
+                                    aula.possuiInstrumento
+                                        ? '#067647'
+                                        : '#B42318'
+                                }
+                            />
+
+                            <Text
+                                style={[
+                                    styles.possuiInstrumentoTexto,
+
+                                    aula.possuiInstrumento
+                                        ? styles.possuiInstrumentoTextoSim
+                                        : styles.possuiInstrumentoTextoNao,
+                                ]}
+                            >
+                                {aula.possuiInstrumento
+                                    ? 'Sim'
+                                    : 'Não'}
+                            </Text>
+                        </View>
+                    </View>
                 </View>
 
                 {/* ALUNO */}
@@ -340,8 +384,6 @@ export function AulaAlunoCard({
                     </View>
                 )}
 
-                {/* ENDEREÇO */}
-
                 {enderecoTexto && (
                     <View
                         style={
@@ -369,12 +411,6 @@ export function AulaAlunoCard({
                     </View>
                 )}
             </View>
-
-            {/* ================================= */}
-
-            {/* MAPA */}
-
-            {/* ================================= */}
 
             {linkMaps && (
                 <TouchableOpacity
@@ -404,12 +440,6 @@ export function AulaAlunoCard({
                     </Text>
                 </TouchableOpacity>
             )}
-
-            {/* ================================= */}
-
-            {/* REMARCAR */}
-
-            {/* ================================= */}
 
             {onRemarcar && (
                 <TouchableOpacity
@@ -441,13 +471,6 @@ export function AulaAlunoCard({
                     </Text>
                 </TouchableOpacity>
             )}
-
-            {/* ================================= */}
-
-            {/* CANCELAR */}
-
-            {/* ================================= */}
-
             {onCancelar && (
                 <TouchableOpacity
                     style={
