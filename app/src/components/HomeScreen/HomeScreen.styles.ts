@@ -226,22 +226,6 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
         color: TEXTO_PRINCIPAL,
     },
-
-    botaoDetalhes: {
-        height: 46,
-        borderRadius: 12,
-        backgroundColor: AZUL,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
-    },
-
-    botaoDetalhesTexto: {
-        color: '#FFFFFF',
-        fontSize: 14,
-        fontWeight: '700',
-    },
     semAulaCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
@@ -462,19 +446,31 @@ export const styles = StyleSheet.create({
 
     botaoCancelarAula: {
         height: 42,
+
+        marginTop: 10,
+
         borderRadius: 11,
+
         borderWidth: 1,
+
         borderColor: '#E5D0CE',
+
         backgroundColor: '#FFF8F7',
+
         flexDirection: 'row',
+
         alignItems: 'center',
+
         justifyContent: 'center',
+
         gap: 7,
     },
 
     botaoCancelarAulaTexto: {
         fontSize: 13,
+
         fontWeight: '700',
+
         color: '#B42318',
     },
 
@@ -651,7 +647,42 @@ export const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#DCE6F5',
     },
+    botaoWhatsApp: {
+        height: 44,
 
+        borderRadius: 12,
+
+        backgroundColor: '#25D366',
+
+        flexDirection: 'row',
+
+        alignItems: 'center',
+
+        justifyContent: 'center',
+
+        gap: 7,
+
+        shadowColor: '#25D366',
+
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+
+        shadowOpacity: 0.15,
+
+        shadowRadius: 6,
+
+        elevation: 2,
+    },
+
+    botaoWhatsAppTexto: {
+        fontSize: 13,
+
+        fontWeight: '700',
+
+        color: '#FFFFFF',
+    },
 
 
 });
