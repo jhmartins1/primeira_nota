@@ -68,18 +68,8 @@ export function LoginScreen() {
                 // ignora erro de parse
             }
 
-            console.log(
-                'Erro ao vincular professor:',
-                mensagemErro
-            );
-
             return false;
         } catch (error) {
-            console.log(
-                'Erro na requisição de vínculo do professor:',
-                error
-            );
-
             return false;
         }
     }
