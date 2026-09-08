@@ -10,8 +10,7 @@ interface CreateAgendamentoDTO {
     dataHora: Date;
 }
 
-const DIAS_MAXIMOS_AGENDAMENTO =
-    14;
+const DIAS_MAXIMOS_AGENDAMENTO = 14;
 
 export class CreateAgendamentoService {
     async execute({
@@ -23,13 +22,11 @@ export class CreateAgendamentoService {
     }: CreateAgendamentoDTO) {
         // 1. VERIFICAR USUÁRIO
         const usuario =
-            await prisma.usuario.findUnique(
-                {
-                    where: {
-                        id: usuarioId,
-                    },
-                }
-            );
+            await prisma.usuario.findUnique({
+                where: {
+                    id: usuarioId,
+                },
+            });
 
         if (!usuario) {
             throw new Error(
@@ -39,43 +36,39 @@ export class CreateAgendamentoService {
 
         // 2. VERIFICAR PROFESSOR
         const professor =
-            await prisma.professor.findUnique(
-                {
-                    where: {
-                        id: professorId,
-                    },
-                }
-            );
+            await prisma.professor.findUnique({
+                where: {
+                    id: professorId,
+                },
+            });
 
         if (!professor) {
             throw new Error(
                 'Professor não encontrado.'
             );
         }
+
         // 3. VERIFICAR INSTRUMENTO
         const instrumento =
-            await prisma.instrumento.findUnique(
-                {
-                    where: {
-                        id: instrumentoId,
-                    },
-                }
-            );
+            await prisma.instrumento.findUnique({
+                where: {
+                    id: instrumentoId,
+                },
+            });
 
         if (!instrumento) {
             throw new Error(
                 'Instrumento não encontrado.'
             );
         }
+
         // 4. VERIFICAR NÍVEL
         const nivel =
-            await prisma.nivel.findUnique(
-                {
-                    where: {
-                        id: nivelId,
-                    },
-                }
-            );
+            await prisma.nivel.findUnique({
+                where: {
+                    id: nivelId,
+                },
+            });
 
         if (!nivel) {
             throw new Error(
@@ -83,16 +76,16 @@ export class CreateAgendamentoService {
             );
         }
 
+        // 5. VERIFICAR SE O USUÁRIO POSSUI
+        // O INSTRUMENTO E NÍVEL CADASTRADOS
         const usuarioInstrumento =
-            await prisma.usuarioInstrumento.findFirst(
-                {
-                    where: {
-                        usuarioId,
-                        instrumentoId,
-                        nivelId,
-                    },
-                }
-            );
+            await prisma.usuarioInstrumento.findFirst({
+                where: {
+                    usuarioId,
+                    instrumentoId,
+                    nivelId,
+                },
+            });
 
         if (!usuarioInstrumento) {
             throw new Error(
@@ -100,16 +93,16 @@ export class CreateAgendamentoService {
             );
         }
 
+        // 6. VERIFICAR SE O PROFESSOR
+        // LECIONA O INSTRUMENTO E NÍVEL
         const professorInstrumento =
-            await prisma.professorInstrumento.findFirst(
-                {
-                    where: {
-                        professorId,
-                        instrumentoId,
-                        nivelId,
-                    },
-                }
-            );
+            await prisma.professorInstrumento.findFirst({
+                where: {
+                    professorId,
+                    instrumentoId,
+                    nivelId,
+                },
+            });
 
         if (!professorInstrumento) {
             throw new Error(
@@ -152,10 +145,6 @@ export class CreateAgendamentoService {
             DIAS_MAXIMOS_AGENDAMENTO
         );
 
-        /*
-         * Como estamos comparando somente
-         * a data abaixo, 00:00 já é suficiente.
-         */
         const dataComparar =
             new Date(dataHora);
 
@@ -166,6 +155,7 @@ export class CreateAgendamentoService {
             0
         );
 
+        // 8. VERIFICAR LIMITE DE 14 DIAS
         if (
             dataComparar < amanha ||
             dataComparar > limite
@@ -183,14 +173,10 @@ export class CreateAgendamentoService {
             dataHora.getMinutes();
 
         const horario =
-            `${String(
-                horas
-            ).padStart(
+            `${String(horas).padStart(
                 2,
                 '0'
-            )}:${String(
-                minutos
-            ).padStart(
+            )}:${String(minutos).padStart(
                 2,
                 '0'
             )}`;
@@ -205,49 +191,72 @@ export class CreateAgendamentoService {
             );
         }
 
-        const agendamentoExistente =
-            await prisma.agendamento.findFirst(
-                {
-                    where: {
-                        professorId,
-                        dataHora,
-                        status: 'AGENDADO',
-                    },
-                }
-            );
+        // 10. VERIFICAR SE O PROFESSOR
+        // REALMENTE DISPONIBILIZOU O HORÁRIO
+        const disponibilidade =
+            await prisma.disponibilidade.findFirst({
+                where: {
+                    professorId,
+                    horaInicio: dataHora,
+                },
+            });
 
-        if (
-            agendamentoExistente
-        ) {
+        if (!disponibilidade) {
+            throw new Error(
+                'O professor não disponibilizou esse horário.'
+            );
+        }
+
+        // 11. VERIFICAR CONFLITO DO PROFESSOR
+        const conflitoProfessor =
+            await prisma.agendamento.findFirst({
+                where: {
+                    professorId,
+                    dataHora,
+                    status: 'AGENDADO',
+                },
+            });
+
+        if (conflitoProfessor) {
             throw new Error(
                 'Esse horário já está agendado para esse professor.'
             );
         }
-        // 11. CRIAR AGENDAMENTO
-        try {
-            return await prisma.agendamento.create(
-                {
-                    data: {
-                        usuarioId,
-                        professorId,
-                        instrumentoId,
-                        nivelId,
-                        dataHora,
-                        status:
-                            'AGENDADO',
-                    },
 
-                    include: {
-                        professor:
-                            true,
+        // 12. VERIFICAR CONFLITO DO ALUNO
+        const conflitoUsuario =
+            await prisma.agendamento.findFirst({
+                where: {
+                    usuarioId,
+                    dataHora,
+                    status: 'AGENDADO',
+                },
+            });
 
-                        instrumento:
-                            true,
-
-                        nivel: true,
-                    },
-                }
+        if (conflitoUsuario) {
+            throw new Error(
+                'Você já tem um agendamento nessa data e horário.'
             );
+        }
+
+        // 13. CRIAR AGENDAMENTO
+        try {
+            return await prisma.agendamento.create({
+                data: {
+                    usuarioId,
+                    professorId,
+                    instrumentoId,
+                    nivelId,
+                    dataHora,
+                    status: 'AGENDADO',
+                },
+
+                include: {
+                    professor: true,
+                    instrumento: true,
+                    nivel: true,
+                },
+            });
         } catch (error: any) {
             // PROTEÇÃO CONTRA CONCORRÊNCIA
             if (
@@ -255,15 +264,11 @@ export class CreateAgendamentoService {
                 'P2002'
             ) {
                 const target =
-                    error?.meta
-                        ?.target;
+                    error?.meta?.target;
 
-                // Conflito do aluno
-
+                // CONFLITO DO ALUNO
                 if (
-                    Array.isArray(
-                        target
-                    ) &&
+                    Array.isArray(target) &&
                     target.includes(
                         'usuarioId'
                     ) &&
@@ -276,12 +281,9 @@ export class CreateAgendamentoService {
                     );
                 }
 
-                // Conflito do professor
-
+                // CONFLITO DO PROFESSOR
                 if (
-                    Array.isArray(
-                        target
-                    ) &&
+                    Array.isArray(target) &&
                     target.includes(
                         'professorId'
                     ) &&
