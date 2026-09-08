@@ -369,11 +369,6 @@ export function RemarcarAgendamentoProfessorScreen() {
             const url =
                 `${API_URL}/agendamento/disponibilidade?${query.toString()}`;
 
-            console.log(
-                'DISPONIBILIDADE PROFESSOR - URL:',
-                url
-            );
-
             const response =
                 await fetch(
                     url,
@@ -521,15 +516,6 @@ export function RemarcarAgendamentoProfessorScreen() {
                             )
                     );
 
-            console.log(
-                'DISPONIBILIDADE REMARCAÇÃO PROFESSOR:',
-                JSON.stringify(
-                    listaFormatada,
-                    null,
-                    2
-                )
-            );
-
             setDisponibilidades(
                 listaFormatada
             );
@@ -592,11 +578,6 @@ export function RemarcarAgendamentoProfessorScreen() {
     function selecionarData(
         data: string
     ) {
-        console.log(
-            'DATA SELECIONADA:',
-            data
-        );
-
         setDataSelecionada(
             data
         );
@@ -618,15 +599,6 @@ export function RemarcarAgendamentoProfessorScreen() {
 
             return;
         }
-
-        console.log(
-            'CONFIRMAR REMARCAÇÃO:',
-            {
-                agendamentoId,
-                dataSelecionada,
-                horarioSelecionado,
-            }
-        );
 
         const [
             ano,
@@ -668,10 +640,6 @@ export function RemarcarAgendamentoProfessorScreen() {
                 !dataSelecionada ||
                 !horarioSelecionado
             ) {
-                console.log(
-                    'REMARCAÇÃO CANCELADA: data ou horário ausente.'
-                );
-
                 return;
             }
 
@@ -709,39 +677,6 @@ export function RemarcarAgendamentoProfessorScreen() {
                     horarioSelecionado,
             };
 
-            console.log(
-                '========================================'
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - URL:',
-                url
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - AGENDAMENTO:',
-                agendamentoId
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - PROFESSOR:',
-                professorId
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - USUARIO:',
-                usuarioId
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - BODY:',
-                JSON.stringify(
-                    body,
-                    null,
-                    2
-                )
-            );
-
             const response =
                 await fetch(
                     url,
@@ -766,22 +701,6 @@ export function RemarcarAgendamentoProfessorScreen() {
 
             const texto =
                 await response.text();
-
-            console.log(
-                'REMARCAR PROFESSOR - STATUS:',
-                response.status
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - OK:',
-                response.ok
-            );
-
-            console.log(
-                'REMARCAR PROFESSOR - RESPOSTA:',
-                texto
-            );
-
             let dados:
                 any =
                 null;
@@ -808,19 +727,6 @@ export function RemarcarAgendamentoProfessorScreen() {
                 );
             }
 
-            console.log(
-                'REMARCAR PROFESSOR - SUCESSO:',
-                JSON.stringify(
-                    dados,
-                    null,
-                    2
-                )
-            );
-
-            console.log(
-                '========================================'
-            );
-
             Alert.alert(
                 'Aula remarcada',
 
@@ -833,10 +739,6 @@ export function RemarcarAgendamentoProfessorScreen() {
 
                         onPress:
                             () => {
-                                console.log(
-                                    'VOLTANDO PARA HOME DO PROFESSOR'
-                                );
-
                                 router.replace(
                                     '/professor'
                                 );
@@ -1359,11 +1261,6 @@ export function RemarcarAgendamentoProfessorScreen() {
                                                     styles.horarioCardSelecionado,
                                                 ]}
                                                 onPress={() => {
-                                                    console.log(
-                                                        'HORÁRIO SELECIONADO:',
-                                                        horario
-                                                    );
-
                                                     setHorarioSelecionado(
                                                         horario
                                                     );

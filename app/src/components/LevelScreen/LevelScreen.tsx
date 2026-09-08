@@ -567,15 +567,6 @@ export function LevelScreen() {
         }
       }
 
-      console.log(
-        'INSTRUMENTOS PARA SALVAR:',
-        JSON.stringify(
-          selecaoFinal,
-          null,
-          2
-        )
-      );
-
       const token =
         await getToken();
 
