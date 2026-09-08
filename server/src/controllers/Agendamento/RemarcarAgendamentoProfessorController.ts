@@ -17,43 +17,11 @@ export class RemarcarAgendamentoProfessorController {
         res: Response
     ) {
         try {
-            console.log(
-                '========================================'
-            );
-
-            console.log(
-                'REMARCAÇÃO PROFESSOR - REQUEST RECEBIDO'
-            );
-
-            console.log(
-                'tipoConta:',
-                req.tipoConta
-            );
-
-            console.log(
-                'professorId:',
-                req.professorId
-            );
-
-            console.log(
-                'params:',
-                req.params
-            );
-
-            console.log(
-                'body:',
-                req.body
-            );
-
             if (
                 req.tipoConta !==
                 'professor' ||
                 !req.professorId
             ) {
-                console.log(
-                    'REMARCAÇÃO NEGADA: não é professor autenticado.'
-                );
-
                 return res
                     .status(403)
                     .json({
@@ -77,11 +45,6 @@ export class RemarcarAgendamentoProfessorController {
                 agendamentoId <=
                 0
             ) {
-                console.log(
-                    'ID INVÁLIDO:',
-                    req.params.id
-                );
-
                 return res
                     .status(400)
                     .json({
@@ -102,11 +65,6 @@ export class RemarcarAgendamentoProfessorController {
                 typeof horario !==
                 'string'
             ) {
-                console.log(
-                    'BODY INVÁLIDO:',
-                    req.body
-                );
-
                 return res
                     .status(400)
                     .json({
@@ -160,16 +118,6 @@ export class RemarcarAgendamentoProfessorController {
                     });
             }
 
-            console.log(
-                'REMARCAÇÃO PROFESSOR - DADOS VALIDADOS:',
-                {
-                    professorId,
-                    agendamentoId,
-                    data,
-                    horario,
-                }
-            );
-
             const service =
                 new RemarcarAgendamentoProfessorService();
 
@@ -180,37 +128,6 @@ export class RemarcarAgendamentoProfessorController {
                     data,
                     horario,
                 });
-
-            console.log(
-                'REMARCAÇÃO PROFESSOR - BANCO ATUALIZADO:'
-            );
-
-            console.log({
-                id:
-                    agendamento.id,
-
-                usuarioId:
-                    agendamento.usuarioId,
-
-                professorId:
-                    agendamento.professorId,
-
-                instrumentoId:
-                    agendamento.instrumentoId,
-
-                nivelId:
-                    agendamento.nivelId,
-
-                dataHora:
-                    agendamento.dataHora,
-
-                status:
-                    agendamento.status,
-            });
-
-            console.log(
-                '========================================'
-            );
 
             return res
                 .status(200)
