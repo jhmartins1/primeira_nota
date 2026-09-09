@@ -1,11 +1,14 @@
 import { prisma } from '../../prisma/client';
+
 import { HORARIOS_DISPONIVEIS } from '../../utils/horarios';
 
 interface RemarcarAgendamentoProfessorDTO {
     professorId: number;
+
     agendamentoId: number;
 
     data: string;
+
     horario: string;
 }
 
@@ -281,35 +284,87 @@ export class RemarcarAgendamentoProfessorService {
 
         // ----------------------------------------------------
         // 14. ALTERAR SOMENTE DATA/HORA
+        //
+        // O P2002 é tratado aqui porque, mesmo após as
+        // verificações anteriores, ainda pode ocorrer uma
+        // condição de corrida entre duas requisições.
         // ----------------------------------------------------
 
-        const agendamentoRemarcado =
-            await prisma.agendamento.update({
-                where: {
-                    id:
-                        agendamentoId,
-                },
+        try {
+            const agendamentoRemarcado =
+                await prisma.agendamento.update({
+                    where: {
+                        id:
+                            agendamentoId,
+                    },
 
-                data: {
-                    dataHora,
-                },
+                    data: {
+                        dataHora,
+                    },
 
-                include: {
-                    usuario:
-                        true,
+                    include: {
+                        usuario:
+                            true,
 
-                    professor:
-                        true,
+                        professor:
+                            true,
 
-                    instrumento:
-                        true,
+                        instrumento:
+                            true,
 
-                    nivel:
-                        true,
-                },
-            });
+                        nivel:
+                            true,
+                    },
+                });
 
-        return agendamentoRemarcado;
+            return agendamentoRemarcado;
+        } catch (error: any) {
+            if (
+                error?.code ===
+                'P2002'
+            ) {
+                const target =
+                    error?.meta?.target;
+
+                if (
+                    Array.isArray(
+                        target
+                    ) &&
+                    target.includes(
+                        'usuarioId'
+                    ) &&
+                    target.includes(
+                        'dataHora'
+                    )
+                ) {
+                    throw new Error(
+                        'O aluno já possui outra aula agendada nessa data e horário.'
+                    );
+                }
+
+                if (
+                    Array.isArray(
+                        target
+                    ) &&
+                    target.includes(
+                        'professorId'
+                    ) &&
+                    target.includes(
+                        'dataHora'
+                    )
+                ) {
+                    throw new Error(
+                        'Você já possui outra aula agendada nessa data e horário.'
+                    );
+                }
+
+                throw new Error(
+                    'Esse horário não está mais disponível.'
+                );
+            }
+
+            throw error;
+        }
     }
 }
 
