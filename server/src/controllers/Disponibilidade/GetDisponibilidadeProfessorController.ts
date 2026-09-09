@@ -3,7 +3,7 @@ import type {
     Response,
 } from 'express';
 
-import { prisma } from '../../prisma/client';
+import { GetDisponibilidadeProfessorService } from '../../services/Disponibilidade/GetDisponibilidadeProfessorService';
 
 export class GetDisponibilidadeProfessorController {
     async handle(
@@ -16,31 +16,21 @@ export class GetDisponibilidadeProfessorController {
                 'professor' ||
                 !req.professorId
             ) {
-                return res.status(403).json({
-                    error:
-                        'Acesso restrito a professores.',
-                });
+                return res
+                    .status(403)
+                    .json({
+                        error:
+                            'Acesso restrito a professores.',
+                    });
             }
 
-            const agora =
-                new Date();
+            const service =
+                new GetDisponibilidadeProfessorService();
 
             const disponibilidades =
-                await prisma.disponibilidade.findMany({
-                    where: {
-                        professorId:
-                            req.professorId,
-
-                        horaInicio: {
-                            gte:
-                                agora,
-                        },
-                    },
-
-                    orderBy: {
-                        horaInicio:
-                            'asc',
-                    },
+                await service.execute({
+                    professorId:
+                        req.professorId,
                 });
 
             return res
@@ -54,10 +44,12 @@ export class GetDisponibilidadeProfessorController {
                 error
             );
 
-            return res.status(500).json({
-                error:
-                    'Erro interno ao buscar disponibilidades.',
-            });
+            return res
+                .status(500)
+                .json({
+                    error:
+                        'Erro interno ao buscar disponibilidades.',
+                });
         }
     }
 }
