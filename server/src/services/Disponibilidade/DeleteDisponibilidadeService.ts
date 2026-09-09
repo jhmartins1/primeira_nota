@@ -1,3 +1,4 @@
+import { AppError } from '../../errors/AppError';
 import { prisma } from '../../prisma/client';
 
 interface DeleteDisponibilidadeDTO {
@@ -14,8 +15,9 @@ export class DeleteDisponibilidadeService {
             !Number.isInteger(professorId) ||
             professorId <= 0
         ) {
-            throw new Error(
-                'Professor inválido.'
+            throw new AppError(
+                'Professor inválido.',
+                400
             );
         }
 
@@ -25,8 +27,9 @@ export class DeleteDisponibilidadeService {
             ) ||
             disponibilidadeId <= 0
         ) {
-            throw new Error(
-                'Disponibilidade inválida.'
+            throw new AppError(
+                'Disponibilidade inválida.',
+                400
             );
         }
 
@@ -45,8 +48,9 @@ export class DeleteDisponibilidadeService {
             disponibilidade.professorId !==
             professorId
         ) {
-            throw new Error(
-                'Disponibilidade não encontrada.'
+            throw new AppError(
+                'Disponibilidade não encontrada.',
+                404
             );
         }
 
@@ -55,11 +59,14 @@ export class DeleteDisponibilidadeService {
                 {
                     where: {
                         professorId,
+
                         status:
                             'AGENDADO',
+
                         dataHora: {
                             gte:
                                 disponibilidade.horaInicio,
+
                             lt:
                                 disponibilidade.horaFim,
                         },
@@ -70,8 +77,9 @@ export class DeleteDisponibilidadeService {
         if (
             agendamentoConflitante
         ) {
-            throw new Error(
-                'Já existe uma aula agendada nesse horário. Cancele a aula antes de remover este horário.'
+            throw new AppError(
+                'Já existe uma aula agendada nesse horário. Cancele a aula antes de remover este horário.',
+                409
             );
         }
 

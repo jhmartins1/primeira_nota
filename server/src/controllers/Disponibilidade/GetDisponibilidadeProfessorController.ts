@@ -3,6 +3,8 @@ import type {
     Response,
 } from 'express';
 
+import { AppError } from '../../errors/AppError';
+
 import { GetDisponibilidadeProfessorService } from '../../services/Disponibilidade/GetDisponibilidadeProfessorService';
 
 export class GetDisponibilidadeProfessorController {
@@ -43,6 +45,20 @@ export class GetDisponibilidadeProfessorController {
                 'Erro ao buscar disponibilidades:',
                 error
             );
+
+            if (
+                error instanceof
+                AppError
+            ) {
+                return res
+                    .status(
+                        error.statusCode
+                    )
+                    .json({
+                        error:
+                            error.message,
+                    });
+            }
 
             return res
                 .status(500)

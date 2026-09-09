@@ -3,6 +3,8 @@ import type {
     Response,
 } from 'express';
 
+import { AppError } from '../../errors/AppError';
+
 import { CreateDisponibilidadeService } from '../../services/Disponibilidade/CreateDisponibilidadeService';
 
 export class CreateDisponibilidadeController {
@@ -45,9 +47,7 @@ export class CreateDisponibilidadeController {
 
             return res
                 .status(201)
-                .json(
-                    resultado
-                );
+                .json(resultado);
         } catch (error) {
             console.error(
                 'Erro ao criar disponibilidades:',
@@ -56,10 +56,12 @@ export class CreateDisponibilidadeController {
 
             if (
                 error instanceof
-                Error
+                AppError
             ) {
                 return res
-                    .status(400)
+                    .status(
+                        error.statusCode
+                    )
                     .json({
                         error:
                             error.message,

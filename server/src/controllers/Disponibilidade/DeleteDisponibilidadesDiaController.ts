@@ -3,6 +3,8 @@ import type {
     Response,
 } from 'express';
 
+import { AppError } from '../../errors/AppError';
+
 import { DeleteDisponibilidadesDiaService } from '../../services/Disponibilidade/DeleteDisponibilidadesDiaService';
 
 export class DeleteDisponibilidadesDiaController {
@@ -35,12 +37,10 @@ export class DeleteDisponibilidadesDiaController {
                     : dataParam;
 
             if (!data) {
-                return res
-                    .status(400)
-                    .json({
-                        error:
-                            'Data inválida. Utilize o formato YYYY-MM-DD.',
-                    });
+                throw new AppError(
+                    'Data inválida. Utilize o formato YYYY-MM-DD.',
+                    400
+                );
             }
 
             const service =
@@ -55,9 +55,7 @@ export class DeleteDisponibilidadesDiaController {
 
             return res
                 .status(200)
-                .json(
-                    resultado
-                );
+                .json(resultado);
         } catch (error) {
             console.error(
                 'Erro ao remover horários do dia:',
@@ -65,28 +63,13 @@ export class DeleteDisponibilidadesDiaController {
             );
 
             if (
-                error instanceof Error
+                error instanceof
+                AppError
             ) {
-                let status =
-                    400;
-
-                if (
-                    error.message ===
-                    'Nenhum horário encontrado nesta data.'
-                ) {
-                    status = 404;
-                }
-
-                if (
-                    error.message.includes(
-                        'Existe uma aula agendada'
-                    )
-                ) {
-                    status = 409;
-                }
-
                 return res
-                    .status(status)
+                    .status(
+                        error.statusCode
+                    )
                     .json({
                         error:
                             error.message,
