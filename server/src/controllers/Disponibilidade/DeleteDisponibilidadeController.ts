@@ -3,6 +3,8 @@ import type {
     Response,
 } from 'express';
 
+import { AppError } from '../../errors/AppError';
+
 import { DeleteDisponibilidadeService } from '../../services/Disponibilidade/DeleteDisponibilidadeService';
 
 export class DeleteDisponibilidadeController {
@@ -50,20 +52,12 @@ export class DeleteDisponibilidadeController {
 
             if (
                 error instanceof
-                Error
+                AppError
             ) {
-                const status =
-                    error.message ===
-                        'Disponibilidade não encontrada.'
-                        ? 404
-                        : error.message.includes(
-                            'Já existe uma aula agendada'
-                        )
-                            ? 409
-                            : 400;
-
                 return res
-                    .status(status)
+                    .status(
+                        error.statusCode
+                    )
                     .json({
                         error:
                             error.message,

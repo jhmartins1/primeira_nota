@@ -1,3 +1,4 @@
+import { AppError } from '../../errors/AppError';
 import { prisma } from '../../prisma/client';
 
 interface DeleteDisponibilidadesDiaDTO {
@@ -14,14 +15,20 @@ export class DeleteDisponibilidadesDiaService {
             !Number.isInteger(professorId) ||
             professorId <= 0
         ) {
-            throw new Error(
-                'Professor inválido.'
+            throw new AppError(
+                'Professor inválido.',
+                400
             );
         }
 
-        if (!ehDataValida(data)) {
-            throw new Error(
-                'Data inválida. Utilize o formato YYYY-MM-DD.'
+        if (
+            !ehDataValida(
+                data
+            )
+        ) {
+            throw new AppError(
+                'Data inválida. Utilize o formato YYYY-MM-DD.',
+                400
             );
         }
 
@@ -36,66 +43,77 @@ export class DeleteDisponibilidadesDiaService {
             );
 
         const agendamento =
-            await prisma.agendamento.findFirst({
-                where: {
-                    professorId,
+            await prisma.agendamento.findFirst(
+                {
+                    where: {
+                        professorId,
 
-                    status:
-                        'AGENDADO',
+                        status:
+                            'AGENDADO',
 
-                    dataHora: {
-                        gte:
-                            inicioDia,
+                        dataHora: {
+                            gte:
+                                inicioDia,
 
-                        lt:
-                            fimDia,
+                            lt:
+                                fimDia,
+                        },
                     },
-                },
-            });
+                }
+            );
 
-        if (agendamento) {
-            throw new Error(
-                'Existe uma aula agendada neste dia. Cancele a aula antes de remover todos os horários.'
+        if (
+            agendamento
+        ) {
+            throw new AppError(
+                'Existe uma aula agendada neste dia. Cancele a aula antes de remover todos os horários.',
+                409
             );
         }
 
         const quantidadeDisponivel =
-            await prisma.disponibilidade.count({
-                where: {
-                    professorId,
+            await prisma.disponibilidade.count(
+                {
+                    where: {
+                        professorId,
 
-                    horaInicio: {
-                        gte:
-                            inicioDia,
+                        horaInicio: {
+                            gte:
+                                inicioDia,
 
-                        lt:
-                            fimDia,
+                            lt:
+                                fimDia,
+                        },
                     },
-                },
-            });
+                }
+            );
 
         if (
-            quantidadeDisponivel === 0
+            quantidadeDisponivel ===
+            0
         ) {
-            throw new Error(
-                'Nenhum horário encontrado nesta data.'
+            throw new AppError(
+                'Nenhum horário encontrado nesta data.',
+                404
             );
         }
 
         const resultado =
-            await prisma.disponibilidade.deleteMany({
-                where: {
-                    professorId,
+            await prisma.disponibilidade.deleteMany(
+                {
+                    where: {
+                        professorId,
 
-                    horaInicio: {
-                        gte:
-                            inicioDia,
+                        horaInicio: {
+                            gte:
+                                inicioDia,
 
-                        lt:
-                            fimDia,
+                            lt:
+                                fimDia,
+                        },
                     },
-                },
-            });
+                }
+            );
 
         return {
             message:
@@ -121,7 +139,9 @@ function ehDataValida(
     }
 
     const partes =
-        data.split('-');
+        data.split(
+            '-'
+        );
 
     const anoTexto =
         partes[0];
@@ -141,13 +161,19 @@ function ehDataValida(
     }
 
     const ano =
-        Number(anoTexto);
+        Number(
+            anoTexto
+        );
 
     const mes =
-        Number(mesTexto);
+        Number(
+            mesTexto
+        );
 
     const dia =
-        Number(diaTexto);
+        Number(
+            diaTexto
+        );
 
     if (
         !Number.isInteger(ano) ||

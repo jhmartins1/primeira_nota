@@ -1,3 +1,4 @@
+import { AppError } from '../../errors/AppError';
 import { prisma } from '../../prisma/client';
 
 interface GetDisponibilidadeProfessorDTO {
@@ -12,8 +13,9 @@ export class GetDisponibilidadeProfessorService {
             !Number.isInteger(professorId) ||
             professorId <= 0
         ) {
-            throw new Error(
-                'Professor inválido.'
+            throw new AppError(
+                'Professor inválido.',
+                400
             );
         }
 
@@ -21,20 +23,23 @@ export class GetDisponibilidadeProfessorService {
             new Date();
 
         const disponibilidades =
-            await prisma.disponibilidade.findMany({
-                where: {
-                    professorId,
+            await prisma.disponibilidade.findMany(
+                {
+                    where: {
+                        professorId,
 
-                    horaInicio: {
-                        gte: agora,
+                        horaInicio: {
+                            gte:
+                                agora,
+                        },
                     },
-                },
 
-                orderBy: {
-                    horaInicio:
-                        'asc',
-                },
-            });
+                    orderBy: {
+                        horaInicio:
+                            'asc',
+                    },
+                }
+            );
 
         return disponibilidades;
     }

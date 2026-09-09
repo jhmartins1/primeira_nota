@@ -1,3 +1,4 @@
+import { AppError } from '../../errors/AppError';
 import { prisma } from '../../prisma/client';
 
 interface CreateDisponibilidadeDTO {
@@ -29,8 +30,9 @@ export class CreateDisponibilidadeService {
             !Number.isInteger(professorId) ||
             professorId <= 0
         ) {
-            throw new Error(
-                'Professor inválido.'
+            throw new AppError(
+                'Professor inválido.',
+                400
             );
         }
 
@@ -38,8 +40,9 @@ export class CreateDisponibilidadeService {
             typeof dataInicial !==
             'string'
         ) {
-            throw new Error(
-                'Data inicial inválida.'
+            throw new AppError(
+                'Data inicial inválida.',
+                400
             );
         }
 
@@ -47,8 +50,9 @@ export class CreateDisponibilidadeService {
             !Array.isArray(horarios) ||
             horarios.length === 0
         ) {
-            throw new Error(
-                'Informe pelo menos um horário.'
+            throw new AppError(
+                'Informe pelo menos um horário.',
+                400
             );
         }
 
@@ -56,8 +60,9 @@ export class CreateDisponibilidadeService {
             typeof repetirProximos14Dias !==
             'boolean'
         ) {
-            throw new Error(
-                'repetirProximos14Dias deve ser boolean.'
+            throw new AppError(
+                'repetirProximos14Dias deve ser boolean.',
+                400
             );
         }
 
@@ -66,8 +71,9 @@ export class CreateDisponibilidadeService {
                 dataInicial
             )
         ) {
-            throw new Error(
-                'Data inicial inválida.'
+            throw new AppError(
+                'Data inicial inválida.',
+                400
             );
         }
 
@@ -85,8 +91,9 @@ export class CreateDisponibilidadeService {
             horariosInvalidos.length >
             0
         ) {
-            throw new Error(
-                'Existe um horário inválido.'
+            throw new AppError(
+                'Existe um horário inválido.',
+                400
             );
         }
 
@@ -147,8 +154,9 @@ export class CreateDisponibilidadeService {
             registros.length ===
             0
         ) {
-            throw new Error(
-                'Nenhum horário futuro válido foi informado.'
+            throw new AppError(
+                'Nenhum horário futuro válido foi informado.',
+                400
             );
         }
 
@@ -211,10 +219,12 @@ function adicionarHorariosDoDia(
 
         registros.push({
             professorId,
-            data: inicio,
+            data:
+                inicio,
             horaInicio:
                 inicio,
-            horaFim: fim,
+            horaFim:
+                fim,
         });
     }
 }
@@ -248,35 +258,38 @@ function adicionarDias(
     if (
         partes.length !== 3
     ) {
-        throw new Error(
-            'Data inicial inválida.'
+        throw new AppError(
+            'Data inicial inválida.',
+            400
         );
     }
 
     const ano =
-        Number(partes[0]);
+        Number(
+            partes[0]
+        );
 
     const mes =
-        Number(partes[1]);
+        Number(
+            partes[1]
+        );
 
     const dia =
-        Number(partes[2]);
+        Number(
+            partes[2]
+        );
 
     if (
         Number.isNaN(ano) ||
         Number.isNaN(mes) ||
         Number.isNaN(dia)
     ) {
-        throw new Error(
-            'Data inicial inválida.'
+        throw new AppError(
+            'Data inicial inválida.',
+            400
         );
     }
 
-    /*
-     * Usamos UTC ao adicionar
-     * dias para não depender
-     * do timezone do servidor.
-     */
     const dataUTC =
         new Date(
             Date.UTC(
