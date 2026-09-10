@@ -264,7 +264,7 @@ export default function ProfessorHomeScreen() {
                                 styles.eyebrow
                             }
                         >
-                            PRIMEIRA NOTA ·
+                            TOCAÊ ·
                             PROFESSOR
                         </Text>
 

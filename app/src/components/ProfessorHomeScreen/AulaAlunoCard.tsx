@@ -103,7 +103,7 @@ export function AulaAlunoCard({
 
         const mensagem =
             `Olá, ${primeiroNomeAluno}! ` +
-            `Sou seu professor no Primeira Nota e queria falar sobre nossa aula de ${aula.instrumento.name} ` +
+            `Sou seu professor no Tocaê e queria falar sobre nossa aula de ${aula.instrumento.name} ` +
             `no dia ${dataFormatada.data} às ${dataFormatada.hora}.`;
 
         const url =

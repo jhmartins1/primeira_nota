@@ -349,7 +349,7 @@ export function InstrumentScreen() {
                         styles.headerTitulo
                     }
                 >
-                    Primeira Nota
+                    Tocaê
                 </Text>
             </View>
 

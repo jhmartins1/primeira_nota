@@ -206,7 +206,7 @@ export default function DisponibilidadeScreen() {
                             },
                         ]}
                     >
-                        PRIMEIRA NOTA · PROFESSOR
+                        TOCAÊ · PROFESSOR
                     </Text>
 
                     <Text
