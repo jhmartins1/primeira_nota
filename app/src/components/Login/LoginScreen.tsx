@@ -194,11 +194,11 @@ export function LoginScreen() {
                         }
                     >
                         <Image
-                            source={require('../../../assets/images/primeira_nota_logo2.png')}
+                            source={require('../../../assets/images/tocae_logo.png')}
                             style={
                                 styles.logo
                             }
-                            resizeMode="contain"
+                            resizeMode="cover"
                         />
                     </View>
 
@@ -213,7 +213,7 @@ export function LoginScreen() {
                             styles.tituloDestaque
                         }
                     >
-                        na Primeira Nota
+                        no Tocaê
                     </Text>
 
                     <Text

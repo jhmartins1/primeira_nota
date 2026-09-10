@@ -106,40 +106,29 @@ export const styles =
 
         //LOGO
         logoContainer: {
-            width: 145,
-            height: 145,
+            width: 155,
+            height: 155,
 
-            borderRadius: 42,
-
-            backgroundColor:
-                '#FFFFFF',
-
-            alignItems:
-                'center',
-
-            justifyContent:
-                'center',
+            alignItems: 'center',
+            justifyContent: 'center',
 
             marginBottom: 24,
 
             elevation: 10,
 
             shadowColor: '#000',
-
             shadowOffset: {
                 width: 0,
                 height: 8,
             },
-
-            shadowOpacity:
-                0.18,
-
+            shadowOpacity: 0.18,
             shadowRadius: 18,
         },
 
         logo: {
-            width: 125,
-            height: 125,
+            width: 155,
+            height: 155,
+            borderRadius: 38,
         },
 
         //TÍTULO

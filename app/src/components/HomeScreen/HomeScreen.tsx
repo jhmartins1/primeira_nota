@@ -243,7 +243,7 @@ export default function HomeScreen() {
                                 styles.eyebrow
                             }
                         >
-                            PRIMEIRA NOTA
+                            TOCAÊ
                         </Text>
 
                         <Text
