@@ -1,16 +1,17 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
+const AZUL = colors.navy;
 
 export const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#F5F6FA',
+        backgroundColor: colors.background,
     },
 
     container: {
         flex: 1,
-        backgroundColor: '#F5F6FA',
+        backgroundColor: colors.background,
     },
 
     // LOADING
@@ -18,13 +19,13 @@ export const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#F5F6FA',
+        backgroundColor: colors.background,
     },
 
     loadingTexto: {
         marginTop: 12,
         fontSize: 14,
-        color: '#6B7280',
+        color: colors.textSecondary,
     },
 
     // HEADER
@@ -32,7 +33,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 8,
         paddingBottom: 8,
-        backgroundColor: '#F5F6FA',
+        backgroundColor: colors.background,
     },
 
     botaoVoltar: {
@@ -69,40 +70,38 @@ export const styles = StyleSheet.create({
         borderRadius: 22,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#EAF0FB',
+        backgroundColor: colors.yellowSoft,
         borderWidth: 1,
-        borderColor: '#DCE6F5',
+        borderColor: colors.yellowBorder,
         marginBottom: 14,
     },
 
     titulo: {
+        letterSpacing: -0.7,
         fontSize: 27,
         fontWeight: '800',
-        color: '#1A1E29',
+        color: colors.text,
         marginBottom: 7,
     },
 
     subtitulo: {
         fontSize: 14,
-        color: '#6B7280',
+        color: colors.textSecondary,
         textAlign: 'center',
     },
 
     // CARD
     card: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
+        backgroundColor: colors.surface,
+        borderRadius: 22,
         padding: 20,
         borderWidth: 1,
-        borderColor: '#E7EAF0',
+        borderColor: colors.border,
 
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
+        shadowColor: colors.navy,
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
 
         elevation: 2,
     },
@@ -117,30 +116,30 @@ export const styles = StyleSheet.create({
         marginLeft: 9,
         fontSize: 17,
         fontWeight: '700',
-        color: '#1A1E29',
+        color: colors.text,
     },
 
     label: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#374151',
+        color: colors.text,
         marginBottom: 8,
     },
 
     input: {
         width: '100%',
         height: 54,
-        borderRadius: 13,
+        borderRadius: 14,
         borderWidth: 1,
-        borderColor: '#DDE2EA',
-        backgroundColor: '#FFFFFF',
+        borderColor: colors.border,
+        backgroundColor: colors.background,
         paddingHorizontal: 16,
         fontSize: 16,
-        color: '#1A1E29',
+        color: colors.text,
     },
 
     inputErro: {
-        borderColor: '#B42318',
+        borderColor: colors.danger,
     },
 
     // MENSAGENS
@@ -155,7 +154,7 @@ export const styles = StyleSheet.create({
         marginLeft: 6,
         fontSize: 12,
         lineHeight: 18,
-        color: '#B42318',
+        color: colors.danger,
     },
 
     mensagemSucesso: {
@@ -169,7 +168,7 @@ export const styles = StyleSheet.create({
         marginLeft: 6,
         fontSize: 12,
         lineHeight: 18,
-        color: '#2E8B57',
+        color: colors.success,
         fontWeight: '600',
     },
 
@@ -180,9 +179,9 @@ export const styles = StyleSheet.create({
         marginTop: 16,
         padding: 16,
         borderRadius: 15,
-        backgroundColor: '#EAF0FB',
+        backgroundColor: colors.tealSoft,
         borderWidth: 1,
-        borderColor: '#DCE6F5',
+        borderColor: colors.tealBorder,
     },
 
     infoTexto: {
@@ -190,7 +189,7 @@ export const styles = StyleSheet.create({
         marginLeft: 10,
         fontSize: 13,
         lineHeight: 19,
-        color: '#4B5563',
+        color: colors.textSecondary,
     },
 
     // FOOTER
@@ -199,29 +198,26 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: 12,
         paddingBottom: 16,
-        backgroundColor: '#F5F6FA',
+        backgroundColor: colors.surface,
     },
 
     botaoSalvar: {
         width: '100%',
         height: 54,
-        borderRadius: 14,
-        backgroundColor: AZUL,
+        borderRadius: 16,
+        backgroundColor: colors.navy,
 
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 9,
 
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 4,
+        shadowColor: colors.navy,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.14,
+        shadowRadius: 10,
 
-        elevation: 2,
+        elevation: 3,
     },
 
     botaoSalvarDesabilitado: {
@@ -231,7 +227,7 @@ export const styles = StyleSheet.create({
     botaoSalvarTexto: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#FFFFFF',
+        color: colors.surface,
     },
     cardEndereco: {
         marginTop: 16,
@@ -253,9 +249,9 @@ export const styles = StyleSheet.create({
         marginTop: 12,
         padding: 14,
         borderRadius: 13,
-        backgroundColor: '#EAF0FB',
+        backgroundColor: colors.tealSoft,
         borderWidth: 1,
-        borderColor: '#DCE6F5',
+        borderColor: colors.tealBorder,
     },
 
     enderecoPreviewConteudo: {
@@ -266,13 +262,13 @@ export const styles = StyleSheet.create({
     enderecoRua: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#1A1E29',
+        color: colors.text,
     },
 
     enderecoCidade: {
         marginTop: 3,
         fontSize: 12,
-        color: '#6B7280',
+        color: colors.textSecondary,
     },
 
     linhaEndereco: {
@@ -296,7 +292,7 @@ export const styles = StyleSheet.create({
         marginTop: 14,
         padding: 14,
         borderRadius: 13,
-        backgroundColor: '#FFF1F0',
+        backgroundColor: colors.dangerSoft,
     },
 
     mensagemGeralSucesso: {
@@ -306,7 +302,7 @@ export const styles = StyleSheet.create({
         marginTop: 14,
         padding: 14,
         borderRadius: 13,
-        backgroundColor: '#ECFDF3',
+        backgroundColor: colors.successSoft,
     },
     campoEndereco: {
         marginTop: 16,

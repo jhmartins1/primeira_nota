@@ -1,27 +1,28 @@
+import { colors } from '../../theme/colors';
 import {
     StyleSheet,
 } from 'react-native';
 
 const AZUL =
-    '#093373';
+    colors.navy;
 
 const AZUL_CLARO =
-    '#EAF0FB';
+    colors.tealSoft;
 
 const FUNDO =
-    '#F5F6FA';
+    colors.background;
 
 const BORDA =
-    '#E7EAF0';
+    colors.border;
 
 const TEXTO_PRINCIPAL =
-    '#1A1E29';
+    colors.text;
 
 const TEXTO_SECUNDARIO =
-    '#6B7280';
+    colors.textSecondary;
 
 const VERMELHO_FUNDO =
-    '#FFF1F0';
+    colors.dangerSoft;
 
 export const styles =
     StyleSheet.create({
@@ -47,7 +48,7 @@ export const styles =
         eyebrow: {
             fontSize: 12,
             fontWeight: '700',
-            color: AZUL,
+            color: colors.teal,
             letterSpacing: 1.4,
             textTransform:
                 'uppercase',
@@ -71,7 +72,7 @@ export const styles =
 
         vazioCard: {
             backgroundColor:
-                '#FFFFFF',
+                colors.surface,
             borderRadius: 20,
             borderWidth: 1,
             borderColor: BORDA,
@@ -128,10 +129,10 @@ export const styles =
 
         horarioCard: {
             backgroundColor:
-                '#FFFFFF',
+                colors.surface,
             borderWidth: 1,
             borderColor: BORDA,
-            borderRadius: 14,
+            borderRadius: 18,
             paddingVertical: 12,
             paddingHorizontal:
                 14,
@@ -146,7 +147,7 @@ export const styles =
             height: 38,
             borderRadius: 10,
             backgroundColor:
-                AZUL_CLARO,
+                colors.yellowSoft,
             alignItems:
                 'center',
             justifyContent:
@@ -183,7 +184,7 @@ export const styles =
                 20,
             borderRadius: 26,
             backgroundColor:
-                AZUL,
+                colors.teal,
             flexDirection: 'row',
             alignItems:
                 'center',
@@ -203,7 +204,7 @@ export const styles =
         botaoAdicionarTexto:
         {
             color:
-                '#FFFFFF',
+                colors.surface,
             fontWeight:
                 '800',
             fontSize: 14,
@@ -219,11 +220,11 @@ export const styles =
 
         modalConteudo: {
             backgroundColor:
-                '#FFFFFF',
+                colors.surface,
             borderTopLeftRadius:
-                24,
+                30,
             borderTopRightRadius:
-                24,
+                30,
             paddingHorizontal:
                 22,
             paddingTop: 20,
@@ -236,7 +237,7 @@ export const styles =
             height: 4,
             borderRadius: 2,
             backgroundColor:
-                BORDA,
+                colors.turquoise,
             alignSelf:
                 'center',
             marginBottom: 16,
@@ -324,9 +325,9 @@ export const styles =
         horarioOpcaoSelecionado:
         {
             borderColor:
-                AZUL,
+                colors.teal,
             backgroundColor:
-                AZUL_CLARO,
+                colors.tealSoft,
         },
 
         horarioOpcaoTexto: {
@@ -347,7 +348,7 @@ export const styles =
             borderRadius: 6,
             borderWidth: 1.5,
             borderColor:
-                '#AAB2C0',
+                colors.disabled,
             alignItems:
                 'center',
             justifyContent:
@@ -356,8 +357,8 @@ export const styles =
 
         checkboxSelecionado: {
             backgroundColor:
-                AZUL,
-            borderColor: AZUL,
+                colors.teal,
+            borderColor: colors.teal,
         },
 
         infoAula: {
@@ -383,9 +384,9 @@ export const styles =
         repeticaoOpcaoSelecionada:
         {
             borderColor:
-                AZUL,
+                colors.teal,
             backgroundColor:
-                AZUL_CLARO,
+                colors.tealSoft,
         },
 
         radio: {
@@ -394,7 +395,7 @@ export const styles =
             borderRadius: 11,
             borderWidth: 2,
             borderColor:
-                '#AAB2C0',
+                colors.disabled,
             alignItems:
                 'center',
             justifyContent:
@@ -402,7 +403,7 @@ export const styles =
         },
 
         radioSelecionado: {
-            borderColor: AZUL,
+            borderColor: colors.teal,
         },
 
         radioCentro: {
@@ -410,7 +411,7 @@ export const styles =
             height: 10,
             borderRadius: 5,
             backgroundColor:
-                AZUL,
+                colors.teal,
         },
 
         repeticaoTitulo: {
@@ -450,10 +451,15 @@ export const styles =
         },
 
         botaoSalvar: {
+        shadowColor: colors.navy,
+        shadowOpacity: 0.14,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 3,
             height: 52,
-            borderRadius: 14,
+            borderRadius: 16,
             backgroundColor:
-                AZUL,
+                colors.navy,
             alignItems:
                 'center',
             justifyContent:
@@ -467,7 +473,7 @@ export const styles =
         },
 
         botaoSalvarTexto: {
-            color: '#FFFFFF',
+            color: colors.surface,
             fontWeight: '800',
             fontSize: 15,
         },
@@ -518,6 +524,6 @@ export const styles =
         botaoApagarDiaTexto: {
             fontSize: 12,
             fontWeight: '800',
-            color: '#B42318',
+            color: colors.danger,
         },
     });

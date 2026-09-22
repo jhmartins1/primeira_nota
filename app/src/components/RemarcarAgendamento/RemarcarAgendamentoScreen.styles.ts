@@ -1,16 +1,17 @@
+import { colors } from '../../theme/colors';
 import {
     StyleSheet,
 } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_CLARO = '#EAF0FB';
-const FUNDO = '#F5F6FA';
-const BRANCO = '#FFFFFF';
-const TEXTO = '#1A1E29';
+const AZUL = colors.navy;
+const AZUL_CLARO = colors.tealSoft;
+const FUNDO = colors.background;
+const BRANCO = colors.surface;
+const TEXTO = colors.text;
 const TEXTO_SECUNDARIO =
-    '#6B7280';
-const BORDA = '#E3E7EF';
-const DOURADO = '#B8842E';
+    colors.textSecondary;
+const BORDA = colors.border;
+const DOURADO = colors.amberText;
 
 export const styles =
     StyleSheet.create({
@@ -104,8 +105,13 @@ export const styles =
         // --------------------------------
 
         cardResumo: {
+        shadowColor: colors.navy,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 5 },
+        elevation: 2,
             padding: 16,
-            borderRadius: 18,
+            borderRadius: 22,
             backgroundColor:
                 BRANCO,
             borderWidth: 1,
@@ -122,7 +128,7 @@ export const styles =
             height: 52,
             borderRadius: 16,
             backgroundColor:
-                AZUL_CLARO,
+                colors.yellowSoft,
             alignItems:
                 'center',
             justifyContent:
@@ -175,9 +181,9 @@ export const styles =
             borderRadius: 16,
             borderWidth: 1,
             borderColor:
-                '#EADFCB',
+                colors.yellowBorder,
             backgroundColor:
-                '#FFFBF4',
+                colors.yellowSoft,
         },
 
         atualCabecalho: {
@@ -197,7 +203,7 @@ export const styles =
             justifyContent:
                 'center',
             backgroundColor:
-                '#F7ECD8',
+                colors.yellowSoft,
         },
 
         atualLabel: {
@@ -246,7 +252,7 @@ export const styles =
             marginRight: 10,
             borderRadius: 10,
             backgroundColor:
-                AZUL,
+                colors.teal,
             alignItems:
                 'center',
             justifyContent:
@@ -304,9 +310,9 @@ export const styles =
 
         dataCardSelecionado: {
             borderColor:
-                AZUL,
+                colors.teal,
             backgroundColor:
-                AZUL,
+                colors.teal,
         },
 
         dataDiaSemana: {
@@ -362,7 +368,7 @@ export const styles =
             borderRadius: 13,
             borderWidth: 1,
             borderColor:
-                '#D8E2F0',
+                colors.tealBorder,
             backgroundColor:
                 BRANCO,
             flexDirection:
@@ -376,9 +382,9 @@ export const styles =
 
         horarioCardSelecionado: {
             borderColor:
-                AZUL,
+                colors.teal,
             backgroundColor:
-                AZUL,
+                colors.teal,
         },
 
         horarioTexto: {
@@ -466,7 +472,7 @@ export const styles =
             borderRadius: 16,
             borderWidth: 1,
             borderColor:
-                '#D6E1F0',
+                colors.tealBorder,
             backgroundColor:
                 AZUL_CLARO,
             flexDirection:
@@ -525,9 +531,9 @@ export const styles =
 
         botaoConfirmar: {
             height: 52,
-            borderRadius: 15,
+            borderRadius: 16,
             backgroundColor:
-                AZUL,
+                colors.navy,
             flexDirection:
                 'row',
             alignItems:
@@ -536,14 +542,11 @@ export const styles =
                 'center',
             gap: 8,
             shadowColor:
-                '#000000',
-            shadowOffset: {
-                width: 0,
-                height: 3,
-            },
+                colors.navy,
+            shadowOffset: { width: 0, height: 4 },
             shadowOpacity:
-                0.12,
-            shadowRadius: 7,
+                0.14,
+            shadowRadius: 10,
             elevation: 3,
         },
 

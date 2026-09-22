@@ -1,17 +1,18 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_CLARO = '#EAF0FB';
-const FUNDO = '#F5F6FA';
-const BORDA = '#E7EAF0';
-const TEXTO_PRINCIPAL = '#1A1E29';
-const TEXTO_SECUNDARIO = '#6B7280';
-const DOURADO = '#B8842E';
-const DOURADO_FUNDO = '#FBF1DE';
-const VERDE = '#2E8B57';
-const VERDE_FUNDO = '#EAF6EF';
-const VERMELHO = '#B42318';
-const VERMELHO_FUNDO = '#FFF1F0';
+const AZUL = colors.navy;
+const AZUL_CLARO = colors.tealSoft;
+const FUNDO = colors.background;
+const BORDA = colors.border;
+const TEXTO_PRINCIPAL = colors.text;
+const TEXTO_SECUNDARIO = colors.textSecondary;
+const DOURADO = colors.amberText;
+const DOURADO_FUNDO = colors.yellowSoft;
+const VERDE = colors.success;
+const VERDE_FUNDO = colors.successSoft;
+const VERMELHO = colors.danger;
+const VERMELHO_FUNDO = colors.dangerSoft;
 
 export const styles = StyleSheet.create({
     container: {
@@ -37,10 +38,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
 
-        backgroundColor: '#FEF2F2',
+        backgroundColor: colors.dangerSoft,
 
         borderWidth: 1,
-        borderColor: '#FDE2E2',
+        borderColor: colors.dangerBorder,
     },
 
     botaoLogoutCarregando: {
@@ -50,40 +51,41 @@ export const styles = StyleSheet.create({
     eyebrow: {
         fontSize: 12,
         fontWeight: '700',
-        color: AZUL,
+        color: colors.teal,
         letterSpacing: 1.4,
         textTransform: 'uppercase',
         marginBottom: 5,
     },
 
     titulo: {
+        letterSpacing: -0.8,
         fontSize: 28,
         fontWeight: '800',
         color: TEXTO_PRINCIPAL,
     },
 
     subtitulo: {
+        lineHeight: 21,
         fontSize: 14,
         color: TEXTO_SECUNDARIO,
         marginTop: 5,
     },
 
     proximaAulaCard: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
+        borderTopWidth: 4,
+        borderTopColor: colors.turquoise,
+        backgroundColor: colors.surface,
+        borderRadius: 22,
         borderWidth: 1,
         borderColor: BORDA,
-        padding: 18,
+        padding: 20,
         marginBottom: 28,
 
-        shadowColor: '#0F1B3D',
-        shadowOffset: {
-            width: 0,
-            height: 7,
-        },
-        shadowOpacity: 0.06,
-        shadowRadius: 14,
-        elevation: 3,
+        shadowColor: colors.navy,
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
+        elevation: 2,
     },
 
     proximaAulaTopo: {
@@ -96,7 +98,7 @@ export const styles = StyleSheet.create({
     proximaAulaLabel: {
         fontSize: 11,
         fontWeight: '800',
-        color: AZUL,
+        color: colors.teal,
         letterSpacing: 1.2,
     },
 
@@ -132,8 +134,8 @@ export const styles = StyleSheet.create({
     proximaAulaIcone: {
         width: 58,
         height: 58,
-        borderRadius: 17,
-        backgroundColor: AZUL_CLARO,
+        borderRadius: 20,
+        backgroundColor: colors.yellowSoft,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 14,
@@ -227,10 +229,15 @@ export const styles = StyleSheet.create({
         color: TEXTO_PRINCIPAL,
     },
     semAulaCard: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 20,
+        shadowColor: colors.navy,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 5 },
+        elevation: 2,
+        backgroundColor: colors.tealSoft,
+        borderRadius: 22,
         borderWidth: 1,
-        borderColor: BORDA,
+        borderColor: colors.tealBorder,
         padding: 24,
         alignItems: 'center',
         marginBottom: 28,
@@ -240,7 +247,7 @@ export const styles = StyleSheet.create({
         width: 66,
         height: 66,
         borderRadius: 33,
-        backgroundColor: AZUL_CLARO,
+        backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 14,
@@ -273,7 +280,7 @@ export const styles = StyleSheet.create({
     },
 
     semAulaBotaoTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontSize: 13,
         fontWeight: '700',
     },
@@ -322,10 +329,15 @@ export const styles = StyleSheet.create({
         gap: 10,
     },
     aulaCard: {
-        backgroundColor: '#FFFFFF',
+        shadowColor: colors.navy,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 5 },
+        elevation: 2,
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: BORDA,
-        borderRadius: 16,
+        borderRadius: 22,
         padding: 16,
     },
 
@@ -338,8 +350,8 @@ export const styles = StyleSheet.create({
     aulaIcone: {
         width: 50,
         height: 50,
-        borderRadius: 14,
-        backgroundColor: AZUL_CLARO,
+        borderRadius: 16,
+        backgroundColor: colors.orangeSoft,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
@@ -453,9 +465,9 @@ export const styles = StyleSheet.create({
 
         borderWidth: 1,
 
-        borderColor: '#E5D0CE',
+        borderColor: colors.dangerBorder,
 
-        backgroundColor: '#FFF8F7',
+        backgroundColor: colors.dangerSoft,
 
         flexDirection: 'row',
 
@@ -471,11 +483,11 @@ export const styles = StyleSheet.create({
 
         fontWeight: '700',
 
-        color: '#B42318',
+        color: colors.danger,
     },
 
     listaVazia: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         borderRadius: 16,
         borderWidth: 1,
         borderColor: BORDA,
@@ -488,30 +500,27 @@ export const styles = StyleSheet.create({
         color: TEXTO_SECUNDARIO,
     },
     botaoAgendar: {
-        backgroundColor: AZUL,
-        borderRadius: 17,
-        minHeight: 72,
-        paddingHorizontal: 15,
+        backgroundColor: colors.yellow,
+        borderRadius: 22,
+        minHeight: 84,
+        paddingHorizontal: 18,
         paddingVertical: 12,
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 30,
 
-        shadowColor: '#093373',
-        shadowOffset: {
-            width: 0,
-            height: 6,
-        },
-        shadowOpacity: 0.18,
+        shadowColor: colors.navy,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.14,
         shadowRadius: 10,
-        elevation: 4,
+        elevation: 3,
     },
 
     botaoAgendarIcone: {
         width: 46,
         height: 46,
-        borderRadius: 14,
-        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
@@ -522,15 +531,16 @@ export const styles = StyleSheet.create({
     },
 
     botaoAgendarTitulo: {
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: '800',
-        color: '#FFFFFF',
+        color: colors.navy,
         marginBottom: 3,
     },
 
     botaoAgendarSubtitulo: {
-        fontSize: 11,
-        color: '#DCE6F5',
+        lineHeight: 17,
+        fontSize: 12,
+        color: colors.navy,
     },
 
     /*
@@ -560,10 +570,10 @@ export const styles = StyleSheet.create({
     },
 
     instrumentoCard: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: BORDA,
-        borderRadius: 16,
+        borderRadius: 18,
         padding: 13,
         flexDirection: 'row',
         alignItems: 'center',
@@ -572,8 +582,8 @@ export const styles = StyleSheet.create({
     instrumentoIcone: {
         width: 46,
         height: 46,
-        borderRadius: 13,
-        backgroundColor: AZUL_CLARO,
+        borderRadius: 16,
+        backgroundColor: colors.yellowSoft,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
@@ -606,7 +616,7 @@ export const styles = StyleSheet.create({
     },
 
     instrumentosVazio: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         borderRadius: 16,
         borderWidth: 1,
         borderColor: BORDA,
@@ -642,17 +652,17 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
 
-        backgroundColor: '#EAF0FB',
+        backgroundColor: colors.tealSoft,
 
         borderWidth: 1,
-        borderColor: '#DCE6F5',
+        borderColor: colors.tealBorder,
     },
     botaoWhatsApp: {
         height: 44,
 
         borderRadius: 12,
 
-        backgroundColor: '#25D366',
+        backgroundColor: colors.success,
 
         flexDirection: 'row',
 
@@ -662,7 +672,7 @@ export const styles = StyleSheet.create({
 
         gap: 7,
 
-        shadowColor: '#25D366',
+        shadowColor: colors.success,
 
         shadowOffset: {
             width: 0,
@@ -681,7 +691,7 @@ export const styles = StyleSheet.create({
 
         fontWeight: '700',
 
-        color: '#FFFFFF',
+        color: colors.surface,
     },
 
     botaoRemarcarAula: {
@@ -689,8 +699,8 @@ export const styles = StyleSheet.create({
         marginTop: 10,
         borderRadius: 11,
         borderWidth: 1,
-        borderColor: '#DCE6F5',
-        backgroundColor: '#F5F8FD',
+        borderColor: colors.tealBorder,
+        backgroundColor: colors.surfaceMuted,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -700,7 +710,7 @@ export const styles = StyleSheet.create({
     botaoRemarcarAulaTexto: {
         fontSize: 13,
         fontWeight: '700',
-        color: '#093373',
+        color: colors.navy,
     },
 
 });

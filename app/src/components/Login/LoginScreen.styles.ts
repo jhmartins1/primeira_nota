@@ -1,8 +1,9 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_ESCURO = '#061F45';
-const AZUL_CLARO = '#1554A6';
+const AZUL = colors.navy;
+const AZUL_ESCURO = colors.navyDeep;
+const AZUL_CLARO = colors.navy;
 
 export const styles =
     StyleSheet.create({
@@ -10,13 +11,13 @@ export const styles =
             flex: 1,
 
             backgroundColor:
-                AZUL_ESCURO,
+                colors.surface,
         },
 
         container: {
-            flex: 1,
+            flexGrow: 1,
 
-            backgroundColor: AZUL,
+            backgroundColor: colors.surface,
 
             overflow: 'hidden',
         },
@@ -25,31 +26,31 @@ export const styles =
         circuloDecorativoGrande: {
             position: 'absolute',
 
-            width: 330,
-            height: 330,
+            width: 270,
+            height: 270,
 
-            borderRadius: 165,
+            borderRadius: 135,
 
             backgroundColor:
-                'rgba(255,255,255,0.035)',
+                colors.yellow,
 
-            top: -120,
-            right: -120,
+            top: -175,
+            right: -100,
         },
 
         circuloDecorativoPequeno: {
             position: 'absolute',
 
-            width: 180,
-            height: 180,
+            width: 240,
+            height: 240,
 
-            borderRadius: 90,
+            borderRadius: 120,
 
             backgroundColor:
-                'rgba(255,255,255,0.035)',
+                colors.tealSoft,
 
-            bottom: 170,
-            left: -100,
+            bottom: 180,
+            left: -170,
         },
 
         notaMusicalUm: {
@@ -99,45 +100,45 @@ export const styles =
             paddingHorizontal:
                 28,
 
-            paddingTop: 20,
+            paddingTop: 24,
 
-            paddingBottom: 30,
+            paddingBottom: 28,
         },
 
         //LOGO
         logoContainer: {
-            width: 155,
-            height: 155,
+            width: 170,
+            height: 170,
 
             alignItems: 'center',
             justifyContent: 'center',
 
-            marginBottom: 24,
+            marginBottom: 20,
 
-            elevation: 10,
+            elevation: 0,
 
             shadowColor: '#000',
             shadowOffset: {
                 width: 0,
                 height: 8,
             },
-            shadowOpacity: 0.18,
+            shadowOpacity: 0,
             shadowRadius: 18,
         },
 
         logo: {
-            width: 155,
-            height: 155,
-            borderRadius: 38,
+            width: 170,
+            height: 170,
+            borderRadius: 0,
         },
 
         //TÍTULO
         titulo: {
-            fontSize: 27,
+            fontSize: 26,
 
-            fontWeight: '700',
+            fontWeight: '800',
 
-            color: '#FFFFFF',
+            color: colors.navy,
 
             textAlign: 'center',
 
@@ -146,11 +147,11 @@ export const styles =
         },
 
         tituloDestaque: {
-            fontSize: 30,
+            fontSize: 34,
 
             fontWeight: '900',
 
-            color: '#FFFFFF',
+            color: colors.teal,
 
             textAlign: 'center',
 
@@ -165,14 +166,14 @@ export const styles =
 
             fontSize: 14,
 
-            lineHeight: 21,
+            lineHeight: 22,
 
             color:
-                'rgba(255,255,255,0.72)',
+                colors.textSecondary,
 
             textAlign: 'center',
 
-            marginTop: 14,
+            marginTop: 12,
         },
 
         //INSTRUMENTOS
@@ -185,14 +186,14 @@ export const styles =
 
             gap: 10,
 
-            marginTop: 24,
+            marginTop: 20,
         },
 
         instrumento: {
             width: 42,
             height: 42,
 
-            borderRadius: 14,
+            borderRadius: 15,
 
             alignItems:
                 'center',
@@ -201,35 +202,35 @@ export const styles =
                 'center',
 
             backgroundColor:
-                'rgba(255,255,255,0.10)',
+                colors.tealSoft,
 
             borderWidth: 1,
 
             borderColor:
-                'rgba(255,255,255,0.12)',
+                colors.tealBorder,
         },
 
         //CARD LOGIN
         loginCard: {
             backgroundColor:
-                '#FFFFFF',
+                colors.navy,
 
             borderTopLeftRadius:
-                30,
+                32,
 
             borderTopRightRadius:
-                30,
+                32,
 
             paddingHorizontal:
                 24,
 
-            paddingTop: 16,
+            paddingTop: 18,
 
-            paddingBottom: 16,
+            paddingBottom: 20,
 
-            elevation: 20,
+            elevation: 0,
 
-            shadowColor: '#000',
+            shadowColor: colors.navy,
 
             shadowOffset: {
                 width: 0,
@@ -237,19 +238,19 @@ export const styles =
             },
 
             shadowOpacity:
-                0.12,
+                0.08,
 
             shadowRadius: 20,
         },
 
         indicador: {
-            width: 42,
+            width: 36,
             height: 4,
 
             borderRadius: 2,
 
             backgroundColor:
-                '#D9E2F0',
+                colors.yellow,
 
             alignSelf:
                 'center',
@@ -258,21 +259,21 @@ export const styles =
         },
 
         loginTitulo: {
-            fontSize: 21,
+            fontSize: 22,
 
             fontWeight: '800',
 
-            color: '#111827',
+            color: colors.surface,
 
             textAlign: 'center',
         },
 
         loginSubtitulo: {
-            fontSize: 13,
+            fontSize: 14,
 
-            lineHeight: 19,
+            lineHeight: 20,
 
-            color: '#6B7280',
+            color: '#CEDDEC',
 
             textAlign: 'center',
 
@@ -291,15 +292,15 @@ export const styles =
 
             height: 56,
 
-            borderRadius: 16,
+            borderRadius: 17,
 
             backgroundColor:
-                '#FFFFFF',
+                colors.surface,
 
             borderWidth: 1.5,
 
             borderColor:
-                '#DCE4EF',
+                colors.surface,
 
             flexDirection:
                 'row',
@@ -310,10 +311,10 @@ export const styles =
             justifyContent:
                 'center',
 
-            elevation: 3,
+            elevation: 0,
 
             shadowColor:
-                '#093373',
+                colors.navy,
 
             shadowOffset: {
                 width: 0,
@@ -343,7 +344,7 @@ export const styles =
                 'center',
 
             backgroundColor:
-                '#F5F8FC',
+                colors.surface,
 
             marginRight: 10,
         },
@@ -361,7 +362,7 @@ export const styles =
 
             fontWeight: '700',
 
-            color: '#1F2937',
+            color: colors.text,
         },
 
         setaGoogle: {
@@ -396,7 +397,7 @@ export const styles =
 
             lineHeight: 15,
 
-            color: '#9CA3AF',
+            color: '#CEDDEC',
 
             textAlign: 'center',
         },
@@ -415,7 +416,7 @@ export const styles =
         madeByTexto: {
             fontSize: 8.5,
 
-            color: '#D1D5DB',
+            color: '#AFC4D9',
 
             textAlign: 'center',
 
@@ -425,7 +426,7 @@ export const styles =
         },
 
         madeByNick: {
-            color: '#B6BDC7',
+            color: '#CEDDEC',
 
             fontWeight: '700',
         },

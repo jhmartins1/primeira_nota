@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -144,7 +145,7 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="star"
                         size={11}
-                        color="#FFFFFF"
+                        color={colors.surface}
                     />
 
                     <Text
@@ -173,7 +174,7 @@ export function AulaAlunoCard({
                                 icone.nome
                             }
                             size={24}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     ) : (
                         <FontAwesome5
@@ -181,7 +182,7 @@ export function AulaAlunoCard({
                                 icone.nome
                             }
                             size={22}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     )}
                 </View>
@@ -232,7 +233,7 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="calendar-outline"
                         size={15}
-                        color="#6B7280"
+                        color={colors.textSecondary}
                     />
 
                     <Text
@@ -256,7 +257,7 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="music-note-outline"
                         size={15}
-                        color="#6B7280"
+                        color={colors.textSecondary}
                     />
 
                     <View
@@ -291,8 +292,8 @@ export function AulaAlunoCard({
                                 size={14}
                                 color={
                                     aula.possuiInstrumento
-                                        ? '#067647'
-                                        : '#B42318'
+                                        ? colors.success
+                                        : colors.danger
                                 }
                             />
 
@@ -323,7 +324,7 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="account-outline"
                         size={15}
-                        color="#6B7280"
+                        color={colors.textSecondary}
                     />
 
                     <Text
@@ -349,7 +350,7 @@ export function AulaAlunoCard({
                         <MaterialCommunityIcons
                             name="phone-outline"
                             size={15}
-                            color="#6B7280"
+                            color={colors.textSecondary}
                         />
 
                         <Text
@@ -378,7 +379,7 @@ export function AulaAlunoCard({
                             <FontAwesome5
                                 name="whatsapp"
                                 size={15}
-                                color="#FFFFFF"
+                                color={colors.surface}
                             />
                         </TouchableOpacity>
                     </View>
@@ -393,7 +394,7 @@ export function AulaAlunoCard({
                         <MaterialCommunityIcons
                             name="map-marker-outline"
                             size={15}
-                            color="#6B7280"
+                            color={colors.textSecondary}
                         />
 
                         <Text
@@ -427,7 +428,7 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="map-marker-radius-outline"
                         size={16}
-                        color="#FFFFFF"
+                        color={colors.surface}
                     />
 
                     <Text
@@ -459,7 +460,7 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="calendar-sync-outline"
                         size={17}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -489,7 +490,7 @@ export function AulaAlunoCard({
                     {cancelando ? (
                         <ActivityIndicator
                             size="small"
-                            color="#B42318"
+                            color={colors.danger}
                         />
                     ) : (
                         <>
@@ -498,7 +499,7 @@ export function AulaAlunoCard({
                                 size={
                                     16
                                 }
-                                color="#B42318"
+                                color={colors.danger}
                             />
 
                             <Text

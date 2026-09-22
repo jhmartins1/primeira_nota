@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import {
@@ -300,7 +301,7 @@ export function InstrumentScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -340,7 +341,7 @@ export function InstrumentScreen() {
                     <MaterialCommunityIcons
                         name="arrow-left"
                         size={26}
-                        color="#093373"
+                        color={colors.navy}
                     />
                 </TouchableOpacity>
 
@@ -473,7 +474,7 @@ export function InstrumentScreen() {
                     <MaterialCommunityIcons
                         name="arrow-right"
                         size={22}
-                        color="#FFFFFF"
+                        color={colors.surface}
                     />
                 </TouchableOpacity>
             </ScrollView>

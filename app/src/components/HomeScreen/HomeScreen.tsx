@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -99,14 +100,14 @@ export default function HomeScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
                         style={{
                             marginTop: 12,
                             color:
-                                '#6B7280',
+                                colors.textSecondary,
                             fontSize: 14,
                         }}
                     >
@@ -140,7 +141,7 @@ export default function HomeScreen() {
                     <MaterialCommunityIcons
                         name="alert-circle-outline"
                         size={50}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -150,7 +151,7 @@ export default function HomeScreen() {
                             fontWeight:
                                 '800',
                             color:
-                                '#1A1E29',
+                                colors.text,
                             textAlign:
                                 'center',
                         }}
@@ -165,7 +166,7 @@ export default function HomeScreen() {
                             fontSize: 14,
                             lineHeight: 21,
                             color:
-                                '#6B7280',
+                                colors.textSecondary,
                             textAlign:
                                 'center',
                         }}
@@ -177,7 +178,7 @@ export default function HomeScreen() {
                         style={{
                             marginTop: 20,
                             backgroundColor:
-                                '#093373',
+                                colors.navy,
                             paddingHorizontal:
                                 25,
                             paddingVertical:
@@ -192,7 +193,7 @@ export default function HomeScreen() {
                         <Text
                             style={{
                                 color:
-                                    '#FFFFFF',
+                                    colors.surface,
                                 fontWeight:
                                     '700',
                             }}
@@ -224,7 +225,7 @@ export default function HomeScreen() {
                         onRefresh={
                             atualizarTela
                         }
-                        tintColor="#093373"
+                        tintColor={colors.navy}
                     />
                 }
             >
@@ -293,7 +294,7 @@ export default function HomeScreen() {
                             <MaterialCommunityIcons
                                 name="account-outline"
                                 size={22}
-                                color="#093373"
+                                color={colors.navy}
                             />
                         </TouchableOpacity>
 
@@ -318,13 +319,13 @@ export default function HomeScreen() {
                             {saindo ? (
                                 <ActivityIndicator
                                     size="small"
-                                    color="#B42318"
+                                    color={colors.danger}
                                 />
                             ) : (
                                 <MaterialCommunityIcons
                                     name="logout"
                                     size={21}
-                                    color="#B42318"
+                                    color={colors.danger}
                                 />
                             )}
                         </TouchableOpacity>
@@ -369,7 +370,7 @@ export default function HomeScreen() {
                             <MaterialCommunityIcons
                                 name="calendar-plus"
                                 size={30}
-                                color="#093373"
+                                color={colors.navy}
                             />
                         </View>
 
@@ -416,7 +417,7 @@ export default function HomeScreen() {
                             <MaterialCommunityIcons
                                 name="arrow-right"
                                 size={16}
-                                color="#FFFFFF"
+                                color={colors.surface}
                             />
                         </TouchableOpacity>
                     </View>
@@ -445,7 +446,7 @@ export default function HomeScreen() {
                         <MaterialCommunityIcons
                             name="calendar-plus"
                             size={24}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     </View>
 
@@ -476,7 +477,7 @@ export default function HomeScreen() {
                     <MaterialCommunityIcons
                         name="chevron-right"
                         size={24}
-                        color="#FFFFFF"
+                        color={colors.navy}
                     />
                 </TouchableOpacity>
 
@@ -676,7 +677,7 @@ export default function HomeScreen() {
                             <MaterialCommunityIcons
                                 name="pencil-outline"
                                 size={15}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <Text

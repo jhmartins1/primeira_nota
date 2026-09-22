@@ -1,11 +1,12 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_CLARO = '#EAF0FB';
-const FUNDO = '#F5F6FA';
-const BORDA = '#E4E7EC';
-const TEXTO_PRINCIPAL = '#1A1E29';
-const TEXTO_SECUNDARIO = '#6B7280';
+const AZUL = colors.navy;
+const AZUL_CLARO = colors.tealSoft;
+const FUNDO = colors.background;
+const BORDA = colors.border;
+const TEXTO_PRINCIPAL = colors.text;
+const TEXTO_SECUNDARIO = colors.textSecondary;
 
 export const styles = StyleSheet.create({
     safeArea: {
@@ -73,7 +74,7 @@ export const styles = StyleSheet.create({
     },
 
     botaoErroTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontSize: 14,
         fontWeight: '700',
     },
@@ -106,13 +107,14 @@ export const styles = StyleSheet.create({
     eyebrow: {
         fontSize: 11,
         fontWeight: '800',
-        color: AZUL,
+        color: colors.teal,
         letterSpacing: 1.4,
         textTransform: 'uppercase',
         marginBottom: 7,
     },
 
     titulo: {
+        letterSpacing: -0.7,
         fontSize: 26,
         fontWeight: '800',
         color: TEXTO_PRINCIPAL,
@@ -126,9 +128,11 @@ export const styles = StyleSheet.create({
     },
 
     instrucoesCard: {
+        borderWidth: 1,
+        borderColor: colors.tealBorder,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: AZUL_CLARO,
+        backgroundColor: colors.tealSoft,
         borderRadius: 18,
         padding: 16,
         marginBottom: 26,
@@ -138,7 +142,7 @@ export const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 15,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 13,
@@ -181,10 +185,10 @@ export const styles = StyleSheet.create({
     instrumentoCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: BORDA,
-        borderRadius: 17,
+        borderRadius: 20,
         padding: 14,
     },
 
@@ -192,7 +196,7 @@ export const styles = StyleSheet.create({
         width: 52,
         height: 52,
         borderRadius: 15,
-        backgroundColor: AZUL_CLARO,
+        backgroundColor: colors.yellowSoft,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 13,
@@ -233,14 +237,14 @@ export const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: '#F7F8FB',
+        backgroundColor: colors.surfaceMuted,
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 8,
     },
 
     instrumentosVazio: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: BORDA,
         borderRadius: 17,
@@ -353,12 +357,12 @@ export const styles = StyleSheet.create({
         borderRadius: 16,
         borderWidth: 1.5,
         borderColor: BORDA,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
     },
 
     professorCardSelecionado: {
-        borderColor: AZUL,
-        backgroundColor: AZUL_CLARO,
+        borderColor: colors.teal,
+        backgroundColor: colors.tealSoft,
     },
 
     professorFotoContainer: {
@@ -388,15 +392,15 @@ export const styles = StyleSheet.create({
         width: 21,
         height: 21,
         borderRadius: 11,
-        backgroundColor: AZUL,
+        backgroundColor: colors.teal,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: '#FFFFFF',
+        borderColor: colors.surface,
     },
 
     professorCheckTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontSize: 11,
         fontWeight: '800',
     },
@@ -427,12 +431,12 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         borderWidth: 1.5,
         borderColor: BORDA,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
     },
 
     diaCardSelecionado: {
-        borderColor: AZUL,
-        backgroundColor: AZUL_CLARO,
+        borderColor: colors.teal,
+        backgroundColor: colors.tealSoft,
     },
 
     diaSemanaTexto: {
@@ -466,7 +470,7 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1.5,
         borderColor: BORDA,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
@@ -474,8 +478,8 @@ export const styles = StyleSheet.create({
     },
 
     horarioCardSelecionado: {
-        borderColor: AZUL,
-        backgroundColor: AZUL,
+        borderColor: colors.teal,
+        backgroundColor: colors.teal,
     },
 
     horarioTexto: {
@@ -485,17 +489,17 @@ export const styles = StyleSheet.create({
     },
 
     horarioTextoSelecionado: {
-        color: '#FFFFFF',
+        color: colors.surface,
     },
 
     resumoCard: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 15,
-        borderRadius: 17,
-        backgroundColor: '#FBF1DE',
+        borderRadius: 20,
+        backgroundColor: colors.yellowSoft,
         borderWidth: 1,
-        borderColor: '#F1DDAF',
+        borderColor: colors.yellowBorder,
     },
 
     resumoFoto: {
@@ -508,7 +512,7 @@ export const styles = StyleSheet.create({
         width: 54,
         height: 54,
         borderRadius: 27,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -520,7 +524,7 @@ export const styles = StyleSheet.create({
 
     resumoInstrumento: {
         fontSize: 12,
-        color: '#B8842E',
+        color: colors.amberText,
         fontWeight: '800',
     },
 
@@ -545,16 +549,21 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 22,
         paddingTop: 10,
         paddingBottom: 10,
-        backgroundColor: FUNDO,
+        backgroundColor: colors.surface,
         borderTopWidth: 1,
-        borderTopColor: '#E9EBF0',
+        borderTopColor: colors.border,
     },
 
     botaoConfirmar: {
+        shadowColor: colors.navy,
+        shadowOpacity: 0.14,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 3,
         width: '100%',
         minHeight: 54,
-        backgroundColor: AZUL,
-        borderRadius: 15,
+        backgroundColor: colors.navy,
+        borderRadius: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -566,7 +575,7 @@ export const styles = StyleSheet.create({
     },
 
     botaoConfirmarTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontWeight: '800',
         fontSize: 14,
     },

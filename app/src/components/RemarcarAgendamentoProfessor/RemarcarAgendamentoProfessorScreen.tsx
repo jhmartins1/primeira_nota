@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { useAuth } from '@clerk/expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
@@ -786,7 +787,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -829,7 +830,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                     <MaterialCommunityIcons
                         name="chevron-left"
                         size={28}
-                        color="#093373"
+                        color={colors.navy}
                     />
                 </TouchableOpacity>
 
@@ -883,7 +884,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                         <MaterialCommunityIcons
                             name="account-music-outline"
                             size={26}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     </View>
 
@@ -920,7 +921,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                             <MaterialCommunityIcons
                                 name="account-outline"
                                 size={16}
-                                color="#6B7280"
+                                color={colors.textSecondary}
                             />
 
                             <Text
@@ -955,7 +956,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                                 <MaterialCommunityIcons
                                     name="calendar-clock-outline"
                                     size={21}
-                                    color="#B8842E"
+                                    color={colors.amberText}
                                 />
                             </View>
 
@@ -1136,7 +1137,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                             <MaterialCommunityIcons
                                 name="calendar-remove-outline"
                                 size={35}
-                                color="#9CA3AF"
+                                color={colors.textMuted}
                             />
 
                             <Text
@@ -1169,7 +1170,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                                 <MaterialCommunityIcons
                                     name="refresh"
                                     size={18}
-                                    color="#093373"
+                                    color={colors.navy}
                                 />
 
                                 <Text
@@ -1271,8 +1272,8 @@ export function RemarcarAgendamentoProfessorScreen() {
                                                     size={19}
                                                     color={
                                                         selecionado
-                                                            ? '#FFFFFF'
-                                                            : '#093373'
+                                                            ? colors.surface
+                                                            : colors.navy
                                                     }
                                                 />
 
@@ -1306,7 +1307,7 @@ export function RemarcarAgendamentoProfessorScreen() {
                             <MaterialCommunityIcons
                                 name="calendar-check-outline"
                                 size={24}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <View
@@ -1380,14 +1381,14 @@ export function RemarcarAgendamentoProfessorScreen() {
                     {salvando ? (
                         <ActivityIndicator
                             size="small"
-                            color="#FFFFFF"
+                            color={colors.surface}
                         />
                     ) : (
                         <>
                             <MaterialCommunityIcons
                                 name="calendar-sync-outline"
                                 size={21}
-                                color="#FFFFFF"
+                                color={colors.surface}
                             />
 
                             <Text

@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -143,13 +144,13 @@ export function ProximaAulaCard({
                         <MaterialCommunityIcons
                             name={icone.nome}
                             size={31}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     ) : (
                         <FontAwesome5
                             name={icone.nome}
                             size={28}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     )}
                 </View>
@@ -222,7 +223,7 @@ export function ProximaAulaCard({
                     <MaterialCommunityIcons
                         name="calendar-outline"
                         size={19}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <View>
@@ -264,7 +265,7 @@ export function ProximaAulaCard({
                     <MaterialCommunityIcons
                         name="clock-outline"
                         size={19}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <View>
@@ -325,7 +326,7 @@ export function ProximaAulaCard({
                         <FontAwesome5
                             name="user"
                             size={17}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     )}
                 </View>
@@ -369,7 +370,7 @@ export function ProximaAulaCard({
                     <FontAwesome5
                         name="whatsapp"
                         size={18}
-                        color="#FFFFFF"
+                        color={colors.surface}
                     />
 
                     <Text
@@ -391,7 +392,7 @@ export function ProximaAulaCard({
                 <MaterialCommunityIcons
                     name="calendar-sync-outline"
                     size={18}
-                    color="#093373"
+                    color={colors.navy}
                 />
 
                 <Text
@@ -414,14 +415,14 @@ export function ProximaAulaCard({
                 {cancelando ? (
                     <ActivityIndicator
                         size="small"
-                        color="#B42318"
+                        color={colors.danger}
                     />
                 ) : (
                     <>
                         <MaterialCommunityIcons
                             name="calendar-remove-outline"
                             size={18}
-                            color="#B42318"
+                            color={colors.danger}
                         />
 
                         <Text

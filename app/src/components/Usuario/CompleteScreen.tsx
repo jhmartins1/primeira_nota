@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { useAuth } from '@clerk/expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -309,7 +310,7 @@ export function CompleteScreen() {
                         <MaterialCommunityIcons
                             name="arrow-left"
                             size={22}
-                            color="#093373"
+                            color={colors.navy}
                         />
 
                         <Text
@@ -370,7 +371,7 @@ export function CompleteScreen() {
                                     <MaterialCommunityIcons
                                         name="phone-outline"
                                         size={19}
-                                        color="#093373"
+                                        color={colors.navy}
                                     />
                                 </View>
 
@@ -420,7 +421,7 @@ export function CompleteScreen() {
                                     <MaterialCommunityIcons
                                         name="cellphone"
                                         size={18}
-                                        color="#6B7280"
+                                        color={colors.textSecondary}
                                         style={
                                             styles.inputIcone
                                         }
@@ -434,7 +435,7 @@ export function CompleteScreen() {
                                                 : null,
                                         ]}
                                         placeholder="(61) 98235-1199"
-                                        placeholderTextColor="#999"
+                                        placeholderTextColor={colors.textMuted}
                                         keyboardType="phone-pad"
                                         value={
                                             telefone
@@ -480,7 +481,7 @@ export function CompleteScreen() {
                                     <MaterialCommunityIcons
                                         name="home-city-outline"
                                         size={19}
-                                        color="#093373"
+                                        color={colors.navy}
                                     />
                                 </View>
 
@@ -529,7 +530,7 @@ export function CompleteScreen() {
                                     <MaterialCommunityIcons
                                         name="map-marker-outline"
                                         size={18}
-                                        color="#6B7280"
+                                        color={colors.textSecondary}
                                         style={
                                             styles.inputIcone
                                         }
@@ -543,7 +544,7 @@ export function CompleteScreen() {
                                                 : null,
                                         ]}
                                         placeholder="00000-000"
-                                        placeholderTextColor="#999"
+                                        placeholderTextColor={colors.textMuted}
                                         keyboardType="numeric"
                                         value={cep}
                                         onChangeText={
@@ -559,7 +560,7 @@ export function CompleteScreen() {
                                     {buscando && (
                                         <ActivityIndicator
                                             size="small"
-                                            color="#093373"
+                                            color={colors.navy}
                                             style={
                                                 styles.inputLoading
                                             }
@@ -605,7 +606,7 @@ export function CompleteScreen() {
                                                     size={
                                                         18
                                                     }
-                                                    color="#6B7280"
+                                                    color={colors.textSecondary}
                                                     style={
                                                         styles.inputIcone
                                                     }
@@ -616,7 +617,7 @@ export function CompleteScreen() {
                                                         styles.input
                                                     }
                                                     placeholder="Rua, avenida..."
-                                                    placeholderTextColor="#999"
+                                                    placeholderTextColor={colors.textMuted}
                                                     value={
                                                         logradouro
                                                     }
@@ -669,7 +670,7 @@ export function CompleteScreen() {
                                                     size={
                                                         18
                                                     }
-                                                    color="#6B7280"
+                                                    color={colors.textSecondary}
                                                     style={
                                                         styles.inputIcone
                                                     }
@@ -680,7 +681,7 @@ export function CompleteScreen() {
                                                         styles.input
                                                     }
                                                     placeholder="Bairro"
-                                                    placeholderTextColor="#999"
+                                                    placeholderTextColor={colors.textMuted}
                                                     value={
                                                         bairro
                                                     }
@@ -717,7 +718,7 @@ export function CompleteScreen() {
                                                 size={
                                                     16
                                                 }
-                                                color="#8A661F"
+                                                color={colors.amberText}
                                             />
 
                                             <Text
@@ -760,7 +761,7 @@ export function CompleteScreen() {
                                             styles.input
                                         }
                                         placeholder="123"
-                                        placeholderTextColor="#999"
+                                        placeholderTextColor={colors.textMuted}
                                         keyboardType="numeric"
                                         value={numero}
                                         onChangeText={(
@@ -810,7 +811,7 @@ export function CompleteScreen() {
                                             styles.input
                                         }
                                         placeholder="Apto 12, bloco B"
-                                        placeholderTextColor="#999"
+                                        placeholderTextColor={colors.textMuted}
                                         value={
                                             complemento
                                         }
@@ -837,7 +838,7 @@ export function CompleteScreen() {
                                 <MaterialCommunityIcons
                                     name="alert-circle-outline"
                                     size={18}
-                                    color="#B42318"
+                                    color={colors.danger}
                                 />
 
                                 <Text
@@ -866,7 +867,7 @@ export function CompleteScreen() {
                             {carregando ? (
                                 <ActivityIndicator
                                     size="small"
-                                    color="#fff"
+                                    color={colors.surface}
                                 />
                             ) : (
                                 <>
@@ -881,7 +882,7 @@ export function CompleteScreen() {
                                     <MaterialCommunityIcons
                                         name="arrow-right"
                                         size={20}
-                                        color="#FFFFFF"
+                                        color={colors.surface}
                                     />
                                 </>
                             )}

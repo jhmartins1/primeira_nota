@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
@@ -81,7 +82,7 @@ export default function AgendamentosScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -134,7 +135,7 @@ export default function AgendamentosScreen() {
                         <MaterialCommunityIcons
                             name="arrow-left"
                             size={24}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     </TouchableOpacity>
 
@@ -172,7 +173,7 @@ export default function AgendamentosScreen() {
                         <MaterialCommunityIcons
                             name="alert-circle-outline"
                             size={42}
-                            color="#B42318"
+                            color={colors.danger}
                         />
 
                         <Text
@@ -253,7 +254,7 @@ export default function AgendamentosScreen() {
                         <MaterialCommunityIcons
                             name="calendar-blank-outline"
                             size={48}
-                            color="#9CA3AF"
+                            color={colors.textMuted}
                         />
 
                         <Text

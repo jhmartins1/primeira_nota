@@ -1,15 +1,16 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_CLARO = '#EAF0FB';
-const FUNDO = '#F5F6FA';
-const BORDA = '#E7EAF0';
+const AZUL = colors.navy;
+const AZUL_CLARO = colors.tealSoft;
+const FUNDO = colors.background;
+const BORDA = colors.border;
 
-const TEXTO_PRINCIPAL = '#1A1E29';
-const TEXTO_SECUNDARIO = '#6B7280';
+const TEXTO_PRINCIPAL = colors.text;
+const TEXTO_SECUNDARIO = colors.textSecondary;
 
-const VERMELHO = '#B42318';
-const VERMELHO_FUNDO = '#FFF1F0';
+const VERMELHO = colors.danger;
+const VERMELHO_FUNDO = colors.dangerSoft;
 
 export const styles = StyleSheet.create({
     container: {
@@ -75,7 +76,7 @@ export const styles = StyleSheet.create({
     },
 
     botaoTentarNovamenteTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontWeight: '700',
     },
 
@@ -113,13 +114,14 @@ export const styles = StyleSheet.create({
         fontSize: 10.5,
         lineHeight: 14,
         fontWeight: '800',
-        color: AZUL,
+        color: colors.teal,
         letterSpacing: 1.1,
         textTransform: 'uppercase',
         paddingRight: 8,
     },
 
     titulo: {
+        letterSpacing: -0.8,
         fontSize: 29,
         lineHeight: 35,
         fontWeight: '800',
@@ -171,11 +173,11 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: VERMELHO_FUNDO,
         borderWidth: 1,
-        borderColor: '#F3D0CC',
+        borderColor: colors.dangerBorder,
     },
 
     botaoLogoutCarregando: {
-        backgroundColor: '#F8E3E1',
+        backgroundColor: colors.dangerBorder,
     },
 
     /*
@@ -210,10 +212,10 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
 
-        backgroundColor: AZUL_CLARO,
+        backgroundColor: colors.yellowSoft,
 
         borderWidth: 1,
-        borderColor: '#DCE6F5',
+        borderColor: colors.yellowBorder,
     },
 
     /*
@@ -221,12 +223,12 @@ export const styles = StyleSheet.create({
     */
 
     semAulaCard: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.tealSoft,
 
-        borderRadius: 20,
+        borderRadius: 22,
 
         borderWidth: 1,
-        borderColor: BORDA,
+        borderColor: colors.tealBorder,
 
         padding: 24,
 
@@ -234,15 +236,12 @@ export const styles = StyleSheet.create({
 
         marginBottom: 28,
 
-        shadowColor: '#0F1B3D',
+        shadowColor: colors.navy,
 
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
+        shadowOffset: { width: 0, height: 5 },
 
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
 
         elevation: 2,
     },
@@ -331,12 +330,12 @@ export const styles = StyleSheet.create({
     */
 
     aulaCard: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
 
         borderWidth: 1,
         borderColor: BORDA,
 
-        borderRadius: 16,
+        borderRadius: 22,
 
         padding: 16,
 
@@ -344,24 +343,22 @@ export const styles = StyleSheet.create({
 
         overflow: 'visible',
 
-        shadowColor: '#0F1B3D',
+        shadowColor: colors.navy,
 
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
+        shadowOffset: { width: 0, height: 5 },
 
-        shadowOpacity: 0.04,
-        shadowRadius: 8,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
 
         elevation: 2,
     },
 
     aulaCardDestaque: {
-        borderColor: AZUL,
+        borderTopWidth: 4,
+        borderColor: colors.teal,
         borderWidth: 1.5,
 
-        backgroundColor: '#FBFCFF',
+        backgroundColor: colors.surface,
 
         shadowOpacity: 0.08,
         shadowRadius: 12,
@@ -380,7 +377,7 @@ export const styles = StyleSheet.create({
 
         gap: 4,
 
-        backgroundColor: AZUL,
+        backgroundColor: colors.teal,
 
         borderRadius: 20,
 
@@ -394,7 +391,7 @@ export const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: '800',
 
-        color: '#FFFFFF',
+        color: colors.surface,
 
         letterSpacing: 0.6,
     },
@@ -412,7 +409,7 @@ export const styles = StyleSheet.create({
 
         borderRadius: 14,
 
-        backgroundColor: AZUL_CLARO,
+        backgroundColor: colors.orangeSoft,
 
         alignItems: 'center',
         justifyContent: 'center',
@@ -439,9 +436,9 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '700',
 
-        color: '#374151',
+        color: colors.text,
 
-        backgroundColor: '#F3F4F6',
+        backgroundColor: colors.surfaceMuted,
 
         borderRadius: 20,
 
@@ -539,7 +536,7 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '700',
 
-        color: '#FFFFFF',
+        color: colors.surface,
     },
 
     /*
@@ -554,9 +551,9 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
 
         borderWidth: 1,
-        borderColor: '#F3D0CC',
+        borderColor: colors.dangerBorder,
 
-        backgroundColor: '#FFF8F7',
+        backgroundColor: colors.dangerSoft,
 
         flexDirection: 'row',
         alignItems: 'center',
@@ -646,7 +643,7 @@ export const styles = StyleSheet.create({
 
         borderRadius: 14,
 
-        backgroundColor: '#25D366',
+        backgroundColor: colors.success,
 
         alignItems: 'center',
 
@@ -660,9 +657,9 @@ export const styles = StyleSheet.create({
         borderRadius: 11,
 
         borderWidth: 1,
-        borderColor: '#DCE6F5',
+        borderColor: colors.tealBorder,
 
-        backgroundColor: '#F5F8FD',
+        backgroundColor: colors.surfaceMuted,
 
         flexDirection: 'row',
         alignItems: 'center',
@@ -675,7 +672,7 @@ export const styles = StyleSheet.create({
         fontSize: 13,
         fontWeight: '700',
 
-        color: '#093373',
+        color: colors.navy,
     },
 
     possuiInstrumentoLinha: {
@@ -707,13 +704,13 @@ export const styles = StyleSheet.create({
     },
 
     possuiInstrumentoSim: {
-        backgroundColor: '#ECFDF3',
-        borderColor: '#ABEFC6',
+        backgroundColor: colors.successSoft,
+        borderColor: colors.successBorder,
     },
 
     possuiInstrumentoNao: {
-        backgroundColor: '#FFF1F0',
-        borderColor: '#F3D0CC',
+        backgroundColor: colors.dangerSoft,
+        borderColor: colors.dangerBorder,
     },
 
     possuiInstrumentoTexto: {
@@ -722,10 +719,10 @@ export const styles = StyleSheet.create({
     },
 
     possuiInstrumentoTextoSim: {
-        color: '#067647',
+        color: colors.success,
     },
 
     possuiInstrumentoTextoNao: {
-        color: '#B42318',
+        color: colors.danger,
     },
 });
