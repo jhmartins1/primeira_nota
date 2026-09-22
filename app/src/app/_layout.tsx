@@ -8,6 +8,7 @@ import {
 } from 'expo-router';
 
 import { useEffect } from 'react';
+import { StatusBar } from 'react-native';
 
 import { useContaAutenticada } from '../hooks/useContaAutenticada';
 
@@ -182,6 +183,7 @@ export default function RootLayout() {
         tokenCache
       }
     >
+      <StatusBar barStyle="dark-content" />
       <AuthGuard />
     </ClerkProvider>
   );
