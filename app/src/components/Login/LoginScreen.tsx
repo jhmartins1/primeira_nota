@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     Image,
     Linking,
     Text,
@@ -15,42 +16,49 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { styles } from './LoginScreen.styles';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_URL =
+    process.env.EXPO_PUBLIC_API_URL;
 
 export function LoginScreen() {
-    const { startGoogleAuthenticationFlow } =
-        useSignInWithGoogle();
+    const {
+        startGoogleAuthenticationFlow,
+    } = useSignInWithGoogle();
 
     const { getToken } = useAuth();
 
     const router = useRouter();
 
-    const [carregando, setCarregando] =
-        useState(false);
+    const [
+        carregando,
+        setCarregando,
+    ] = useState(false);
 
     async function tentarVincularProfessor(
         token: string
     ) {
         try {
-            const response = await fetch(
-                `${API_URL}/professor/vincular-conta`,
-                {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type':
-                            'application/json',
-                    },
-                }
-            );
+            const response =
+                await fetch(
+                    `${API_URL}/professor/vincular-conta`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+                            'Content-Type':
+                                'application/json',
+                        },
+                    }
+                );
 
             if (response.ok) {
-                const professor =
-                    await response.json();
+                await response.json();
                 return true;
             }
 
-            if (response.status === 404) {
+            if (
+                response.status === 404
+            ) {
                 return false;
             }
 
@@ -62,14 +70,24 @@ export function LoginScreen() {
                     await response.json();
 
                 if (data?.error) {
-                    mensagemErro = data.error;
+                    mensagemErro =
+                        data.error;
                 }
             } catch {
-                // ignora erro de parse
+                // Ignora erro de parse
             }
+
+            console.log(
+                mensagemErro
+            );
 
             return false;
         } catch (error) {
+            console.log(
+                'Erro ao vincular professor:',
+                error
+            );
+
             return false;
         }
     }
@@ -84,11 +102,16 @@ export function LoginScreen() {
             } =
                 await startGoogleAuthenticationFlow();
 
-            if (
-                !createdSessionId ||
-                !setActive
-            ) {
-                return;
+            if (!createdSessionId) {
+                throw new Error(
+                    'Não foi possível criar a sessão do usuário.'
+                );
+            }
+
+            if (!setActive) {
+                throw new Error(
+                    'Não foi possível ativar a sessão do usuário.'
+                );
             }
 
             await setActive({
@@ -113,11 +136,19 @@ export function LoginScreen() {
         } catch (error: any) {
             console.log(
                 'Erro ao entrar com Google:',
-                JSON.stringify(
-                    error,
-                    null,
-                    2
-                )
+                error
+            );
+
+            const mensagem =
+                error?.message ??
+                error?.errors?.[0]
+                    ?.message ??
+                error?.code ??
+                'Não foi possível entrar com o Google.';
+
+            Alert.alert(
+                'Erro ao entrar',
+                String(mensagem)
             );
         } finally {
             setCarregando(false);
@@ -145,6 +176,7 @@ export function LoginScreen() {
                 style={styles.container}
             >
                 {/* ELEMENTOS DECORATIVOS */}
+
                 <View
                     style={
                         styles.circuloDecorativoGrande
@@ -185,6 +217,7 @@ export function LoginScreen() {
                 />
 
                 {/* HERO */}
+
                 <View
                     style={styles.hero}
                 >
@@ -203,7 +236,9 @@ export function LoginScreen() {
                     </View>
 
                     <Text
-                        style={styles.titulo}
+                        style={
+                            styles.titulo
+                        }
                     >
                         Sua música começa
                     </Text>
@@ -229,6 +264,7 @@ export function LoginScreen() {
                     </Text>
 
                     {/* ÍCONES DOS INSTRUMENTOS */}
+
                     <View
                         style={
                             styles.instrumentos
@@ -285,6 +321,7 @@ export function LoginScreen() {
                 </View>
 
                 {/* CARD LOGIN */}
+
                 <View
                     style={
                         styles.loginCard
@@ -356,8 +393,8 @@ export function LoginScreen() {
                                         styles.botaoGoogleTexto
                                     }
                                 >
-                                    Continuar com
-                                    Google
+                                    Continuar
+                                    com Google
                                 </Text>
 
                                 <MaterialCommunityIcons
@@ -373,6 +410,7 @@ export function LoginScreen() {
                     </TouchableOpacity>
 
                     {/* TERMOS */}
+
                     <View
                         style={
                             styles.linhaTermos
@@ -389,15 +427,16 @@ export function LoginScreen() {
                                 styles.termos
                             }
                         >
-                            Ao continuar,
-                            você concorda
-                            com os termos de
-                            uso e a política
-                            de privacidade.
+                            Ao continuar, você
+                            concorda com os
+                            termos de uso e a
+                            política de
+                            privacidade.
                         </Text>
                     </View>
 
                     {/* ASSINATURA DO DEV */}
+
                     <TouchableOpacity
                         activeOpacity={0.6}
                         onPress={
@@ -413,6 +452,7 @@ export function LoginScreen() {
                             }
                         >
                             Made by{' '}
+
                             <Text
                                 style={
                                     styles.madeByNick
