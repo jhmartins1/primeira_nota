@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -137,7 +138,7 @@ export default function ProfessorHomeScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -174,7 +175,7 @@ export default function ProfessorHomeScreen() {
                     <MaterialCommunityIcons
                         name="alert-circle-outline"
                         size={50}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -239,7 +240,7 @@ export default function ProfessorHomeScreen() {
                         onRefresh={
                             atualizarTela
                         }
-                        tintColor="#093373"
+                        tintColor={colors.navy}
                     />
                 }
             >
@@ -291,7 +292,7 @@ export default function ProfessorHomeScreen() {
                                 <MaterialCommunityIcons
                                     name="calendar-clock-outline"
                                     size={17}
-                                    color="#093373"
+                                    color={colors.navy}
                                 />
 
                                 <Text
@@ -319,7 +320,7 @@ export default function ProfessorHomeScreen() {
                                 <MaterialCommunityIcons
                                     name="pencil-outline"
                                     size={19}
-                                    color="#093373"
+                                    color={colors.navy}
                                 />
                             </TouchableOpacity>
 
@@ -345,13 +346,13 @@ export default function ProfessorHomeScreen() {
                                 {saindo ? (
                                     <ActivityIndicator
                                         size="small"
-                                        color="#B42318"
+                                        color={colors.danger}
                                     />
                                 ) : (
                                     <MaterialCommunityIcons
                                         name="logout"
                                         size={20}
-                                        color="#B42318"
+                                        color={colors.danger}
                                     />
                                 )}
                             </TouchableOpacity>
@@ -438,7 +439,7 @@ export default function ProfessorHomeScreen() {
                                                             size={
                                                                 26
                                                             }
-                                                            color="#093373"
+                                                            color={colors.navy}
                                                         />
                                                     ) : (
                                                         <FontAwesome5
@@ -448,7 +449,7 @@ export default function ProfessorHomeScreen() {
                                                             size={
                                                                 23
                                                             }
-                                                            color="#093373"
+                                                            color={colors.navy}
                                                         />
                                                     )}
                                                 </View>
@@ -515,7 +516,7 @@ export default function ProfessorHomeScreen() {
                             <MaterialCommunityIcons
                                 name="calendar-blank-outline"
                                 size={30}
-                                color="#093373"
+                                color={colors.navy}
                             />
                         </View>
 

@@ -1,15 +1,16 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_CLARO = '#EAF0FB';
-const FUNDO = '#F5F6FA';
-const BORDA = '#E7EAF0';
-const TEXTO_PRINCIPAL = '#1A1E29';
-const TEXTO_SECUNDARIO = '#6B7280';
-const DOURADO = '#B8842E';
-const DOURADO_FUNDO = '#FBF1DE';
-const VERMELHO = '#B42318';
-const VERMELHO_FUNDO = '#FFF1F0';
+const AZUL = colors.navy;
+const AZUL_CLARO = colors.tealSoft;
+const FUNDO = colors.background;
+const BORDA = colors.border;
+const TEXTO_PRINCIPAL = colors.text;
+const TEXTO_SECUNDARIO = colors.textSecondary;
+const DOURADO = colors.amberText;
+const DOURADO_FUNDO = colors.yellowSoft;
+const VERMELHO = colors.danger;
+const VERMELHO_FUNDO = colors.dangerSoft;
 
 export const styles = StyleSheet.create({
     safeArea: {
@@ -72,7 +73,7 @@ export const styles = StyleSheet.create({
     },
 
     tituloAzul: {
-        color: AZUL,
+        color: colors.teal,
     },
 
     subtitulo: {
@@ -90,20 +91,17 @@ export const styles = StyleSheet.create({
 
     card: {
         width: '100%',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: BORDA,
-        borderRadius: 18,
+        borderRadius: 22,
         padding: 18,
         marginBottom: 16,
 
-        shadowColor: '#0F1B3D',
-        shadowOffset: {
-            width: 0,
-            height: 5,
-        },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
+        shadowColor: colors.navy,
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
         elevation: 2,
     },
 
@@ -117,7 +115,7 @@ export const styles = StyleSheet.create({
         width: 38,
         height: 38,
         borderRadius: 12,
-        backgroundColor: AZUL_CLARO,
+        backgroundColor: colors.yellowSoft,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 10,
@@ -150,7 +148,7 @@ export const styles = StyleSheet.create({
     label: {
         fontSize: 13,
         fontWeight: '600',
-        color: '#333',
+        color: colors.text,
         marginBottom: 8,
     },
 
@@ -171,7 +169,7 @@ export const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
         borderColor: BORDA,
-        backgroundColor: '#FAFBFD',
+        backgroundColor: colors.surfaceMuted,
         paddingHorizontal: 16,
         paddingLeft: 44,
         fontSize: 15,
@@ -214,7 +212,7 @@ export const styles = StyleSheet.create({
         flex: 1,
         fontSize: 13,
         lineHeight: 18,
-        color: '#8A661F',
+        color: colors.amberText,
         fontWeight: '600',
     },
 
@@ -231,7 +229,7 @@ export const styles = StyleSheet.create({
 
     labelOpcional: {
         fontWeight: '400',
-        color: '#999',
+        color: colors.textMuted,
     },
 
     // =========================
@@ -266,28 +264,25 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 22,
         paddingBottom: 16,
         paddingTop: 8,
-        backgroundColor: FUNDO,
+        backgroundColor: colors.surface,
     },
 
     botaoContinuar: {
         width: '100%',
         height: 56,
-        borderRadius: 14,
-        backgroundColor: AZUL,
+        borderRadius: 16,
+        backgroundColor: colors.navy,
 
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
 
-        shadowColor: AZUL,
-        shadowOffset: {
-            width: 0,
-            height: 6,
-        },
-        shadowOpacity: 0.18,
+        shadowColor: colors.navy,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.14,
         shadowRadius: 10,
-        elevation: 4,
+        elevation: 3,
     },
 
     botaoDesabilitado: {
@@ -299,6 +294,6 @@ export const styles = StyleSheet.create({
     botaoContinuarTexto: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#fff',
+        color: colors.surface,
     },
 });

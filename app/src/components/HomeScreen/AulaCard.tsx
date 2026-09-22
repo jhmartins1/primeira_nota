@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -126,13 +127,13 @@ export function AulaCard({
                         <MaterialCommunityIcons
                             name={icone.nome}
                             size={24}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     ) : (
                         <FontAwesome5
                             name={icone.nome}
                             size={22}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     )}
                 </View>
@@ -161,7 +162,7 @@ export function AulaCard({
                 <MaterialCommunityIcons
                     name="calendar-outline"
                     size={16}
-                    color="#093373"
+                    color={colors.navy}
                 />
 
                 <Text
@@ -251,7 +252,7 @@ export function AulaCard({
                     <FontAwesome5
                         name="whatsapp"
                         size={17}
-                        color="#FFFFFF"
+                        color={colors.surface}
                     />
 
                     <Text
@@ -273,7 +274,7 @@ export function AulaCard({
                 <MaterialCommunityIcons
                     name="calendar-sync-outline"
                     size={18}
-                    color="#093373"
+                    color={colors.navy}
                 />
 
                 <Text
@@ -296,14 +297,14 @@ export function AulaCard({
                 {cancelando ? (
                     <ActivityIndicator
                         size="small"
-                        color="#B42318"
+                        color={colors.danger}
                     />
                 ) : (
                     <>
                         <MaterialCommunityIcons
                             name="calendar-remove-outline"
                             size={17}
-                            color="#B42318"
+                            color={colors.danger}
                         />
 
                         <Text

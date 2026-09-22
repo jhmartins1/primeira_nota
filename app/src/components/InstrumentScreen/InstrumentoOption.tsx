@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -74,8 +75,8 @@ export function InstrumentoOption({
                             size={32}
                             color={
                                 selecionado
-                                    ? '#FFFFFF'
-                                    : '#093373'
+                                    ? colors.surface
+                                    : colors.navy
                             }
                         />
                     ) : (
@@ -86,8 +87,8 @@ export function InstrumentoOption({
                             size={30}
                             color={
                                 selecionado
-                                    ? '#FFFFFF'
-                                    : '#093373'
+                                    ? colors.surface
+                                    : colors.navy
                             }
                         />
                     )}
@@ -113,7 +114,7 @@ export function InstrumentoOption({
                         <MaterialCommunityIcons
                             name="check"
                             size={19}
-                            color="#FFFFFF"
+                            color={colors.surface}
                         />
                     </View>
                 )}
@@ -142,7 +143,7 @@ export function InstrumentoOption({
                                 <MaterialCommunityIcons
                                     name="check"
                                     size={16}
-                                    color="#FFFFFF"
+                                    color={colors.surface}
                                 />
                             )}
                         </View>

@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { useAuth } from '@clerk/expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -365,7 +366,7 @@ export default function ProfileScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -401,7 +402,7 @@ export default function ProfileScreen() {
                         <MaterialCommunityIcons
                             name="arrow-left"
                             size={22}
-                            color="#093373"
+                            color={colors.navy}
                         />
 
                         <Text
@@ -437,7 +438,7 @@ export default function ProfileScreen() {
                             <MaterialCommunityIcons
                                 name="account-outline"
                                 size={32}
-                                color="#093373"
+                                color={colors.navy}
                             />
                         </View>
 
@@ -468,7 +469,7 @@ export default function ProfileScreen() {
                             <MaterialCommunityIcons
                                 name="phone-outline"
                                 size={21}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <Text
@@ -494,7 +495,7 @@ export default function ProfileScreen() {
                                     : null,
                             ]}
                             placeholder="(61) 98235-1199"
-                            placeholderTextColor="#9CA3AF"
+                            placeholderTextColor={colors.textMuted}
                             keyboardType="phone-pad"
                             value={telefone}
                             onChangeText={
@@ -521,7 +522,7 @@ export default function ProfileScreen() {
                             <MaterialCommunityIcons
                                 name="home-city-outline"
                                 size={21}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <Text
@@ -552,7 +553,7 @@ export default function ProfileScreen() {
                                         : null,
                                 ]}
                                 placeholder="00000-000"
-                                placeholderTextColor="#9CA3AF"
+                                placeholderTextColor={colors.textMuted}
                                 keyboardType="numeric"
                                 value={cep}
                                 onChangeText={
@@ -567,7 +568,7 @@ export default function ProfileScreen() {
                             {buscando && (
                                 <ActivityIndicator
                                     size="small"
-                                    color="#093373"
+                                    color={colors.navy}
                                     style={
                                         styles.inputLoading
                                     }
@@ -584,7 +585,7 @@ export default function ProfileScreen() {
                                 <MaterialCommunityIcons
                                     name="alert-circle-outline"
                                     size={16}
-                                    color="#B42318"
+                                    color={colors.danger}
                                 />
 
                                 <Text
@@ -607,7 +608,7 @@ export default function ProfileScreen() {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Rua, avenida..."
-                                        placeholderTextColor="#9CA3AF"
+                                        placeholderTextColor={colors.textMuted}
                                         value={logradouro}
                                         onChangeText={(valor) => {
                                             setLogradouro(valor);
@@ -626,7 +627,7 @@ export default function ProfileScreen() {
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Bairro"
-                                        placeholderTextColor="#9CA3AF"
+                                        placeholderTextColor={colors.textMuted}
                                         value={bairro}
                                         onChangeText={(valor) => {
                                             setBairro(valor);
@@ -641,7 +642,7 @@ export default function ProfileScreen() {
                                     <MaterialCommunityIcons
                                         name="map-marker-check-outline"
                                         size={19}
-                                        color="#093373"
+                                        color={colors.navy}
                                     />
 
                                     <View
@@ -690,7 +691,7 @@ export default function ProfileScreen() {
                                         styles.input
                                     }
                                     placeholder="123"
-                                    placeholderTextColor="#9CA3AF"
+                                    placeholderTextColor={colors.textMuted}
                                     keyboardType="numeric"
                                     value={numero}
                                     onChangeText={(
@@ -725,7 +726,7 @@ export default function ProfileScreen() {
                                         styles.input
                                     }
                                     placeholder="Apto 12"
-                                    placeholderTextColor="#9CA3AF"
+                                    placeholderTextColor={colors.textMuted}
                                     value={
                                         complemento
                                     }
@@ -755,7 +756,7 @@ export default function ProfileScreen() {
                             <MaterialCommunityIcons
                                 name="alert-circle-outline"
                                 size={18}
-                                color="#B42318"
+                                color={colors.danger}
                             />
 
                             <Text
@@ -778,7 +779,7 @@ export default function ProfileScreen() {
                             <MaterialCommunityIcons
                                 name="check-circle-outline"
                                 size={18}
-                                color="#2E8B57"
+                                color={colors.success}
                             />
 
                             <Text
@@ -798,7 +799,7 @@ export default function ProfileScreen() {
                         <MaterialCommunityIcons
                             name="information-outline"
                             size={20}
-                            color="#093373"
+                            color={colors.navy}
                         />
 
                         <Text
@@ -826,7 +827,7 @@ export default function ProfileScreen() {
                         {salvando ? (
                             <ActivityIndicator
                                 size="small"
-                                color="#FFFFFF"
+                                color={colors.surface}
                             />
                         ) : (
                             <>
@@ -841,7 +842,7 @@ export default function ProfileScreen() {
                                 <MaterialCommunityIcons
                                     name="check"
                                     size={20}
-                                    color="#FFFFFF"
+                                    color={colors.surface}
                                 />
                             </>
                         )}

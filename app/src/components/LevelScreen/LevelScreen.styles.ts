@@ -1,15 +1,16 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
-const AZUL_CLARO = '#EAF0FB';
-const FUNDO = '#F5F6FA';
-const BORDA = '#E3E7EF';
+const AZUL = colors.navy;
+const AZUL_CLARO = colors.tealSoft;
+const FUNDO = colors.background;
+const BORDA = colors.border;
 
-const TEXTO = '#1A1E29';
-const SECUNDARIO = '#6B7280';
+const TEXTO = colors.text;
+const SECUNDARIO = colors.textSecondary;
 
-const DOURADO = '#B8842E';
-const DOURADO_CLARO = '#FBF1DE';
+const DOURADO = colors.amberText;
+const DOURADO_CLARO = colors.yellowSoft;
 
 export const styles = StyleSheet.create({
   safeArea: {
@@ -124,7 +125,7 @@ export const styles = StyleSheet.create({
     height: 6,
 
     backgroundColor:
-      '#E2E6ED',
+      colors.border,
 
     borderRadius: 10,
 
@@ -134,7 +135,7 @@ export const styles = StyleSheet.create({
   progressoPreenchido: {
     height: '100%',
 
-    backgroundColor: AZUL,
+    backgroundColor: colors.turquoise,
 
     borderRadius: 10,
   },
@@ -149,9 +150,9 @@ export const styles = StyleSheet.create({
   //CARD DO INSTRUMENTO
   instrumentoCard: {
     backgroundColor:
-      '#FFFFFF',
+      colors.surface,
 
-    borderRadius: 20,
+    borderRadius: 22,
 
     borderWidth: 1,
 
@@ -160,16 +161,13 @@ export const styles = StyleSheet.create({
     padding: 18,
 
     shadowColor:
-      '#0F1B3D',
+      colors.navy,
 
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
 
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.045,
 
-    shadowRadius: 12,
+    shadowRadius: 16,
 
     elevation: 2,
   },
@@ -189,7 +187,7 @@ export const styles = StyleSheet.create({
     borderRadius: 14,
 
     backgroundColor:
-      AZUL_CLARO,
+      colors.yellowSoft,
 
     alignItems: 'center',
 
@@ -247,7 +245,7 @@ export const styles = StyleSheet.create({
     borderRadius: 15,
 
     backgroundColor:
-      '#FFFFFF',
+      colors.surface,
 
     paddingHorizontal: 14,
 
@@ -255,10 +253,10 @@ export const styles = StyleSheet.create({
   },
 
   opcaoSelecionada: {
-    borderColor: AZUL,
+    borderColor: colors.teal,
 
     backgroundColor:
-      AZUL_CLARO,
+      colors.tealSoft,
   },
 
   opcaoConteudo: {
@@ -286,7 +284,7 @@ export const styles = StyleSheet.create({
 
   estrelaContainerSelecionada: {
     backgroundColor:
-      '#FFFFFF',
+      colors.surface,
   },
 
   estrelas: {
@@ -336,9 +334,9 @@ export const styles = StyleSheet.create({
     borderRadius: 13,
 
     backgroundColor:
-      AZUL,
+      colors.teal,
 
-    color: '#FFFFFF',
+    color: colors.surface,
 
     textAlign: 'center',
 
@@ -405,7 +403,7 @@ export const styles = StyleSheet.create({
 
     fontWeight: '700',
 
-    color: '#FFFFFF',
+    color: colors.surface,
   },
   //FOOTER
   footer: {
@@ -416,20 +414,20 @@ export const styles = StyleSheet.create({
     paddingBottom: 12,
 
     backgroundColor:
-      FUNDO,
+      colors.surface,
 
     borderTopWidth: 1,
 
     borderTopColor:
-      '#E7EAF0',
+      colors.border,
   },
 
   botaoContinuar: {
     height: 54,
 
-    borderRadius: 15,
+    borderRadius: 16,
 
-    backgroundColor: AZUL,
+    backgroundColor: colors.navy,
 
     flexDirection: 'row',
 
@@ -438,23 +436,20 @@ export const styles = StyleSheet.create({
     justifyContent:
       'center',
 
-    shadowColor: AZUL,
+    shadowColor: colors.navy,
 
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 4 },
 
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.14,
 
     shadowRadius: 10,
 
-    elevation: 4,
+    elevation: 3,
   },
 
   botaoDesabilitado: {
     backgroundColor:
-      '#C7CBD3',
+      colors.disabled,
 
     shadowOpacity: 0,
 
@@ -462,7 +457,7 @@ export const styles = StyleSheet.create({
   },
 
   botaoTexto: {
-    color: '#FFFFFF',
+    color: colors.surface,
 
     fontSize: 15,
 
@@ -470,7 +465,7 @@ export const styles = StyleSheet.create({
   },
 
   botaoSeta: {
-    color: '#FFFFFF',
+    color: colors.surface,
 
     fontSize: 20,
 

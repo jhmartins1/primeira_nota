@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -45,13 +46,13 @@ export function InstrumentoCard({ instrumento, onPress }: InstrumentoCardProps) 
                     <MaterialCommunityIcons
                         name={icone.nome}
                         size={25}
-                        color="#093373"
+                        color={colors.navy}
                     />
                 ) : (
                     <FontAwesome5
                         name={icone.nome}
                         size={23}
-                        color="#093373"
+                        color={colors.navy}
                     />
                 )}
             </View>
@@ -91,7 +92,7 @@ export function InstrumentoCard({ instrumento, onPress }: InstrumentoCardProps) 
             <MaterialCommunityIcons
                 name="chevron-right"
                 size={22}
-                color="#093373"
+                color={colors.navy}
             />
         </TouchableOpacity>
     );

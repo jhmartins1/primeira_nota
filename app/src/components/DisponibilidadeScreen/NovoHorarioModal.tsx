@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useEffect, useState } from 'react';
@@ -191,7 +192,7 @@ export function NovoHorarioModal({
                             <MaterialCommunityIcons
                                 name="calendar-outline"
                                 size={18}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <Text
@@ -317,7 +318,7 @@ export function NovoHorarioModal({
                                                         size={
                                                             15
                                                         }
-                                                        color="#FFFFFF"
+                                                        color={colors.surface}
                                                     />
                                                 )}
                                             </View>
@@ -475,7 +476,7 @@ export function NovoHorarioModal({
                                         size={
                                             18
                                         }
-                                        color="#093373"
+                                        color={colors.navy}
                                     />
 
                                     <Text
@@ -513,7 +514,7 @@ export function NovoHorarioModal({
                         >
                             {salvando ? (
                                 <ActivityIndicator
-                                    color="#FFFFFF"
+                                    color={colors.surface}
                                 />
                             ) : (
                                 <Text

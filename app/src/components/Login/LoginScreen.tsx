@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { useAuth } from '@clerk/expo';
 import { useSignInWithGoogle } from '@clerk/expo/google';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -8,6 +9,7 @@ import {
     Alert,
     Image,
     Linking,
+    ScrollView,
     Text,
     TouchableOpacity,
     View,
@@ -172,8 +174,9 @@ export function LoginScreen() {
         <SafeAreaView
             style={styles.safeArea}
         >
-            <View
-                style={styles.container}
+            <ScrollView
+                contentContainerStyle={styles.container}
+                showsVerticalScrollIndicator={false}
             >
                 {/* ELEMENTOS DECORATIVOS */}
 
@@ -192,7 +195,7 @@ export function LoginScreen() {
                 <MaterialCommunityIcons
                     name="music-note"
                     size={38}
-                    color="rgba(255,255,255,0.18)"
+                    color={colors.orange}
                     style={
                         styles.notaMusicalUm
                     }
@@ -201,7 +204,7 @@ export function LoginScreen() {
                 <MaterialCommunityIcons
                     name="music-note-eighth-dotted"
                     size={32}
-                    color="rgba(255,255,255,0.14)"
+                    color={colors.turquoise}
                     style={
                         styles.notaMusicalDois
                     }
@@ -210,7 +213,7 @@ export function LoginScreen() {
                 <MaterialCommunityIcons
                     name="music-clef-treble"
                     size={72}
-                    color="rgba(255,255,255,0.08)"
+                    color={colors.tealSoft}
                     style={
                         styles.claveMusical
                     }
@@ -231,7 +234,7 @@ export function LoginScreen() {
                             style={
                                 styles.logo
                             }
-                            resizeMode="cover"
+                            resizeMode="contain"
                         />
                     </View>
 
@@ -272,13 +275,13 @@ export function LoginScreen() {
                     >
                         <View
                             style={
-                                styles.instrumento
+                                [styles.instrumento, { backgroundColor: colors.yellowSoft, borderColor: colors.yellowBorder }]
                             }
                         >
                             <MaterialCommunityIcons
                                 name="guitar-acoustic"
                                 size={20}
-                                color="#FFFFFF"
+                                color={colors.amberText}
                             />
                         </View>
 
@@ -290,31 +293,31 @@ export function LoginScreen() {
                             <MaterialCommunityIcons
                                 name="piano"
                                 size={20}
-                                color="#FFFFFF"
+                                color={colors.teal}
                             />
                         </View>
 
                         <View
                             style={
-                                styles.instrumento
+                                [styles.instrumento, { backgroundColor: colors.orangeSoft, borderColor: colors.orangeSoft }]
                             }
                         >
                             <MaterialCommunityIcons
                                 name="music-note"
                                 size={20}
-                                color="#FFFFFF"
+                                color={colors.orangeText}
                             />
                         </View>
 
                         <View
                             style={
-                                styles.instrumento
+                                [styles.instrumento, { backgroundColor: colors.navy, borderColor: colors.navy }]
                             }
                         >
                             <MaterialCommunityIcons
                                 name="microphone-variant"
                                 size={20}
-                                color="#FFFFFF"
+                                color={colors.surface}
                             />
                         </View>
                     </View>
@@ -370,7 +373,7 @@ export function LoginScreen() {
                         {carregando ? (
                             <ActivityIndicator
                                 size="small"
-                                color="#093373"
+                                color={colors.navy}
                             />
                         ) : (
                             <>
@@ -400,7 +403,7 @@ export function LoginScreen() {
                                 <MaterialCommunityIcons
                                     name="arrow-right"
                                     size={20}
-                                    color="#093373"
+                                    color={colors.navy}
                                     style={
                                         styles.setaGoogle
                                     }
@@ -419,7 +422,7 @@ export function LoginScreen() {
                         <MaterialCommunityIcons
                             name="shield-check-outline"
                             size={15}
-                            color="#9CA3AF"
+                            color="#CEDDEC"
                         />
 
                         <Text
@@ -463,7 +466,7 @@ export function LoginScreen() {
                         </Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }

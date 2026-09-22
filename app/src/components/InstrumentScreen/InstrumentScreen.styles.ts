@@ -1,13 +1,14 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
-const AZUL = '#093373';
+const AZUL = colors.navy;
 
 export const styles = StyleSheet.create({
     // CONTAINER
 
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.background,
     },
 
     scroll: {
@@ -31,7 +32,7 @@ export const styles = StyleSheet.create({
     loadingTexto: {
         marginTop: 12,
         fontSize: 15,
-        color: '#555',
+        color: colors.textSecondary,
         textAlign: 'center',
     },
 
@@ -45,10 +46,10 @@ export const styles = StyleSheet.create({
 
         paddingHorizontal: 20,
 
-        backgroundColor: '#fff',
+        backgroundColor: colors.background,
 
         borderBottomWidth: 1,
-        borderBottomColor: '#f0f0f0',
+        borderBottomColor: colors.border,
     },
 
     botaoVoltar: {
@@ -74,16 +75,17 @@ export const styles = StyleSheet.create({
 
     // TÍTULO
     titulo: {
+        letterSpacing: -0.6,
         width: '100%',
 
-        fontSize: 22,
-        fontWeight: '700',
+        fontSize: 26,
+        fontWeight: '800',
 
         textAlign: 'center',
 
-        color: '#222',
+        color: colors.text,
 
-        marginTop: 20,
+        marginTop: 28,
         marginBottom: 10,
     },
 
@@ -93,7 +95,7 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         lineHeight: 21,
 
-        color: '#666',
+        color: colors.textSecondary,
 
         textAlign: 'center',
 
@@ -114,19 +116,19 @@ export const styles = StyleSheet.create({
         width: '100%',
 
         borderWidth: 1.5,
-        borderColor: '#DDDDDD',
+        borderColor: colors.border,
 
-        borderRadius: 14,
+        borderRadius: 20,
 
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
 
         overflow: 'hidden',
     },
 
     opcaoWrapperSelecionado: {
-        borderColor: AZUL,
+        borderColor: colors.teal,
 
-        backgroundColor: '#F8FAFD',
+        backgroundColor: colors.tealSoft,
     },
 
     // OPÇÃO PRINCIPAL
@@ -140,11 +142,11 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
 
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
     },
 
     opcaoSelecionada: {
-        backgroundColor: '#F1EEFE',
+        backgroundColor: colors.tealSoft,
     },
 
     // ÍCONE
@@ -152,18 +154,18 @@ export const styles = StyleSheet.create({
         width: 48,
         height: 48,
 
-        borderRadius: 24,
+        borderRadius: 16,
 
         alignItems: 'center',
         justifyContent: 'center',
 
-        backgroundColor: '#F1F4F8',
+        backgroundColor: colors.yellowSoft,
 
         marginRight: 14,
     },
 
     iconeContainerSelecionado: {
-        backgroundColor: AZUL,
+        backgroundColor: colors.teal,
     },
 
     // NOME
@@ -173,7 +175,7 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
 
-        color: '#333333',
+        color: colors.text,
     },
 
     nomeInstrumentoSelecionado: {
@@ -191,7 +193,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
 
-        backgroundColor: AZUL,
+        backgroundColor: colors.teal,
 
         marginLeft: 10,
     },
@@ -206,10 +208,10 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
 
-        backgroundColor: '#F8FAFD',
+        backgroundColor: colors.surface,
 
         borderTopWidth: 1,
-        borderTopColor: '#E3E7EF',
+        borderTopColor: colors.border,
     },
 
     checkboxPossui: {
@@ -219,9 +221,9 @@ export const styles = StyleSheet.create({
         borderRadius: 6,
 
         borderWidth: 1.5,
-        borderColor: '#AAB3C2',
+        borderColor: colors.disabled,
 
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
 
         alignItems: 'center',
         justifyContent: 'center',
@@ -230,8 +232,8 @@ export const styles = StyleSheet.create({
     },
 
     checkboxPossuiSelecionado: {
-        backgroundColor: AZUL,
-        borderColor: AZUL,
+        backgroundColor: colors.teal,
+        borderColor: colors.teal,
     },
 
     possuiInstrumentoTextos: {
@@ -242,7 +244,7 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '700',
 
-        color: '#1A1E29',
+        color: colors.text,
 
         marginBottom: 3,
     },
@@ -251,16 +253,21 @@ export const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 17,
 
-        color: '#6B7280',
+        color: colors.textSecondary,
     },
 
     botaoContinuar: {
+        shadowColor: colors.navy,
+        shadowOpacity: 0.14,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 3,
         width: '100%',
         minHeight: 54,
 
-        borderRadius: 12,
+        borderRadius: 16,
 
-        backgroundColor: AZUL,
+        backgroundColor: colors.navy,
 
         flexDirection: 'row',
         alignItems: 'center',
@@ -272,11 +279,11 @@ export const styles = StyleSheet.create({
     },
 
     botaoContinuarDesabilitado: {
-        backgroundColor: '#CCCCCC',
+        backgroundColor: colors.disabled,
     },
 
     textoBotaoContinuar: {
-        color: '#FFFFFF',
+        color: colors.surface,
 
         fontSize: 16,
         fontWeight: '700',

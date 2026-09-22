@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import {
     MaterialCommunityIcons,
 } from '@expo/vector-icons';
@@ -175,7 +176,7 @@ export default function DisponibilidadeScreen() {
                             carregarDisponibilidades
                         }
 
-                        tintColor="#093373"
+                        tintColor={colors.navy}
                     />
                 }
             >
@@ -192,7 +193,7 @@ export default function DisponibilidadeScreen() {
                         <MaterialCommunityIcons
                             name="arrow-left"
                             size={22}
-                            color="#093373"
+                            color={colors.navy}
                         />
                     </TouchableOpacity>
 
@@ -231,7 +232,7 @@ export default function DisponibilidadeScreen() {
                     0 ? (
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                         style={{
                             marginTop:
                                 30,
@@ -254,7 +255,7 @@ export default function DisponibilidadeScreen() {
                                 size={
                                     30
                                 }
-                                color="#093373"
+                                color={colors.navy}
                             />
                         </View>
 
@@ -334,7 +335,7 @@ export default function DisponibilidadeScreen() {
                                             grupo.chave ? (
                                             <ActivityIndicator
                                                 size="small"
-                                                color="#B42318"
+                                                color={colors.danger}
                                             />
                                         ) : (
                                             <>
@@ -343,7 +344,7 @@ export default function DisponibilidadeScreen() {
                                                     size={
                                                         15
                                                     }
-                                                    color="#B42318"
+                                                    color={colors.danger}
                                                 />
 
                                                 <Text
@@ -381,7 +382,7 @@ export default function DisponibilidadeScreen() {
                                                     size={
                                                         18
                                                     }
-                                                    color="#093373"
+                                                    color={colors.navy}
                                                 />
                                             </View>
 
@@ -428,7 +429,7 @@ export default function DisponibilidadeScreen() {
                                                     item.id ? (
                                                     <ActivityIndicator
                                                         size="small"
-                                                        color="#B42318"
+                                                        color={colors.danger}
                                                     />
                                                 ) : (
                                                     <MaterialCommunityIcons
@@ -436,7 +437,7 @@ export default function DisponibilidadeScreen() {
                                                         size={
                                                             17
                                                         }
-                                                        color="#B42318"
+                                                        color={colors.danger}
                                                     />
                                                 )}
                                             </TouchableOpacity>
@@ -467,7 +468,7 @@ export default function DisponibilidadeScreen() {
                 <MaterialCommunityIcons
                     name="plus"
                     size={20}
-                    color="#FFFFFF"
+                    color={colors.surface}
                 />
 
                 <Text

@@ -1,15 +1,16 @@
+import { colors } from '../theme/colors';
 interface NivelColor {
     cor: string;
     fundo: string;
 }
 
 const CORES_NIVEL: Record<string, NivelColor> = {
-    Iniciante: { cor: '#2E8B57', fundo: '#EAF6EF' },
-    Intermediário: { cor: '#B8842E', fundo: '#FBF1DE' },
-    Avançado: { cor: '#6D28D9', fundo: '#F2EBFC' },
+    Iniciante: { cor: colors.success, fundo: colors.successSoft },
+    Intermediário: { cor: colors.amberText, fundo: colors.yellowSoft },
+    Avançado: { cor: colors.orangeText, fundo: colors.orangeSoft },
 };
 
-const PADRAO: NivelColor = { cor: '#B8842E', fundo: '#FBF1DE' };
+const PADRAO: NivelColor = { cor: colors.amberText, fundo: colors.yellowSoft };
 
 export function getCorNivel(nivel: string): NivelColor {
     return CORES_NIVEL[nivel] ?? PADRAO;

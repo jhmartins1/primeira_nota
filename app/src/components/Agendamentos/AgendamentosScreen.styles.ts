@@ -1,9 +1,10 @@
+import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: colors.background,
     },
 
     content: {
@@ -22,12 +23,12 @@ export const styles = StyleSheet.create({
         width: 42,
         height: 42,
         borderRadius: 12,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: colors.surface,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 12,
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: colors.border,
     },
 
     headerTexto: {
@@ -35,15 +36,16 @@ export const styles = StyleSheet.create({
     },
 
     titulo: {
+        letterSpacing: -0.6,
         fontSize: 24,
         fontWeight: '800',
-        color: '#111827',
+        color: colors.text,
     },
 
     subtitulo: {
         marginTop: 3,
         fontSize: 14,
-        color: '#6B7280',
+        color: colors.textSecondary,
     },
 
     lista: {
@@ -59,17 +61,22 @@ export const styles = StyleSheet.create({
     loadingText: {
         marginTop: 12,
         fontSize: 14,
-        color: '#6B7280',
+        color: colors.textSecondary,
     },
 
     estadoContainer: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 16,
+        shadowColor: colors.navy,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 5 },
+        elevation: 2,
+        backgroundColor: colors.surface,
+        borderRadius: 22,
         padding: 28,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: colors.border,
         marginTop: 8,
     },
 
@@ -77,7 +84,7 @@ export const styles = StyleSheet.create({
         marginTop: 14,
         fontSize: 17,
         fontWeight: '700',
-        color: '#111827',
+        color: colors.text,
         textAlign: 'center',
     },
 
@@ -85,7 +92,7 @@ export const styles = StyleSheet.create({
         marginTop: 7,
         fontSize: 14,
         lineHeight: 20,
-        color: '#6B7280',
+        color: colors.textSecondary,
         textAlign: 'center',
     },
 
@@ -94,29 +101,34 @@ export const styles = StyleSheet.create({
         height: 44,
         paddingHorizontal: 20,
         borderRadius: 12,
-        backgroundColor: '#093373',
+        backgroundColor: colors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     botaoTentarNovamenteTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontSize: 14,
         fontWeight: '700',
     },
 
     botaoAgendar: {
+        shadowColor: colors.navy,
+        shadowOpacity: 0.14,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 3,
         marginTop: 18,
         height: 44,
         paddingHorizontal: 20,
-        borderRadius: 12,
-        backgroundColor: '#093373',
+        borderRadius: 16,
+        backgroundColor: colors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
 
     botaoAgendarTexto: {
-        color: '#FFFFFF',
+        color: colors.surface,
         fontSize: 14,
         fontWeight: '700',
     },

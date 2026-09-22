@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { useAuth } from '@clerk/expo';
 import {
     FontAwesome5,
@@ -826,7 +827,7 @@ export default function AgendamentoScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -858,7 +859,7 @@ export default function AgendamentoScreen() {
                     <MaterialCommunityIcons
                         name="alert-circle-outline"
                         size={48}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -931,7 +932,7 @@ export default function AgendamentoScreen() {
                             <MaterialCommunityIcons
                                 name="arrow-left"
                                 size={24}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <Text
@@ -986,7 +987,7 @@ export default function AgendamentoScreen() {
                             <MaterialCommunityIcons
                                 name="calendar"
                                 size={26}
-                                color="#093373"
+                                color={colors.navy}
                             />
                         </View>
 
@@ -1086,7 +1087,7 @@ export default function AgendamentoScreen() {
                                                     size={
                                                         29
                                                     }
-                                                    color="#093373"
+                                                    color={colors.navy}
                                                 />
                                             ) : (
                                                 <FontAwesome5
@@ -1096,7 +1097,7 @@ export default function AgendamentoScreen() {
                                                     size={
                                                         27
                                                     }
-                                                    color="#093373"
+                                                    color={colors.navy}
                                                 />
                                             )}
                                         </View>
@@ -1165,7 +1166,7 @@ export default function AgendamentoScreen() {
                                                 size={
                                                     25
                                                 }
-                                                color="#093373"
+                                                color={colors.navy}
                                             />
                                         </View>
                                     </TouchableOpacity>
@@ -1184,7 +1185,7 @@ export default function AgendamentoScreen() {
                                 <MaterialCommunityIcons
                                     name="music-off"
                                     size={40}
-                                    color="#6B7280"
+                                    color={colors.textSecondary}
                                 />
 
                                 <Text
@@ -1232,7 +1233,7 @@ export default function AgendamentoScreen() {
                 >
                     <ActivityIndicator
                         size="large"
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -1274,7 +1275,7 @@ export default function AgendamentoScreen() {
                     <MaterialCommunityIcons
                         name="calendar-remove-outline"
                         size={48}
-                        color="#093373"
+                        color={colors.navy}
                     />
 
                     <Text
@@ -1355,7 +1356,7 @@ export default function AgendamentoScreen() {
                             <MaterialCommunityIcons
                                 name="arrow-left"
                                 size={24}
-                                color="#093373"
+                                color={colors.navy}
                             />
 
                             <Text
@@ -1400,7 +1401,7 @@ export default function AgendamentoScreen() {
                                             size={
                                                 29
                                             }
-                                            color="#093373"
+                                            color={colors.navy}
                                         />
                                     ) : (
                                         <FontAwesome5
@@ -1410,7 +1411,7 @@ export default function AgendamentoScreen() {
                                             size={
                                                 27
                                             }
-                                            color="#093373"
+                                            color={colors.navy}
                                         />
                                     );
                                 })()}
@@ -1568,7 +1569,7 @@ export default function AgendamentoScreen() {
                                                                 size={
                                                                     24
                                                                 }
-                                                                color="#093373"
+                                                                color={colors.navy}
                                                             />
                                                         </View>
                                                     )}
@@ -1780,8 +1781,8 @@ export default function AgendamentoScreen() {
                                                     }
                                                     color={
                                                         selecionado
-                                                            ? '#FFFFFF'
-                                                            : '#093373'
+                                                            ? colors.surface
+                                                            : colors.navy
                                                     }
                                                 />
 
@@ -1845,7 +1846,7 @@ export default function AgendamentoScreen() {
                                                 size={
                                                     21
                                                 }
-                                                color="#093373"
+                                                color={colors.navy}
                                             />
                                         </View>
                                     )}
@@ -1933,14 +1934,14 @@ export default function AgendamentoScreen() {
                         {confirmando ? (
                             <ActivityIndicator
                                 size="small"
-                                color="#FFFFFF"
+                                color={colors.surface}
                             />
                         ) : (
                             <>
                                 <MaterialCommunityIcons
                                     name="calendar-check"
                                     size={20}
-                                    color="#FFFFFF"
+                                    color={colors.surface}
                                 />
 
                                 <Text

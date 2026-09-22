@@ -1,30 +1,31 @@
+import { colors } from '../../theme/colors';
 import {
     StyleSheet,
 } from 'react-native';
 
 const AZUL =
-    '#093373';
+    colors.navy;
 
 const AZUL_CLARO =
-    '#EAF0FB';
+    colors.tealSoft;
 
 const FUNDO =
-    '#F5F6FA';
+    colors.background;
 
 const BRANCO =
-    '#FFFFFF';
+    colors.surface;
 
 const TEXTO =
-    '#1A1E29';
+    colors.text;
 
 const TEXTO_SECUNDARIO =
-    '#6B7280';
+    colors.textSecondary;
 
 const BORDA =
-    '#E3E7EF';
+    colors.border;
 
 const DOURADO =
-    '#B8842E';
+    colors.amberText;
 
 export const styles =
     StyleSheet.create({
@@ -134,11 +135,16 @@ export const styles =
         },
 
         cardResumo: {
+        shadowColor: colors.navy,
+        shadowOpacity: 0.045,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 5 },
+        elevation: 2,
             padding:
                 16,
 
             borderRadius:
-                18,
+                22,
 
             backgroundColor:
                 BRANCO,
@@ -167,7 +173,7 @@ export const styles =
                 16,
 
             backgroundColor:
-                AZUL_CLARO,
+                colors.yellowSoft,
 
             alignItems:
                 'center',
@@ -248,10 +254,10 @@ export const styles =
                 1,
 
             borderColor:
-                '#EADFCB',
+                colors.yellowBorder,
 
             backgroundColor:
-                '#FFFBF4',
+                colors.yellowSoft,
         },
 
         atualCabecalho: {
@@ -282,7 +288,7 @@ export const styles =
                 'center',
 
             backgroundColor:
-                '#F7ECD8',
+                colors.yellowSoft,
         },
 
         atualLabel: {
@@ -354,7 +360,7 @@ export const styles =
                 10,
 
             backgroundColor:
-                AZUL,
+                colors.teal,
 
             alignItems:
                 'center',
@@ -441,10 +447,10 @@ export const styles =
 
         dataCardSelecionado: {
             borderColor:
-                AZUL,
+                colors.teal,
 
             backgroundColor:
-                AZUL,
+                colors.teal,
         },
 
         dataDiaSemana: {
@@ -525,7 +531,7 @@ export const styles =
                 1,
 
             borderColor:
-                '#D8E2F0',
+                colors.tealBorder,
 
             backgroundColor:
                 BRANCO,
@@ -545,10 +551,10 @@ export const styles =
 
         horarioCardSelecionado: {
             borderColor:
-                AZUL,
+                colors.teal,
 
             backgroundColor:
-                AZUL,
+                colors.teal,
         },
 
         horarioTexto: {
@@ -681,7 +687,7 @@ export const styles =
                 1,
 
             borderColor:
-                '#D6E1F0',
+                colors.tealBorder,
 
             backgroundColor:
                 AZUL_CLARO,
@@ -771,10 +777,10 @@ export const styles =
                 52,
 
             borderRadius:
-                15,
+                16,
 
             backgroundColor:
-                AZUL,
+                colors.navy,
 
             flexDirection:
                 'row',
@@ -789,21 +795,15 @@ export const styles =
                 8,
 
             shadowColor:
-                '#000000',
+                colors.navy,
 
-            shadowOffset: {
-                width:
-                    0,
-
-                height:
-                    3,
-            },
+            shadowOffset: { width: 0, height: 4 },
 
             shadowOpacity:
-                0.12,
+                0.14,
 
             shadowRadius:
-                7,
+                10,
 
             elevation:
                 3,

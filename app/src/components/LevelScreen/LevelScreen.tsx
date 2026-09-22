@@ -1,3 +1,4 @@
+import { colors } from '../../theme/colors';
 import { useAuth } from '@clerk/expo';
 
 import {
@@ -738,7 +739,7 @@ export function LevelScreen() {
             <MaterialCommunityIcons
               name="music-note-off-outline"
               size={46}
-              color="#093373"
+              color={colors.navy}
             />
 
             <Text
@@ -1010,7 +1011,7 @@ export function LevelScreen() {
                             size={
                               25
                             }
-                            color="#093373"
+                            color={colors.navy}
                           />
                         ) : (
                           <FontAwesome5
@@ -1020,7 +1021,7 @@ export function LevelScreen() {
                             size={
                               22
                             }
-                            color="#093373"
+                            color={colors.navy}
                           />
                         )}
                       </View>
@@ -1234,7 +1235,7 @@ export function LevelScreen() {
           >
             {salvando ? (
               <ActivityIndicator
-                color="#fff"
+                color={colors.surface}
               />
             ) : (
               <>
