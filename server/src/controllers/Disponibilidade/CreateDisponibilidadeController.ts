@@ -29,7 +29,7 @@ export class CreateDisponibilidadeController {
             const {
                 dataInicial,
                 horarios,
-                repetirProximos14Dias =
+                repetirSeteDiasUteis =
                 false,
             } = req.body;
 
@@ -42,7 +42,7 @@ export class CreateDisponibilidadeController {
                         req.professorId,
                     dataInicial,
                     horarios,
-                    repetirProximos14Dias,
+                    repetirSeteDiasUteis,
                 });
 
             return res
