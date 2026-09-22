@@ -5,7 +5,7 @@ interface CreateDisponibilidadeDTO {
     professorId: number;
     dataInicial: string;
     horarios: string[];
-    repetirProximos14Dias?: boolean;
+    repetirSeteDiasUteis?: boolean;
 }
 
 const HORARIOS_PERMITIDOS = [
@@ -17,14 +17,14 @@ const HORARIOS_PERMITIDOS = [
     '16:00',
 ];
 
-const DIAS_REPETICAO = 14;
+const QUANTIDADE_DIAS_UTEIS = 7;
 
 export class CreateDisponibilidadeService {
     async execute({
         professorId,
         dataInicial,
         horarios,
-        repetirProximos14Dias = false,
+        repetirSeteDiasUteis = false,
     }: CreateDisponibilidadeDTO) {
         if (
             !Number.isInteger(professorId) ||
@@ -37,8 +37,8 @@ export class CreateDisponibilidadeService {
         }
 
         if (
-            typeof dataInicial !==
-            'string'
+            typeof dataInicial !== 'string' ||
+            !ehDataValida(dataInicial)
         ) {
             throw new AppError(
                 'Data inicial inválida.',
@@ -57,22 +57,11 @@ export class CreateDisponibilidadeService {
         }
 
         if (
-            typeof repetirProximos14Dias !==
+            typeof repetirSeteDiasUteis !==
             'boolean'
         ) {
             throw new AppError(
-                'repetirProximos14Dias deve ser boolean.',
-                400
-            );
-        }
-
-        if (
-            !ehDataValida(
-                dataInicial
-            )
-        ) {
-            throw new AppError(
-                'Data inicial inválida.',
+                'repetirSeteDiasUteis deve ser boolean.',
                 400
             );
         }
@@ -88,8 +77,7 @@ export class CreateDisponibilidadeService {
             );
 
         if (
-            horariosInvalidos.length >
-            0
+            horariosInvalidos.length > 0
         ) {
             throw new AppError(
                 'Existe um horário inválido.',
@@ -99,9 +87,7 @@ export class CreateDisponibilidadeService {
 
         const horariosUnicos =
             Array.from(
-                new Set(
-                    horarios
-                )
+                new Set(horarios)
             );
 
         const registros: {
@@ -111,14 +97,13 @@ export class CreateDisponibilidadeService {
             horaFim: Date;
         }[] = [];
 
-        if (
-            repetirProximos14Dias
-        ) {
-            for (
-                let deslocamento = 0;
-                deslocamento <
-                DIAS_REPETICAO;
-                deslocamento++
+        if (repetirSeteDiasUteis) {
+            let diasUteisAdicionados = 0;
+            let deslocamento = 0;
+
+            while (
+                diasUteisAdicionados <
+                QUANTIDADE_DIAS_UTEIS
             ) {
                 const dataDoDia =
                     adicionarDias(
@@ -126,10 +111,10 @@ export class CreateDisponibilidadeService {
                         deslocamento
                     );
 
+                deslocamento++;
+
                 if (
-                    !ehDiaUtil(
-                        dataDoDia
-                    )
+                    !ehDiaUtil(dataDoDia)
                 ) {
                     continue;
                 }
@@ -140,6 +125,8 @@ export class CreateDisponibilidadeService {
                     dataDoDia,
                     horariosUnicos
                 );
+
+                diasUteisAdicionados++;
             }
         } else {
             adicionarHorariosDoDia(
@@ -150,10 +137,7 @@ export class CreateDisponibilidadeService {
             );
         }
 
-        if (
-            registros.length ===
-            0
-        ) {
+        if (registros.length === 0) {
             throw new AppError(
                 'Nenhum horário futuro válido foi informado.',
                 400
@@ -164,8 +148,7 @@ export class CreateDisponibilidadeService {
             await prisma.disponibilidade.createMany(
                 {
                     data: registros,
-                    skipDuplicates:
-                        true,
+                    skipDuplicates: true,
                 }
             );
 
@@ -191,12 +174,9 @@ function adicionarHorariosDoDia(
     data: string,
     horarios: string[]
 ) {
-    const agora =
-        new Date();
+    const agora = new Date();
 
-    for (
-        const horario of horarios
-    ) {
+    for (const horario of horarios) {
         const inicio =
             criarDataHoraSaoPaulo(
                 data,
@@ -206,25 +186,20 @@ function adicionarHorariosDoDia(
         const fim =
             new Date(
                 inicio.getTime() +
-                60 *
-                60 *
-                1000
+                60 * 60 * 1000
             );
 
-        if (
-            inicio <= agora
-        ) {
+        // Horários que já passaram são ignorados.
+        // Os próximos dias continuam sendo processados.
+        if (inicio <= agora) {
             continue;
         }
 
         registros.push({
             professorId,
-            data:
-                inicio,
-            horaInicio:
-                inicio,
-            horaFim:
-                fim,
+            data: inicio,
+            horaInicio: inicio,
+            horaFim: fim,
         });
     }
 }
@@ -251,13 +226,9 @@ function adicionarDias(
     quantidade: number
 ): string {
     const partes =
-        dataInicial.split(
-            '-'
-        );
+        dataInicial.split('-');
 
-    if (
-        partes.length !== 3
-    ) {
+    if (partes.length !== 3) {
         throw new AppError(
             'Data inicial inválida.',
             400
@@ -265,19 +236,13 @@ function adicionarDias(
     }
 
     const ano =
-        Number(
-            partes[0]
-        );
+        Number(partes[0]);
 
     const mes =
-        Number(
-            partes[1]
-        );
+        Number(partes[1]);
 
     const dia =
-        Number(
-            partes[2]
-        );
+        Number(partes[2]);
 
     if (
         Number.isNaN(ano) ||
@@ -312,20 +277,13 @@ function adicionarDias(
 
     const novoMes =
         String(
-            dataUTC.getUTCMonth() +
-            1
-        ).padStart(
-            2,
-            '0'
-        );
+            dataUTC.getUTCMonth() + 1
+        ).padStart(2, '0');
 
     const novoDia =
         String(
             dataUTC.getUTCDate()
-        ).padStart(
-            2,
-            '0'
-        );
+        ).padStart(2, '0');
 
     return `${novoAno}-${novoMes}-${novoDia}`;
 }
@@ -342,9 +300,7 @@ function ehDataValida(
     }
 
     const partes =
-        data.split(
-            '-'
-        );
+        data.split('-');
 
     const anoTexto =
         partes[0];
@@ -364,30 +320,18 @@ function ehDataValida(
     }
 
     const ano =
-        Number(
-            anoTexto
-        );
+        Number(anoTexto);
 
     const mes =
-        Number(
-            mesTexto
-        );
+        Number(mesTexto);
 
     const dia =
-        Number(
-            diaTexto
-        );
+        Number(diaTexto);
 
     if (
-        !Number.isInteger(
-            ano
-        ) ||
-        !Number.isInteger(
-            mes
-        ) ||
-        !Number.isInteger(
-            dia
-        )
+        !Number.isInteger(ano) ||
+        !Number.isInteger(mes) ||
+        !Number.isInteger(dia)
     ) {
         return false;
     }
