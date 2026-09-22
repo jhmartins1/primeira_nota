@@ -1,5 +1,11 @@
-import type { Request, Response, NextFunction } from 'express';
+import type {
+    Request,
+    Response,
+    NextFunction,
+} from 'express';
+
 import { verifyToken } from '@clerk/backend';
+
 import { prisma } from '../prisma/client';
 
 declare global {
@@ -7,7 +13,9 @@ declare global {
         interface Request {
             usuarioId?: number;
             professorId?: number;
-            tipoConta?: 'usuario' | 'professor';
+            tipoConta?:
+            | 'usuario'
+            | 'professor';
         }
     }
 }
@@ -18,50 +26,118 @@ export async function clerkAuthMiddleware(
     next: NextFunction
 ) {
     try {
-        const authHeader = req.headers.authorization;
+        const authHeader =
+            req.headers.authorization;
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                error: 'Token não fornecido',
-            });
+        if (
+            !authHeader ||
+            !authHeader.startsWith(
+                'Bearer '
+            )
+        ) {
+            return res
+                .status(401)
+                .json({
+                    error:
+                        'Token não fornecido',
+                });
         }
 
-        const token = authHeader.replace('Bearer ', '');
+        const token =
+            authHeader.replace(
+                'Bearer ',
+                ''
+            );
 
-        const payload = await verifyToken(token, {
-            secretKey: process.env.CLERK_SECRET_KEY,
-        });
+        const payload =
+            await verifyToken(
+                token,
+                {
+                    secretKey:
+                        process.env
+                            .CLERK_SECRET_KEY,
+                }
+            );
 
-        // Tenta primeiro como aluno
-        const usuario = await prisma.usuario.findUnique({
-            where: { clerkId: payload.sub },
-        });
+        const clerkId =
+            payload.sub;
 
-        if (usuario) {
-            req.usuarioId = usuario.id;
-            req.tipoConta = 'usuario';
-            return next();
+        if (!clerkId) {
+            return res
+                .status(401)
+                .json({
+                    error:
+                        'Token sem identificação de usuário',
+                });
         }
 
-        // Se não é aluno, tenta como professor
-        const professor = await prisma.professor.findUnique({
-            where: { clerkId: payload.sub },
-        });
+        // ==========================================
+        // 1. PROFESSOR TEM PRIORIDADE
+        // ==========================================
+
+        const professor =
+            await prisma.professor.findUnique(
+                {
+                    where: {
+                        clerkId,
+                    },
+                }
+            );
 
         if (professor) {
-            req.professorId = professor.id;
-            req.tipoConta = 'professor';
+            req.professorId =
+                professor.id;
+
+            req.tipoConta =
+                'professor';
+
             return next();
         }
 
-        return res.status(404).json({
-            error: 'Conta não encontrada',
-        });
-    } catch (error) {
-        console.error('ERRO DETALHADO NA AUTENTICAÇÃO:', error);
+        // ==========================================
+        // 2. SE NÃO FOR PROFESSOR, PROCURA USUÁRIO
+        // ==========================================
 
-        return res.status(401).json({
-            error: 'Token inválido',
-        });
+        const usuario =
+            await prisma.usuario.findUnique(
+                {
+                    where: {
+                        clerkId,
+                    },
+                }
+            );
+
+        if (usuario) {
+            req.usuarioId =
+                usuario.id;
+
+            req.tipoConta =
+                'usuario';
+
+            return next();
+        }
+
+        // ==========================================
+        // 3. NENHUMA CONTA ENCONTRADA
+        // ==========================================
+
+        return res
+            .status(404)
+            .json({
+                error:
+                    'Conta não encontrada',
+            });
+    } catch (error) {
+        console.error(
+            'ERRO DETALHADO NA AUTENTICAÇÃO:',
+            error
+        );
+
+        return res
+            .status(401)
+            .json({
+                error:
+                    'Token inválido',
+            });
     }
 }
