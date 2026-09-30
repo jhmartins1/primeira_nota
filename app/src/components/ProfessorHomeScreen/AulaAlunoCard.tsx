@@ -1,4 +1,5 @@
 import { colors } from '../../theme/colors';
+
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -29,14 +30,34 @@ import {
 
 interface AulaAlunoCardProps {
     aula: AgendamentoProfessor;
-
     destaque?: boolean;
-
     cancelando?: boolean;
-
     onRemarcar?: () => void;
-
     onCancelar?: () => void;
+}
+
+function formatarFaixaEtaria(
+    faixa?: string | null
+): string | null {
+    switch (faixa) {
+        case 'ATE_6':
+            return 'Até 6 anos';
+
+        case 'DE_7_A_10':
+            return '7 a 10 anos';
+
+        case 'DE_11_A_14':
+            return '11 a 14 anos';
+
+        case 'DE_15_A_17':
+            return '15 a 17 anos';
+
+        case 'ADULTO':
+            return '18 anos ou mais';
+
+        default:
+            return null;
+    }
 }
 
 export function AulaAlunoCard({
@@ -66,6 +87,15 @@ export function AulaAlunoCard({
             aula.usuario
         );
 
+    const nomeAluno =
+        aula.usuario.nomeAluno?.trim() ||
+        aula.usuario.name;
+
+    const faixaEtaria =
+        formatarFaixaEtaria(
+            aula.usuario.faixaEtaria
+        );
+
     // MAPA
     function handleAbrirMapa() {
         if (linkMaps) {
@@ -77,9 +107,7 @@ export function AulaAlunoCard({
 
     // WHATSAPP
     async function falarComAluno() {
-        if (
-            !aula.usuario.phone
-        ) {
+        if (!aula.usuario.phone) {
             return;
         }
 
@@ -90,17 +118,15 @@ export function AulaAlunoCard({
             );
 
         const telefoneWhatsApp =
-            telefone.startsWith(
-                '55'
-            )
+            telefone.startsWith('55')
                 ? telefone
                 : `55${telefone}`;
 
         const primeiroNomeAluno =
-            aula.usuario.name
+            nomeAluno
                 ?.trim()
                 .split(/\s+/)[0] ??
-            aula.usuario.name;
+            'Aluno';
 
         const mensagem =
             `Olá, ${primeiroNomeAluno}! ` +
@@ -157,6 +183,9 @@ export function AulaAlunoCard({
                     </Text>
                 </View>
             )}
+
+            {/* INSTRUMENTO */}
+
             <View
                 style={
                     styles.aulaTopo
@@ -170,17 +199,13 @@ export function AulaAlunoCard({
                     {icone.familia ===
                         'material' ? (
                         <MaterialCommunityIcons
-                            name={
-                                icone.nome
-                            }
+                            name={icone.nome}
                             size={24}
                             color={colors.navy}
                         />
                     ) : (
                         <FontAwesome5
-                            name={
-                                icone.nome
-                            }
+                            name={icone.nome}
                             size={22}
                             color={colors.navy}
                         />
@@ -198,8 +223,7 @@ export function AulaAlunoCard({
                         }
                     >
                         {
-                            aula
-                                .instrumento
+                            aula.instrumento
                                 .name
                         }
                     </Text>
@@ -210,13 +234,14 @@ export function AulaAlunoCard({
                         }
                     >
                         {
-                            aula
-                                .nivel
+                            aula.nivel
                                 .name
                         }
                     </Text>
                 </View>
             </View>
+
+            {/* DETALHES */}
 
             <View
                 style={
@@ -233,7 +258,9 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="calendar-outline"
                         size={15}
-                        color={colors.textSecondary}
+                        color={
+                            colors.textSecondary
+                        }
                     />
 
                     <Text
@@ -253,11 +280,17 @@ export function AulaAlunoCard({
 
                 {/* POSSUI O INSTRUMENTO */}
 
-                <View style={styles.aulaLinha}>
+                <View
+                    style={
+                        styles.aulaLinha
+                    }
+                >
                     <MaterialCommunityIcons
                         name="music-note-outline"
                         size={15}
-                        color={colors.textSecondary}
+                        color={
+                            colors.textSecondary
+                        }
                     />
 
                     <View
@@ -271,7 +304,11 @@ export function AulaAlunoCard({
                             }
                         >
                             Possui{' '}
-                            {aula.instrumento.name}:
+                            {
+                                aula.instrumento
+                                    .name
+                            }
+                            :
                         </Text>
 
                         <View
@@ -324,7 +361,9 @@ export function AulaAlunoCard({
                     <MaterialCommunityIcons
                         name="account-outline"
                         size={15}
-                        color={colors.textSecondary}
+                        color={
+                            colors.textSecondary
+                        }
                     />
 
                     <Text
@@ -332,10 +371,18 @@ export function AulaAlunoCard({
                             styles.aulaTexto
                         }
                     >
-                        {
-                            aula.usuario
-                                .name
-                        }
+                        {nomeAluno}
+
+                        {faixaEtaria && (
+                            <Text
+                                style={
+                                    styles.alunoFaixaEtaria
+                                }
+                            >
+                                {'  ·  '}
+                                {faixaEtaria}
+                            </Text>
+                        )}
                     </Text>
                 </View>
 
@@ -350,7 +397,9 @@ export function AulaAlunoCard({
                         <MaterialCommunityIcons
                             name="phone-outline"
                             size={15}
-                            color={colors.textSecondary}
+                            color={
+                                colors.textSecondary
+                            }
                         />
 
                         <Text
@@ -359,8 +408,7 @@ export function AulaAlunoCard({
                             }
                         >
                             {
-                                aula
-                                    .usuario
+                                aula.usuario
                                     .phone
                             }
                         </Text>
@@ -379,11 +427,15 @@ export function AulaAlunoCard({
                             <FontAwesome5
                                 name="whatsapp"
                                 size={15}
-                                color={colors.surface}
+                                color={
+                                    colors.surface
+                                }
                             />
                         </TouchableOpacity>
                     </View>
                 )}
+
+                {/* ENDEREÇO */}
 
                 {enderecoTexto && (
                     <View
@@ -394,7 +446,9 @@ export function AulaAlunoCard({
                         <MaterialCommunityIcons
                             name="map-marker-outline"
                             size={15}
-                            color={colors.textSecondary}
+                            color={
+                                colors.textSecondary
+                            }
                         />
 
                         <Text
@@ -412,6 +466,8 @@ export function AulaAlunoCard({
                     </View>
                 )}
             </View>
+
+            {/* MAPA */}
 
             {linkMaps && (
                 <TouchableOpacity
@@ -436,11 +492,12 @@ export function AulaAlunoCard({
                             styles.botaoVerEnderecoTexto
                         }
                     >
-                        Ver endereço no
-                        mapa
+                        Ver endereço no mapa
                     </Text>
                 </TouchableOpacity>
             )}
+
+            {/* REMARCAR */}
 
             {onRemarcar && (
                 <TouchableOpacity
@@ -472,6 +529,9 @@ export function AulaAlunoCard({
                     </Text>
                 </TouchableOpacity>
             )}
+
+            {/* CANCELAR */}
+
             {onCancelar && (
                 <TouchableOpacity
                     style={
@@ -490,16 +550,18 @@ export function AulaAlunoCard({
                     {cancelando ? (
                         <ActivityIndicator
                             size="small"
-                            color={colors.danger}
+                            color={
+                                colors.danger
+                            }
                         />
                     ) : (
                         <>
                             <MaterialCommunityIcons
                                 name="close-circle-outline"
-                                size={
-                                    16
+                                size={16}
+                                color={
+                                    colors.danger
                                 }
-                                color={colors.danger}
                             />
 
                             <Text
@@ -507,8 +569,7 @@ export function AulaAlunoCard({
                                     styles.botaoCancelarAulaTexto
                                 }
                             >
-                                Cancelar
-                                aula
+                                Cancelar aula
                             </Text>
                         </>
                     )}

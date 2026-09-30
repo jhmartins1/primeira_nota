@@ -1,5 +1,5 @@
-import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
+import { colors } from '../../theme/colors';
 
 const AZUL = colors.navy;
 const AZUL_CLARO = colors.tealSoft;
@@ -24,9 +24,9 @@ export const styles = StyleSheet.create({
         paddingBottom: 40,
     },
 
-    /*
-    LOADING
-    */
+    /**
+     * LOADING
+     */
 
     loadingContainer: {
         flex: 1,
@@ -40,9 +40,9 @@ export const styles = StyleSheet.create({
         fontSize: 14,
     },
 
-    /*
-    ERRO
-    */
+    /**
+     * ERRO
+     */
 
     erroContainer: {
         flex: 1,
@@ -80,9 +80,9 @@ export const styles = StyleSheet.create({
         fontWeight: '700',
     },
 
-    /*
-    HEADER
-    */
+    /**
+     * HEADER
+     */
 
     header: {
         paddingTop: 4,
@@ -135,9 +135,9 @@ export const styles = StyleSheet.create({
         marginTop: 4,
     },
 
-    /*
-    BOTÕES DO HEADER
-    */
+    /**
+     * BOTÕES DO HEADER
+     */
 
     botaoHorarios: {
         height: 40,
@@ -180,9 +180,9 @@ export const styles = StyleSheet.create({
         backgroundColor: colors.dangerBorder,
     },
 
-    /*
-    INSTRUMENTOS
-    */
+    /**
+     * INSTRUMENTOS
+     */
 
     instrumentosContainer: {
         marginTop: 18,
@@ -201,9 +201,6 @@ export const styles = StyleSheet.create({
         gap: 10,
     },
 
-
-
-
     instrumentoIconeCard: {
         width: 50,
         height: 50,
@@ -218,9 +215,9 @@ export const styles = StyleSheet.create({
         borderColor: colors.yellowBorder,
     },
 
-    /*
-    SEM AULA
-    */
+    /**
+     * SEM AULA
+     */
 
     semAulaCard: {
         backgroundColor: colors.tealSoft,
@@ -238,7 +235,10 @@ export const styles = StyleSheet.create({
 
         shadowColor: colors.navy,
 
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
 
         shadowOpacity: 0.045,
         shadowRadius: 16,
@@ -281,9 +281,9 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
-    /*
-    SEÇÕES
-    */
+    /**
+     * SEÇÕES
+     */
 
     secao: {
         marginBottom: 28,
@@ -317,17 +317,17 @@ export const styles = StyleSheet.create({
         marginTop: 3,
     },
 
-    /*
-    LISTA DE AULAS
-    */
+    /**
+     * LISTA DE AULAS
+     */
 
     listaAulas: {
         gap: 10,
     },
 
-    /*
-    CARD DE AULA
-    */
+    /**
+     * CARD DE AULA
+     */
 
     aulaCard: {
         backgroundColor: colors.surface,
@@ -345,7 +345,10 @@ export const styles = StyleSheet.create({
 
         shadowColor: colors.navy,
 
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
 
         shadowOpacity: 0.045,
         shadowRadius: 16,
@@ -446,9 +449,9 @@ export const styles = StyleSheet.create({
         paddingVertical: 3,
     },
 
-    /*
-    CHIP DATA / HORA
-    */
+    /**
+     * CHIP DATA / HORA
+     */
 
     aulaDataChip: {
         flexDirection: 'row',
@@ -481,9 +484,9 @@ export const styles = StyleSheet.create({
         opacity: 0.75,
     },
 
-    /*
-    DETALHES DA AULA
-    */
+    /**
+     * DETALHES DA AULA
+     */
 
     aulaDetalhes: {
         borderTopWidth: 1,
@@ -512,9 +515,20 @@ export const styles = StyleSheet.create({
         fontWeight: '600',
     },
 
-    /*
-    BOTÃO VER ENDEREÇO
-    */
+    /**
+     * NOVO:
+     * FAIXA ETÁRIA DO ALUNO
+     */
+
+    alunoFaixaEtaria: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: TEXTO_SECUNDARIO,
+    },
+
+    /**
+     * BOTÃO VER ENDEREÇO
+     */
 
     botaoVerEndereco: {
         height: 42,
@@ -539,9 +553,9 @@ export const styles = StyleSheet.create({
         color: colors.surface,
     },
 
-    /*
-    BOTÃO CANCELAR
-    */
+    /**
+     * BOTÃO CANCELAR
+     */
 
     botaoCancelarAula: {
         height: 42,
@@ -569,9 +583,9 @@ export const styles = StyleSheet.create({
         color: VERMELHO,
     },
 
-    /*
-    ALUNO
-    */
+    /**
+     * ALUNO
+     */
 
     alunoLinha: {
         flexDirection: 'row',
@@ -635,6 +649,7 @@ export const styles = StyleSheet.create({
 
         fontWeight: '500',
     },
+
     botaoWhatsAppAluno: {
         width: 28,
         height: 28,
@@ -649,6 +664,11 @@ export const styles = StyleSheet.create({
 
         justifyContent: 'center',
     },
+
+    /**
+     * BOTÃO REMARCAR
+     */
+
     botaoRemarcarAula: {
         height: 42,
 
@@ -675,42 +695,62 @@ export const styles = StyleSheet.create({
         color: colors.navy,
     },
 
+    /**
+     * POSSUI INSTRUMENTO
+     */
+
     possuiInstrumentoLinha: {
         flex: 1,
+
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+
         gap: 8,
     },
 
     possuiInstrumentoLabel: {
         flex: 1,
+
         fontSize: 13,
         lineHeight: 18,
+
         color: TEXTO_PRINCIPAL,
+
         fontWeight: '600',
     },
 
     possuiInstrumentoBadge: {
         minWidth: 58,
         height: 26,
+
         paddingHorizontal: 8,
+
         borderRadius: 13,
+
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
+
         gap: 4,
+
         borderWidth: 1,
     },
 
     possuiInstrumentoSim: {
-        backgroundColor: colors.successSoft,
-        borderColor: colors.successBorder,
+        backgroundColor:
+            colors.successSoft,
+
+        borderColor:
+            colors.successBorder,
     },
 
     possuiInstrumentoNao: {
-        backgroundColor: colors.dangerSoft,
-        borderColor: colors.dangerBorder,
+        backgroundColor:
+            colors.dangerSoft,
+
+        borderColor:
+            colors.dangerBorder,
     },
 
     possuiInstrumentoTexto: {

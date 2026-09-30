@@ -8,6 +8,10 @@ export class GetAgendamentosService {
     async execute({
         usuarioId,
     }: GetAgendamentosDTO) {
+        // ----------------------------------------------------
+        // 1. VERIFICAR USUÁRIO
+        // ----------------------------------------------------
+
         const usuario =
             await prisma.usuario.findUnique({
                 where: {
@@ -21,19 +25,27 @@ export class GetAgendamentosService {
             );
         }
 
+        // ----------------------------------------------------
+        // 2. BUSCAR AULAS FUTURAS
+        //
+        // Não existe nenhuma restrição de horário aqui.
+        //
+        // Portanto uma aula pode começar:
+        // 09:00
+        // 10:40
+        // 14:30
+        // 20:00
+        // etc.
+        // ----------------------------------------------------
+
         return prisma.agendamento.findMany({
             where: {
                 usuarioId,
 
-                /*
-                 * A Home mostra somente aulas
-                 * que ainda estão agendadas.
-                 */
+                // Somente aulas ainda agendadas.
                 status: 'AGENDADO',
 
-                /*
-                 * Não mostra aulas que já passaram.
-                 */
+                // Não mostrar aulas que já passaram.
                 dataHora: {
                     gte: new Date(),
                 },
@@ -51,4 +63,3 @@ export class GetAgendamentosService {
         });
     }
 }
-

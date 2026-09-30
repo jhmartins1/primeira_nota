@@ -1,4 +1,5 @@
 import { colors } from '../../theme/colors';
+
 import {
     FontAwesome5,
     MaterialCommunityIcons,
@@ -78,10 +79,14 @@ export default function ProfessorHomeScreen() {
                     String(aula.id),
 
                 professorId:
-                    String(aula.professorId),
+                    String(
+                        aula.professorId
+                    ),
 
                 usuarioId:
-                    String(aula.usuarioId),
+                    String(
+                        aula.usuarioId
+                    ),
 
                 instrumentoId:
                     String(
@@ -89,9 +94,13 @@ export default function ProfessorHomeScreen() {
                     ),
 
                 nivelId:
-                    String(aula.nivelId),
+                    String(
+                        aula.nivelId
+                    ),
 
                 alunoNome:
+                    aula.usuario.nomeAluno
+                        ?.trim() ||
                     aula.usuario.name,
 
                 instrumentoNome:
@@ -240,14 +249,14 @@ export default function ProfessorHomeScreen() {
                         onRefresh={
                             atualizarTela
                         }
-                        tintColor={colors.navy}
+                        tintColor={
+                            colors.navy
+                        }
                     />
                 }
             >
                 {/* ================================= */}
-
                 {/* HEADER */}
-
                 {/* ================================= */}
 
                 <View
@@ -265,8 +274,7 @@ export default function ProfessorHomeScreen() {
                                 styles.eyebrow
                             }
                         >
-                            TOCAÊ ·
-                            PROFESSOR
+                            TOCAÊ · PROFESSOR
                         </Text>
 
                         <View
@@ -292,7 +300,9 @@ export default function ProfessorHomeScreen() {
                                 <MaterialCommunityIcons
                                     name="calendar-clock-outline"
                                     size={17}
-                                    color={colors.navy}
+                                    color={
+                                        colors.navy
+                                    }
                                 />
 
                                 <Text
@@ -320,7 +330,9 @@ export default function ProfessorHomeScreen() {
                                 <MaterialCommunityIcons
                                     name="pencil-outline"
                                     size={19}
-                                    color={colors.navy}
+                                    color={
+                                        colors.navy
+                                    }
                                 />
                             </TouchableOpacity>
 
@@ -346,13 +358,17 @@ export default function ProfessorHomeScreen() {
                                 {saindo ? (
                                     <ActivityIndicator
                                         size="small"
-                                        color={colors.danger}
+                                        color={
+                                            colors.danger
+                                        }
                                     />
                                 ) : (
                                     <MaterialCommunityIcons
                                         name="logout"
                                         size={20}
-                                        color={colors.danger}
+                                        color={
+                                            colors.danger
+                                        }
                                     />
                                 )}
                             </TouchableOpacity>
@@ -384,8 +400,8 @@ export default function ProfessorHomeScreen() {
                                 styles.subtitulo
                             }
                         >
-                            Confira suas
-                            próximas aulas.
+                            Confira suas próximas
+                            aulas.
                         </Text>
                     </View>
 
@@ -403,8 +419,7 @@ export default function ProfessorHomeScreen() {
                                         styles.instrumentosLabel
                                     }
                                 >
-                                    Seus
-                                    instrumentos
+                                    Seus instrumentos
                                 </Text>
 
                                 <View
@@ -439,7 +454,9 @@ export default function ProfessorHomeScreen() {
                                                             size={
                                                                 26
                                                             }
-                                                            color={colors.navy}
+                                                            color={
+                                                                colors.navy
+                                                            }
                                                         />
                                                     ) : (
                                                         <FontAwesome5
@@ -449,7 +466,9 @@ export default function ProfessorHomeScreen() {
                                                             size={
                                                                 23
                                                             }
-                                                            color={colors.navy}
+                                                            color={
+                                                                colors.navy
+                                                            }
                                                         />
                                                     )}
                                                 </View>
@@ -462,9 +481,7 @@ export default function ProfessorHomeScreen() {
                 </View>
 
                 {/* ================================= */}
-
                 {/* PRÓXIMA AULA */}
-
                 {/* ================================= */}
 
                 {proximaAula ? (
@@ -516,7 +533,9 @@ export default function ProfessorHomeScreen() {
                             <MaterialCommunityIcons
                                 name="calendar-blank-outline"
                                 size={30}
-                                color={colors.navy}
+                                color={
+                                    colors.navy
+                                }
                             />
                         </View>
 
@@ -543,9 +562,7 @@ export default function ProfessorHomeScreen() {
                 )}
 
                 {/* ================================= */}
-
                 {/* DEMAIS AULAS */}
-
                 {/* ================================= */}
 
                 {demaisAulas.length >

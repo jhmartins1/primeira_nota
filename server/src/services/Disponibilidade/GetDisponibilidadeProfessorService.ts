@@ -23,23 +23,19 @@ export class GetDisponibilidadeProfessorService {
             new Date();
 
         const disponibilidades =
-            await prisma.disponibilidade.findMany(
-                {
-                    where: {
-                        professorId,
+            await prisma.disponibilidade.findMany({
+                where: {
+                    professorId,
 
-                        horaInicio: {
-                            gte:
-                                agora,
-                        },
+                    horaInicio: {
+                        gte: agora,
                     },
+                },
 
-                    orderBy: {
-                        horaInicio:
-                            'asc',
-                    },
-                }
-            );
+                orderBy: {
+                    horaInicio: 'asc',
+                },
+            });
 
         return disponibilidades;
     }

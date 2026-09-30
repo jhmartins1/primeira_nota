@@ -3,32 +3,71 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { formatarDataBrasilia } from '../HomeScreen/formatters';
+
 import {
     AgendamentoProfessor,
     ProfessorLogado,
 } from './types';
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const API_URL =
+    process.env.EXPO_PUBLIC_API_URL;
 
 export function useProfessorHomeData() {
-    const { getToken, signOut } = useAuth();
+    const {
+        getToken,
+        signOut,
+    } = useAuth();
 
-    const [professor, setProfessor] =
-        useState<ProfessorLogado | null>(null);
+    const [
+        professor,
+        setProfessor,
+    ] =
+        useState<ProfessorLogado | null>(
+            null
+        );
 
-    const [agendamentos, setAgendamentos] =
-        useState<AgendamentoProfessor[]>([]);
+    const [
+        agendamentos,
+        setAgendamentos,
+    ] =
+        useState<
+            AgendamentoProfessor[]
+        >([]);
 
-    const [carregando, setCarregando] = useState(true);
-    const [atualizando, setAtualizando] = useState(false);
+    const [
+        carregando,
+        setCarregando,
+    ] = useState(true);
 
-    const [cancelandoId, setCancelandoId] =
-        useState<number | null>(null);
+    const [
+        atualizando,
+        setAtualizando,
+    ] = useState(false);
 
-    const [erro, setErro] = useState<string | null>(null);
-    const [saindo, setSaindo] = useState(false);
+    const [
+        cancelandoId,
+        setCancelandoId,
+    ] =
+        useState<number | null>(
+            null
+        );
 
-    const carregarDados = async (mostrarLoading = true) => {
+    const [
+        erro,
+        setErro,
+    ] =
+        useState<string | null>(
+            null
+        );
+
+    const [
+        saindo,
+        setSaindo,
+    ] = useState(false);
+
+    const carregarDados = async (
+        mostrarLoading = true
+    ) => {
         try {
             if (!API_URL) {
                 throw new Error(
@@ -44,7 +83,8 @@ export function useProfessorHomeData() {
 
             setErro(null);
 
-            const token = await getToken();
+            const token =
+                await getToken();
 
             if (!token) {
                 throw new Error(
@@ -53,21 +93,27 @@ export function useProfessorHomeData() {
             }
 
             const headers = {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                Authorization:
+                    `Bearer ${token}`,
+
+                'Content-Type':
+                    'application/json',
             };
 
-            // ----------------------------------------------------
             // PROFESSOR
-            // ----------------------------------------------------
 
             const professorResponse =
-                await fetch(`${API_URL}/professor/me`, {
-                    method: 'GET',
-                    headers,
-                });
+                await fetch(
+                    `${API_URL}/professor/me`,
+                    {
+                        method: 'GET',
+                        headers,
+                    }
+                );
 
-            if (!professorResponse.ok) {
+            if (
+                !professorResponse.ok
+            ) {
                 throw new Error(
                     `Erro ao buscar professor: ${professorResponse.status}`
                 );
@@ -76,11 +122,11 @@ export function useProfessorHomeData() {
             const professorData =
                 await professorResponse.json();
 
-            setProfessor(professorData);
+            setProfessor(
+                professorData
+            );
 
-            // ----------------------------------------------------
             // AGENDAMENTOS
-            // ----------------------------------------------------
 
             const agendamentosResponse =
                 await fetch(
@@ -91,7 +137,9 @@ export function useProfessorHomeData() {
                     }
                 );
 
-            if (!agendamentosResponse.ok) {
+            if (
+                !agendamentosResponse.ok
+            ) {
                 throw new Error(
                     `Erro ao buscar agendamentos: ${agendamentosResponse.status}`
                 );
@@ -100,25 +148,38 @@ export function useProfessorHomeData() {
             const agendamentosData =
                 await agendamentosResponse.json();
 
-            const lista: AgendamentoProfessor[] =
-                Array.isArray(agendamentosData)
+            const lista:
+                AgendamentoProfessor[] =
+                Array.isArray(
+                    agendamentosData
+                )
                     ? agendamentosData
                     : [];
 
-            const futuros = lista
-                .filter(
-                    (item) =>
-                        item.status === 'AGENDADO' &&
-                        new Date(item.dataHora).getTime() >
-                        Date.now()
-                )
-                .sort(
-                    (a, b) =>
-                        new Date(a.dataHora).getTime() -
-                        new Date(b.dataHora).getTime()
-                );
+            const futuros =
+                lista
+                    .filter(
+                        (item) =>
+                            item.status ===
+                            'AGENDADO' &&
+                            new Date(
+                                item.dataHora
+                            ).getTime() >
+                            Date.now()
+                    )
+                    .sort(
+                        (a, b) =>
+                            new Date(
+                                a.dataHora
+                            ).getTime() -
+                            new Date(
+                                b.dataHora
+                            ).getTime()
+                    );
 
-            setAgendamentos(futuros);
+            setAgendamentos(
+                futuros
+            );
         } catch (error) {
             console.error(
                 'Erro ao carregar Home do professor:',
@@ -146,13 +207,12 @@ export function useProfessorHomeData() {
         await carregarDados(false);
     }
 
-    // ----------------------------------------------------
     // LOGOUT
-    // ----------------------------------------------------
 
     async function realizarLogout() {
         try {
             setSaindo(true);
+
             await signOut();
         } catch (error) {
             console.error(
@@ -169,39 +229,55 @@ export function useProfessorHomeData() {
         }
     }
 
-    // ----------------------------------------------------
     // CANCELAR AULA
-    // ----------------------------------------------------
 
     function confirmarCancelamento(
-        agendamento: AgendamentoProfessor
+        agendamento:
+            AgendamentoProfessor
     ) {
-        const data = formatarDataBrasilia(
-            agendamento.dataHora
-        );
+        const data =
+            formatarDataBrasilia(
+                agendamento.dataHora
+            );
+
+        const nomeAluno =
+            agendamento.usuario
+                .nomeAluno?.trim() ||
+            agendamento.usuario.name;
 
         Alert.alert(
             'Cancelar aula?',
-            `Tem certeza que deseja cancelar a aula de ${agendamento.instrumento.name} com ${agendamento.usuario.name} em ${data.data} às ${data.hora}?`,
+            `Tem certeza que deseja cancelar a aula de ${agendamento.instrumento.name} com ${nomeAluno} em ${data.data} às ${data.hora}?`,
             [
                 {
                     text: 'Voltar',
                     style: 'cancel',
                 },
+
                 {
-                    text: 'Cancelar aula',
-                    style: 'destructive',
-                    onPress: () => cancelarAula(agendamento),
+                    text:
+                        'Cancelar aula',
+
+                    style:
+                        'destructive',
+
+                    onPress: () =>
+                        cancelarAula(
+                            agendamento
+                        ),
                 },
             ]
         );
     }
 
     async function cancelarAula(
-        agendamento: AgendamentoProfessor
+        agendamento:
+            AgendamentoProfessor
     ) {
         try {
-            setCancelandoId(agendamento.id);
+            setCancelandoId(
+                agendamento.id
+            );
 
             if (!API_URL) {
                 throw new Error(
@@ -209,7 +285,8 @@ export function useProfessorHomeData() {
                 );
             }
 
-            const token = await getToken();
+            const token =
+                await getToken();
 
             if (!token) {
                 throw new Error(
@@ -217,50 +294,74 @@ export function useProfessorHomeData() {
                 );
             }
 
-            const response = await fetch(
-                `${API_URL}/agendamento/${agendamento.id}/cancelar`,
-                {
-                    method: 'PATCH',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+            const response =
+                await fetch(
+                    `${API_URL}/agendamento/${agendamento.id}/cancelar`,
+                    {
+                        method:
+                            'PATCH',
 
-            const texto = await response.text();
+                        headers: {
+                            Authorization:
+                                `Bearer ${token}`,
+
+                            'Content-Type':
+                                'application/json',
+                        },
+                    }
+                );
+
+            const texto =
+                await response.text();
 
             if (!response.ok) {
                 let mensagem =
                     'Não foi possível cancelar a aula.';
 
                 try {
-                    const erroBody = JSON.parse(texto);
+                    const erroBody =
+                        JSON.parse(
+                            texto
+                        );
 
-                    if (erroBody.error) {
-                        mensagem = erroBody.error;
+                    if (
+                        erroBody.error
+                    ) {
+                        mensagem =
+                            erroBody.error;
                     }
                 } catch {
                     // resposta não era JSON
                 }
 
-                throw new Error(mensagem);
+                throw new Error(
+                    mensagem
+                );
             }
 
-            // Remove imediatamente da lista
-            setAgendamentos((listaAtual) =>
-                listaAtual.filter(
-                    (item) => item.id !== agendamento.id
-                )
+            setAgendamentos(
+                (listaAtual) =>
+                    listaAtual.filter(
+                        (item) =>
+                            item.id !==
+                            agendamento.id
+                    )
             );
+
+            const nomeAluno =
+                agendamento.usuario
+                    .nomeAluno?.trim() ||
+                agendamento.usuario
+                    .name;
 
             Alert.alert(
                 'Aula cancelada',
-                `A aula de ${agendamento.usuario.name} foi cancelada com sucesso.`
+                `A aula de ${nomeAluno} foi cancelada com sucesso.`
             );
 
-            // Garante que a Home fique sincronizada
-            await carregarDados(false);
+            await carregarDados(
+                false
+            );
         } catch (error) {
             console.error(
                 'Erro ao cancelar aula:',
@@ -274,7 +375,9 @@ export function useProfessorHomeData() {
                     : 'Não foi possível cancelar a aula.'
             );
         } finally {
-            setCancelandoId(null);
+            setCancelandoId(
+                null
+            );
         }
     }
 

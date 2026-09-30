@@ -1,8 +1,23 @@
+export type FaixaEtaria =
+    | 'ATE_6'
+    | 'DE_7_A_10'
+    | 'DE_11_A_14'
+    | 'DE_15_A_17'
+    | 'ADULTO';
+
 export interface Aluno {
     id: number;
+
+    // Nome do dono da conta / Clerk
     name: string;
+
+    // Dados do aluno
+    nomeAluno?: string | null;
+    faixaEtaria?: FaixaEtaria | null;
+
     image?: string | null;
     phone?: string | null;
+
     logradouro?: string | null;
     numero?: string | null;
     complemento?: string | null;
@@ -18,7 +33,10 @@ export interface AgendamentoProfessor {
     instrumentoId: number;
     nivelId: number;
     dataHora: string;
-    status: 'AGENDADO' | 'CANCELADO' | 'CONCLUIDO';
+    status:
+    | 'AGENDADO'
+    | 'CANCELADO'
+    | 'CONCLUIDO';
 
     possuiInstrumento: boolean;
 

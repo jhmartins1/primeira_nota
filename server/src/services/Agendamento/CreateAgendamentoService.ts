@@ -1,7 +1,5 @@
 import { prisma } from '../../prisma/client';
 
-import { HORARIOS_DISPONIVEIS } from '../../utils/horarios';
-
 interface CreateAgendamentoDTO {
     usuarioId: number;
     professorId: number;
@@ -165,34 +163,19 @@ export class CreateAgendamentoService {
             );
         }
 
-        // 9. VERIFICAR HORÁRIO PERMITIDO
-        const horas =
-            dataHora.getHours();
-
-        const minutos =
-            dataHora.getMinutes();
-
-        const horario =
-            `${String(horas).padStart(
-                2,
-                '0'
-            )}:${String(minutos).padStart(
-                2,
-                '0'
-            )}`;
-
-        if (
-            !HORARIOS_DISPONIVEIS.includes(
-                horario
-            )
-        ) {
-            throw new Error(
-                'Horário não permitido para agendamento.'
-            );
-        }
-
-        // 10. VERIFICAR SE O PROFESSOR
+        // 9. VERIFICAR SE O PROFESSOR
         // REALMENTE DISPONIBILIZOU O HORÁRIO
+        //
+        // A disponibilidade cadastrada pelo professor
+        // passa a ser a fonte da verdade.
+        //
+        // Portanto horários como:
+        // 06:40
+        // 10:40
+        // 14:30
+        // 20:00
+        // são permitidos normalmente, desde que existam
+        // na tabela de disponibilidade.
         const disponibilidade =
             await prisma.disponibilidade.findFirst({
                 where: {
@@ -207,7 +190,10 @@ export class CreateAgendamentoService {
             );
         }
 
-        // 11. VERIFICAR CONFLITO DO PROFESSOR
+        // 10. VERIFICAR CONFLITO DO PROFESSOR
+        //
+        // Verificamos apenas o mesmo horário de início.
+        // Não existe bloqueio baseado em duração de 1 hora.
         const conflitoProfessor =
             await prisma.agendamento.findFirst({
                 where: {
@@ -223,7 +209,10 @@ export class CreateAgendamentoService {
             );
         }
 
-        // 12. VERIFICAR CONFLITO DO ALUNO
+        // 11. VERIFICAR CONFLITO DO ALUNO
+        //
+        // Também verificamos somente o mesmo horário
+        // de início.
         const conflitoUsuario =
             await prisma.agendamento.findFirst({
                 where: {
@@ -239,7 +228,7 @@ export class CreateAgendamentoService {
             );
         }
 
-        // 13. CRIAR AGENDAMENTO
+        // 12. CRIAR AGENDAMENTO
         try {
             return await prisma.agendamento.create({
                 data: {

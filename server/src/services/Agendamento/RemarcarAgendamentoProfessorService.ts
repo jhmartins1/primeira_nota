@@ -1,14 +1,9 @@
 import { prisma } from '../../prisma/client';
 
-import { HORARIOS_DISPONIVEIS } from '../../utils/horarios';
-
 interface RemarcarAgendamentoProfessorDTO {
     professorId: number;
-
     agendamentoId: number;
-
     data: string;
-
     horario: string;
 }
 
@@ -85,25 +80,43 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 5. HORÁRIO PERMITIDO
-        //
-        // Validamos diretamente a string recebida.
-        // Não usamos dataHora.getHours(), pois o servidor
-        // pode estar rodando em UTC.
+        // 5. VALIDAR FORMATO DA DATA
         // ----------------------------------------------------
 
         if (
-            !HORARIOS_DISPONIVEIS.includes(
-                horario
-            )
+            !ehDataValida(data)
         ) {
             throw new Error(
-                'Horário não permitido para agendamento.'
+                'Data inválida.'
             );
         }
 
         // ----------------------------------------------------
-        // 6. CONVERTER DATA/HORA DE SÃO PAULO PARA DATE
+        // 6. VALIDAR FORMATO DO HORÁRIO
+        //
+        // Não existe mais uma lista fixa.
+        //
+        // Exemplos válidos:
+        // 06:40
+        // 09:00
+        // 10:40
+        // 14:30
+        // 20:00
+        // 23:59
+        // ----------------------------------------------------
+
+        if (
+            !ehHorarioValido(
+                horario
+            )
+        ) {
+            throw new Error(
+                'Horário inválido. Use o formato HH:mm.'
+            );
+        }
+
+        // ----------------------------------------------------
+        // 7. CONVERTER DATA/HORA DE SÃO PAULO PARA DATE
         // ----------------------------------------------------
 
         const dataHora =
@@ -123,10 +136,14 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 7. EVITAR DATAS INVÁLIDAS QUE O JS NORMALIZA
+        // 8. GARANTIR QUE O JS NÃO NORMALIZOU UMA DATA
+        // INVÁLIDA
         //
-        // Ex:
+        // Exemplo:
+        //
         // 2026-02-31
+        //
+        // não pode virar automaticamente uma data de março.
         // ----------------------------------------------------
 
         if (
@@ -143,7 +160,7 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 8. NOVA DATA PRECISA ESTAR NO FUTURO
+        // 9. NOVA DATA/HORA PRECISA ESTAR NO FUTURO
         // ----------------------------------------------------
 
         if (
@@ -156,7 +173,7 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 9. JANELA DE 14 DIAS
+        // 10. JANELA DE 14 DIAS
         //
         // Amanhã até hoje + 14 dias.
         // Tudo baseado na data de São Paulo.
@@ -189,7 +206,7 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 10. NÃO PODE SER O MESMO HORÁRIO ATUAL
+        // 11. NÃO PODE SER O MESMO HORÁRIO ATUAL
         // ----------------------------------------------------
 
         if (
@@ -202,7 +219,19 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 11. DISPONIBILIDADE REAL DO PROFESSOR
+        // 12. DISPONIBILIDADE REAL DO PROFESSOR
+        //
+        // ESTA É A FONTE DA VERDADE.
+        //
+        // Não importa se é:
+        //
+        // 09:00
+        // 10:40
+        // 12:25
+        // 20:00
+        //
+        // Se existir uma disponibilidade exatamente nesse
+        // horário, ele pode ser utilizado.
         // ----------------------------------------------------
 
         const disponibilidade =
@@ -222,10 +251,12 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 12. CONFLITO DO PROFESSOR
+        // 13. CONFLITO DO PROFESSOR
         //
-        // Ignoramos o próprio agendamento que está sendo
-        // remarcado.
+        // Consideramos conflito somente outro agendamento
+        // começando exatamente no mesmo horário.
+        //
+        // Não existe bloqueio automático de 30 ou 60 minutos.
         // ----------------------------------------------------
 
         const conflitoProfessor =
@@ -252,10 +283,11 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 13. CONFLITO DO ALUNO
+        // 14. CONFLITO DO ALUNO
         //
-        // Mesmo que o professor esteja livre, o aluno pode
-        // ter outra aula com outro professor nesse horário.
+        // Mesmo que o professor esteja livre, o aluno não
+        // pode ter duas aulas começando exatamente no mesmo
+        // horário.
         // ----------------------------------------------------
 
         const conflitoAluno =
@@ -283,10 +315,9 @@ export class RemarcarAgendamentoProfessorService {
         }
 
         // ----------------------------------------------------
-        // 14. ALTERAR SOMENTE DATA/HORA
+        // 15. ALTERAR SOMENTE DATA/HORA
         //
-        // O P2002 é tratado aqui porque, mesmo após as
-        // verificações anteriores, ainda pode ocorrer uma
+        // O P2002 continua sendo tratado porque pode ocorrer
         // condição de corrida entre duas requisições.
         // ----------------------------------------------------
 
@@ -326,6 +357,7 @@ export class RemarcarAgendamentoProfessorService {
                 const target =
                     error?.meta?.target;
 
+                // CONFLITO DO ALUNO
                 if (
                     Array.isArray(
                         target
@@ -342,6 +374,7 @@ export class RemarcarAgendamentoProfessorService {
                     );
                 }
 
+                // CONFLITO DO PROFESSOR
                 if (
                     Array.isArray(
                         target
@@ -372,6 +405,165 @@ export class RemarcarAgendamentoProfessorService {
 // HELPERS
 // ============================================================
 
+// ------------------------------------------------------------
+// VALIDAR HORÁRIO HH:mm
+// ------------------------------------------------------------
+
+function ehHorarioValido(
+    horario: string
+): boolean {
+    if (
+        typeof horario !==
+        'string'
+    ) {
+        return false;
+    }
+
+    if (
+        !/^\d{2}:\d{2}$/.test(
+            horario
+        )
+    ) {
+        return false;
+    }
+
+    const partes =
+        horario.split(':');
+
+    const horaTexto =
+        partes[0];
+
+    const minutoTexto =
+        partes[1];
+
+    if (
+        horaTexto === undefined ||
+        minutoTexto === undefined
+    ) {
+        return false;
+    }
+
+    const hora =
+        Number(
+            horaTexto
+        );
+
+    const minuto =
+        Number(
+            minutoTexto
+        );
+
+    return (
+        Number.isInteger(
+            hora
+        ) &&
+        Number.isInteger(
+            minuto
+        ) &&
+        hora >= 0 &&
+        hora <= 23 &&
+        minuto >= 0 &&
+        minuto <= 59
+    );
+}
+
+// ------------------------------------------------------------
+// VALIDAR DATA YYYY-MM-DD
+// ------------------------------------------------------------
+
+function ehDataValida(
+    data: string
+): boolean {
+    if (
+        typeof data !==
+        'string'
+    ) {
+        return false;
+    }
+
+    if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(
+            data
+        )
+    ) {
+        return false;
+    }
+
+    const partes =
+        data.split('-');
+
+    const anoTexto =
+        partes[0];
+
+    const mesTexto =
+        partes[1];
+
+    const diaTexto =
+        partes[2];
+
+    if (
+        !anoTexto ||
+        !mesTexto ||
+        !diaTexto
+    ) {
+        return false;
+    }
+
+    const ano =
+        Number(
+            anoTexto
+        );
+
+    const mes =
+        Number(
+            mesTexto
+        );
+
+    const dia =
+        Number(
+            diaTexto
+        );
+
+    if (
+        !Number.isInteger(
+            ano
+        ) ||
+        !Number.isInteger(
+            mes
+        ) ||
+        !Number.isInteger(
+            dia
+        )
+    ) {
+        return false;
+    }
+
+    const teste =
+        new Date(
+            Date.UTC(
+                ano,
+                mes - 1,
+                dia,
+                12,
+                0,
+                0
+            )
+        );
+
+    return (
+        teste.getUTCFullYear() ===
+        ano &&
+        teste.getUTCMonth() ===
+        mes - 1 &&
+        teste.getUTCDate() ===
+        dia
+    );
+}
+
+// ------------------------------------------------------------
+// CRIAR DATE CONSIDERANDO HORÁRIO DE SÃO PAULO
+// ------------------------------------------------------------
+
 function criarDataSaoPaulo(
     data: string,
     horario: string
@@ -380,6 +572,10 @@ function criarDataSaoPaulo(
         `${data}T${horario}:00-03:00`
     );
 }
+
+// ------------------------------------------------------------
+// FORMATAR DATA NO FUSO DE SÃO PAULO
+// ------------------------------------------------------------
 
 function formatarDataSaoPaulo(
     data: Date
@@ -404,6 +600,10 @@ function formatarDataSaoPaulo(
     );
 }
 
+// ------------------------------------------------------------
+// FORMATAR HORA NO FUSO DE SÃO PAULO
+// ------------------------------------------------------------
+
 function formatarHoraSaoPaulo(
     data: Date
 ): string {
@@ -427,6 +627,10 @@ function formatarHoraSaoPaulo(
     );
 }
 
+// ------------------------------------------------------------
+// ADICIONAR DIAS
+// ------------------------------------------------------------
+
 function adicionarDias(
     data: string,
     quantidade: number
@@ -436,9 +640,7 @@ function adicionarDias(
         mesTexto,
         diaTexto,
     ] =
-        data.split(
-            '-'
-        );
+        data.split('-');
 
     if (
         !anoTexto ||

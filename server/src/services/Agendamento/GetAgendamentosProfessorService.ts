@@ -2,6 +2,10 @@ import { prisma } from '../../prisma/client';
 
 export class GetAgendamentosProfessorService {
     async execute(professorId: number) {
+        // ----------------------------------------------------
+        // 1. BUSCAR AGENDAMENTOS DO PROFESSOR
+        // ----------------------------------------------------
+
         const agendamentos =
             await prisma.agendamento.findMany({
                 where: {
@@ -13,12 +17,11 @@ export class GetAgendamentosProfessorService {
                         select: {
                             id: true,
 
-                            // Nome da conta / Clerk
-                            // Mantemos para compatibilidade
-                            // e fallback.
+                            // Nome da conta / Clerk.
+                            // Mantido como fallback.
                             name: true,
 
-                            // Dados reais do aluno
+                            // Dados reais do aluno.
                             nomeAluno: true,
                             faixaEtaria: true,
 
@@ -58,11 +61,9 @@ export class GetAgendamentosProfessorService {
             return [];
         }
 
-        /*
-         * ----------------------------------------------------
-         * BUSCAR SE O ALUNO POSSUI O INSTRUMENTO
-         * ----------------------------------------------------
-         */
+        // ----------------------------------------------------
+        // 2. PEGAR USUÁRIOS ÚNICOS
+        // ----------------------------------------------------
 
         const usuarioIds =
             Array.from(
@@ -74,6 +75,10 @@ export class GetAgendamentosProfessorService {
                 )
             );
 
+        // ----------------------------------------------------
+        // 3. PEGAR INSTRUMENTOS ÚNICOS
+        // ----------------------------------------------------
+
         const instrumentoIds =
             Array.from(
                 new Set(
@@ -83,6 +88,11 @@ export class GetAgendamentosProfessorService {
                     )
                 )
             );
+
+        // ----------------------------------------------------
+        // 4. BUSCAR SE CADA ALUNO POSSUI
+        // O INSTRUMENTO DA AULA
+        // ----------------------------------------------------
 
         const usuariosInstrumentos =
             await prisma.usuarioInstrumento.findMany({
@@ -103,17 +113,17 @@ export class GetAgendamentosProfessorService {
                 },
             });
 
-        /*
-         * ----------------------------------------------------
-         * MAPEAR:
-         *
-         * usuarioId:instrumentoId -> possuiInstrumento
-         *
-         * Exemplo:
-         *
-         * 10:3 -> true
-         * ----------------------------------------------------
-         */
+        // ----------------------------------------------------
+        // 5. CRIAR MAPA
+        //
+        // usuarioId:instrumentoId
+        // ->
+        // possuiInstrumento
+        //
+        // Exemplo:
+        //
+        // 10:3 -> true
+        // ----------------------------------------------------
 
         const mapaPossuiInstrumento =
             new Map<string, boolean>();
@@ -131,11 +141,9 @@ export class GetAgendamentosProfessorService {
             );
         }
 
-        /*
-         * ----------------------------------------------------
-         * MONTAR RESPOSTA
-         * ----------------------------------------------------
-         */
+        // ----------------------------------------------------
+        // 6. MONTAR RESPOSTA
+        // ----------------------------------------------------
 
         return agendamentos.map(
             (agendamento) => {
