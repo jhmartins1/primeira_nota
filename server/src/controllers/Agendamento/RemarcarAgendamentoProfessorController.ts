@@ -4,10 +4,6 @@ import type {
 } from 'express';
 
 import {
-    HORARIOS_DISPONIVEIS,
-} from '../../utils/horarios';
-
-import {
     RemarcarAgendamentoProfessorService,
 } from '../../services/Agendamento/RemarcarAgendamentoProfessorService';
 
@@ -17,6 +13,10 @@ export class RemarcarAgendamentoProfessorController {
         res: Response
     ) {
         try {
+            // ----------------------------------------------------
+            // 1. AUTENTICAÇÃO / TIPO DE CONTA
+            // ----------------------------------------------------
+
             if (
                 req.tipoConta !==
                 'professor' ||
@@ -33,6 +33,10 @@ export class RemarcarAgendamentoProfessorController {
             const professorId =
                 req.professorId;
 
+            // ----------------------------------------------------
+            // 2. ID DO AGENDAMENTO
+            // ----------------------------------------------------
+
             const agendamentoId =
                 Number(
                     req.params.id
@@ -42,8 +46,7 @@ export class RemarcarAgendamentoProfessorController {
                 !Number.isInteger(
                     agendamentoId
                 ) ||
-                agendamentoId <=
-                0
+                agendamentoId <= 0
             ) {
                 return res
                     .status(400)
@@ -53,11 +56,14 @@ export class RemarcarAgendamentoProfessorController {
                     });
             }
 
+            // ----------------------------------------------------
+            // 3. BODY
+            // ----------------------------------------------------
+
             const {
                 data,
                 horario,
-            } =
-                req.body;
+            } = req.body;
 
             if (
                 typeof data !==
@@ -72,6 +78,10 @@ export class RemarcarAgendamentoProfessorController {
                             'data e horario são obrigatórios.',
                     });
             }
+
+            // ----------------------------------------------------
+            // 4. FORMATO DA DATA
+            // ----------------------------------------------------
 
             const regexData =
                 /^\d{4}-\d{2}-\d{2}$/;
@@ -89,11 +99,21 @@ export class RemarcarAgendamentoProfessorController {
                     });
             }
 
-            const regexHorario =
-                /^\d{2}:\d{2}$/;
+            // ----------------------------------------------------
+            // 5. FORMATO DO HORÁRIO
+            //
+            // Não existe mais uma lista fixa de horários.
+            //
+            // Exemplos válidos:
+            // 06:40
+            // 09:00
+            // 10:40
+            // 14:30
+            // 20:00
+            // ----------------------------------------------------
 
             if (
-                !regexHorario.test(
+                !ehHorarioValido(
                     horario
                 )
             ) {
@@ -105,18 +125,9 @@ export class RemarcarAgendamentoProfessorController {
                     });
             }
 
-            if (
-                !HORARIOS_DISPONIVEIS.includes(
-                    horario
-                )
-            ) {
-                return res
-                    .status(400)
-                    .json({
-                        error:
-                            'Horário não permitido para agendamento.',
-                    });
-            }
+            // ----------------------------------------------------
+            // 6. SERVICE
+            // ----------------------------------------------------
 
             const service =
                 new RemarcarAgendamentoProfessorService();
@@ -137,9 +148,7 @@ export class RemarcarAgendamentoProfessorController {
 
                     agendamento,
                 });
-        } catch (
-        error
-        ) {
+        } catch (error) {
             console.error(
                 '========================================'
             );
@@ -176,4 +185,59 @@ export class RemarcarAgendamentoProfessorController {
                 });
         }
     }
+}
+
+// ============================================================
+// VALIDAR HORÁRIO HH:mm
+// ============================================================
+
+function ehHorarioValido(
+    horario: string
+): boolean {
+    if (
+        !/^\d{2}:\d{2}$/.test(
+            horario
+        )
+    ) {
+        return false;
+    }
+
+    const partes =
+        horario.split(':');
+
+    const horaTexto =
+        partes[0];
+
+    const minutoTexto =
+        partes[1];
+
+    if (
+        horaTexto === undefined ||
+        minutoTexto === undefined
+    ) {
+        return false;
+    }
+
+    const hora =
+        Number(
+            horaTexto
+        );
+
+    const minuto =
+        Number(
+            minutoTexto
+        );
+
+    return (
+        Number.isInteger(
+            hora
+        ) &&
+        Number.isInteger(
+            minuto
+        ) &&
+        hora >= 0 &&
+        hora <= 23 &&
+        minuto >= 0 &&
+        minuto <= 59
+    );
 }

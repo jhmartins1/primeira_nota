@@ -8,15 +8,6 @@ interface CreateDisponibilidadeDTO {
     repetirSeteDiasUteis?: boolean;
 }
 
-const HORARIOS_PERMITIDOS = [
-    '09:00',
-    '10:00',
-    '11:00',
-    '14:00',
-    '15:00',
-    '16:00',
-];
-
 const QUANTIDADE_DIAS_UTEIS = 7;
 
 export class CreateDisponibilidadeService {
@@ -26,6 +17,10 @@ export class CreateDisponibilidadeService {
         horarios,
         repetirSeteDiasUteis = false,
     }: CreateDisponibilidadeDTO) {
+        // ----------------------------------------------------
+        // PROFESSOR
+        // ----------------------------------------------------
+
         if (
             !Number.isInteger(professorId) ||
             professorId <= 0
@@ -36,6 +31,10 @@ export class CreateDisponibilidadeService {
             );
         }
 
+        // ----------------------------------------------------
+        // DATA
+        // ----------------------------------------------------
+
         if (
             typeof dataInicial !== 'string' ||
             !ehDataValida(dataInicial)
@@ -45,6 +44,10 @@ export class CreateDisponibilidadeService {
                 400
             );
         }
+
+        // ----------------------------------------------------
+        // HORÁRIOS
+        // ----------------------------------------------------
 
         if (
             !Array.isArray(horarios) ||
@@ -66,12 +69,23 @@ export class CreateDisponibilidadeService {
             );
         }
 
+        // ----------------------------------------------------
+        // VALIDAR QUALQUER HORÁRIO HH:mm
+        //
+        // Exemplos válidos:
+        // 06:40
+        // 10:40
+        // 14:15
+        // 20:00
+        // 23:55
+        // ----------------------------------------------------
+
         const horariosInvalidos =
             horarios.filter(
                 (horario) =>
                     typeof horario !==
                     'string' ||
-                    !HORARIOS_PERMITIDOS.includes(
+                    !ehHorarioValido(
                         horario
                     )
             );
@@ -80,15 +94,23 @@ export class CreateDisponibilidadeService {
             horariosInvalidos.length > 0
         ) {
             throw new AppError(
-                'Existe um horário inválido.',
+                'Existe um horário inválido. Use o formato HH:mm.',
                 400
             );
         }
 
+        // Remove horários repetidos.
+        //
+        // Exemplo:
+        // ['10:40', '10:40', '14:00']
+        //
+        // vira:
+        // ['10:40', '14:00']
+
         const horariosUnicos =
             Array.from(
                 new Set(horarios)
-            );
+            ).sort();
 
         const registros: {
             professorId: number;
@@ -97,8 +119,14 @@ export class CreateDisponibilidadeService {
             horaFim: Date;
         }[] = [];
 
+        // ----------------------------------------------------
+        // REPETIR NOS PRÓXIMOS 7 DIAS ÚTEIS
+        // ----------------------------------------------------
+
         if (repetirSeteDiasUteis) {
-            let diasUteisAdicionados = 0;
+            let diasUteisAdicionados =
+                0;
+
             let deslocamento = 0;
 
             while (
@@ -114,7 +142,9 @@ export class CreateDisponibilidadeService {
                 deslocamento++;
 
                 if (
-                    !ehDiaUtil(dataDoDia)
+                    !ehDiaUtil(
+                        dataDoDia
+                    )
                 ) {
                     continue;
                 }
@@ -129,6 +159,10 @@ export class CreateDisponibilidadeService {
                 diasUteisAdicionados++;
             }
         } else {
+            // ------------------------------------------------
+            // SOMENTE O DIA SELECIONADO
+            // ------------------------------------------------
+
             adicionarHorariosDoDia(
                 registros,
                 professorId,
@@ -137,17 +171,30 @@ export class CreateDisponibilidadeService {
             );
         }
 
-        if (registros.length === 0) {
+        // ----------------------------------------------------
+        // NENHUM HORÁRIO FUTURO
+        // ----------------------------------------------------
+
+        if (
+            registros.length === 0
+        ) {
             throw new AppError(
                 'Nenhum horário futuro válido foi informado.',
                 400
             );
         }
 
+        // ----------------------------------------------------
+        // CRIAR DISPONIBILIDADES
+        // ----------------------------------------------------
+
         const resultado =
             await prisma.disponibilidade.createMany(
                 {
                     data: registros,
+
+                    // Caso exatamente o mesmo horário
+                    // já exista, não duplica.
                     skipDuplicates: true,
                 }
             );
@@ -155,13 +202,19 @@ export class CreateDisponibilidadeService {
         return {
             message:
                 'Horários adicionados com sucesso.',
+
             quantidadeCriada:
                 resultado.count,
+
             quantidadeSolicitada:
                 registros.length,
         };
     }
 }
+
+// ============================================================
+// ADICIONAR HORÁRIOS
+// ============================================================
 
 function adicionarHorariosDoDia(
     registros: {
@@ -174,24 +227,50 @@ function adicionarHorariosDoDia(
     data: string,
     horarios: string[]
 ) {
-    const agora = new Date();
+    const agora =
+        new Date();
 
-    for (const horario of horarios) {
+    for (
+        const horario of horarios
+    ) {
         const inicio =
             criarDataHoraSaoPaulo(
                 data,
                 horario
             );
 
+        /*
+         * Por enquanto horaFim continua sendo
+         * preenchida porque seu model de
+         * Disponibilidade possui esse campo.
+         *
+         * IMPORTANTE:
+         * horaFim NÃO está sendo usada para
+         * impedir outros horários próximos.
+         *
+         * Portanto:
+         *
+         * 10:00
+         * 10:30
+         * 10:40
+         * 11:00
+         *
+         * podem coexistir.
+         *
+         * Quando você implementar duração da aula,
+         * podemos fazer horaFim refletir a duração
+         * real escolhida.
+         */
         const fim =
             new Date(
                 inicio.getTime() +
                 60 * 60 * 1000
             );
 
-        // Horários que já passaram são ignorados.
-        // Os próximos dias continuam sendo processados.
-        if (inicio <= agora) {
+        // Horários passados são ignorados.
+        if (
+            inicio <= agora
+        ) {
             continue;
         }
 
@@ -203,6 +282,68 @@ function adicionarHorariosDoDia(
         });
     }
 }
+
+// ============================================================
+// VALIDAR HORÁRIO
+// ============================================================
+
+function ehHorarioValido(
+    horario: string
+): boolean {
+    // Exige HH:mm.
+    //
+    // Exemplos:
+    // 06:40
+    // 10:00
+    // 20:15
+
+    if (
+        !/^\d{2}:\d{2}$/.test(
+            horario
+        )
+    ) {
+        return false;
+    }
+
+    const partes =
+        horario.split(':');
+
+    const horaTexto =
+        partes[0];
+
+    const minutoTexto =
+        partes[1];
+
+    if (
+        horaTexto === undefined ||
+        minutoTexto === undefined
+    ) {
+        return false;
+    }
+
+    const hora =
+        Number(
+            horaTexto
+        );
+
+    const minuto =
+        Number(
+            minutoTexto
+        );
+
+    return (
+        Number.isInteger(hora) &&
+        Number.isInteger(minuto) &&
+        hora >= 0 &&
+        hora <= 23 &&
+        minuto >= 0 &&
+        minuto <= 59
+    );
+}
+
+// ============================================================
+// DIA ÚTIL
+// ============================================================
 
 function ehDiaUtil(
     data: string
@@ -221,6 +362,10 @@ function ehDiaUtil(
     );
 }
 
+// ============================================================
+// ADICIONAR DIAS
+// ============================================================
+
 function adicionarDias(
     dataInicial: string,
     quantidade: number
@@ -228,7 +373,9 @@ function adicionarDias(
     const partes =
         dataInicial.split('-');
 
-    if (partes.length !== 3) {
+    if (
+        partes.length !== 3
+    ) {
         throw new AppError(
             'Data inicial inválida.',
             400
@@ -236,13 +383,19 @@ function adicionarDias(
     }
 
     const ano =
-        Number(partes[0]);
+        Number(
+            partes[0]
+        );
 
     const mes =
-        Number(partes[1]);
+        Number(
+            partes[1]
+        );
 
     const dia =
-        Number(partes[2]);
+        Number(
+            partes[2]
+        );
 
     if (
         Number.isNaN(ano) ||
@@ -277,16 +430,27 @@ function adicionarDias(
 
     const novoMes =
         String(
-            dataUTC.getUTCMonth() + 1
-        ).padStart(2, '0');
+            dataUTC.getUTCMonth() +
+            1
+        ).padStart(
+            2,
+            '0'
+        );
 
     const novoDia =
         String(
             dataUTC.getUTCDate()
-        ).padStart(2, '0');
+        ).padStart(
+            2,
+            '0'
+        );
 
     return `${novoAno}-${novoMes}-${novoDia}`;
 }
+
+// ============================================================
+// VALIDAR DATA
+// ============================================================
 
 function ehDataValida(
     data: string
@@ -320,13 +484,19 @@ function ehDataValida(
     }
 
     const ano =
-        Number(anoTexto);
+        Number(
+            anoTexto
+        );
 
     const mes =
-        Number(mesTexto);
+        Number(
+            mesTexto
+        );
 
     const dia =
-        Number(diaTexto);
+        Number(
+            diaTexto
+        );
 
     if (
         !Number.isInteger(ano) ||
@@ -357,6 +527,10 @@ function ehDataValida(
         dia
     );
 }
+
+// ============================================================
+// CRIAR DATA/HORA NO FUSO DE SÃO PAULO
+// ============================================================
 
 function criarDataHoraSaoPaulo(
     data: string,

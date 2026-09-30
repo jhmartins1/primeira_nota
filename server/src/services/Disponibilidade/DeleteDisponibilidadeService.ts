@@ -11,6 +11,10 @@ export class DeleteDisponibilidadeService {
         professorId,
         disponibilidadeId,
     }: DeleteDisponibilidadeDTO) {
+        // ----------------------------------------------------
+        // 1. VALIDAR PROFESSOR
+        // ----------------------------------------------------
+
         if (
             !Number.isInteger(professorId) ||
             professorId <= 0
@@ -20,6 +24,10 @@ export class DeleteDisponibilidadeService {
                 400
             );
         }
+
+        // ----------------------------------------------------
+        // 2. VALIDAR DISPONIBILIDADE
+        // ----------------------------------------------------
 
         if (
             !Number.isInteger(
@@ -33,15 +41,16 @@ export class DeleteDisponibilidadeService {
             );
         }
 
+        // ----------------------------------------------------
+        // 3. BUSCAR DISPONIBILIDADE
+        // ----------------------------------------------------
+
         const disponibilidade =
-            await prisma.disponibilidade.findUnique(
-                {
-                    where: {
-                        id:
-                            disponibilidadeId,
-                    },
-                }
-            );
+            await prisma.disponibilidade.findUnique({
+                where: {
+                    id: disponibilidadeId,
+                },
+            });
 
         if (
             !disponibilidade ||
@@ -54,43 +63,49 @@ export class DeleteDisponibilidadeService {
             );
         }
 
+        // ----------------------------------------------------
+        // 4. VERIFICAR SE EXISTE AULA AGENDADA
+        // EXATAMENTE NESSE HORÁRIO
+        //
+        // Não usamos mais o intervalo
+        // horaInicio -> horaFim.
+        //
+        // Exemplo:
+        //
+        // disponibilidade: 10:40
+        //
+        // só impede remoção se existir uma
+        // aula começando exatamente às 10:40.
+        // ----------------------------------------------------
+
         const agendamentoConflitante =
-            await prisma.agendamento.findFirst(
-                {
-                    where: {
-                        professorId,
+            await prisma.agendamento.findFirst({
+                where: {
+                    professorId,
 
-                        status:
-                            'AGENDADO',
+                    status: 'AGENDADO',
 
-                        dataHora: {
-                            gte:
-                                disponibilidade.horaInicio,
+                    dataHora:
+                        disponibilidade.horaInicio,
+                },
+            });
 
-                            lt:
-                                disponibilidade.horaFim,
-                        },
-                    },
-                }
-            );
-
-        if (
-            agendamentoConflitante
-        ) {
+        if (agendamentoConflitante) {
             throw new AppError(
                 'Já existe uma aula agendada nesse horário. Cancele a aula antes de remover este horário.',
                 409
             );
         }
 
-        await prisma.disponibilidade.delete(
-            {
-                where: {
-                    id:
-                        disponibilidadeId,
-                },
-            }
-        );
+        // ----------------------------------------------------
+        // 5. REMOVER DISPONIBILIDADE
+        // ----------------------------------------------------
+
+        await prisma.disponibilidade.delete({
+            where: {
+                id: disponibilidadeId,
+            },
+        });
 
         return {
             message:

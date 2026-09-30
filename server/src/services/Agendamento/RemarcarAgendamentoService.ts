@@ -1,5 +1,4 @@
 import { prisma } from '../../prisma/client';
-import { HORARIOS_DISPONIVEIS } from '../../utils/horarios';
 
 interface RemarcarAgendamentoDTO {
     usuarioId: number;
@@ -15,6 +14,7 @@ export class RemarcarAgendamentoService {
         agendamentoId,
         dataHora,
     }: RemarcarAgendamentoDTO) {
+        // 1. BUSCAR AGENDAMENTO
         const agendamento =
             await prisma.agendamento.findUnique({
                 where: {
@@ -28,14 +28,18 @@ export class RemarcarAgendamentoService {
             );
         }
 
+        // 2. VERIFICAR SE O AGENDAMENTO
+        // PERTENCE AO USUÁRIO
         if (
-            agendamento.usuarioId !== usuarioId
+            agendamento.usuarioId !==
+            usuarioId
         ) {
             throw new Error(
                 'Você não tem permissão para remarcar esta aula.'
             );
         }
 
+        // 3. VERIFICAR STATUS
         if (
             agendamento.status !==
             'AGENDADO'
@@ -45,6 +49,8 @@ export class RemarcarAgendamentoService {
             );
         }
 
+        // 4. A AULA ORIGINAL PRECISA
+        // AINDA ESTAR NO FUTURO
         if (
             agendamento.dataHora <=
             new Date()
@@ -54,7 +60,10 @@ export class RemarcarAgendamentoService {
             );
         }
 
-        const agora = new Date();
+        // 5. NOVA DATA/HORA PRECISA
+        // ESTAR NO FUTURO
+        const agora =
+            new Date();
 
         if (dataHora <= agora) {
             throw new Error(
@@ -62,7 +71,9 @@ export class RemarcarAgendamentoService {
             );
         }
 
-        const hoje = new Date();
+        // 6. CALCULAR JANELA DE AGENDAMENTO
+        const hoje =
+            new Date();
 
         hoje.setHours(
             0,
@@ -96,6 +107,7 @@ export class RemarcarAgendamentoService {
             0
         );
 
+        // 7. VERIFICAR LIMITE DE 14 DIAS
         if (
             dataComparar < amanha ||
             dataComparar > limite
@@ -105,33 +117,8 @@ export class RemarcarAgendamentoService {
             );
         }
 
-        const horas =
-            dataHora.getHours();
-
-        const minutos =
-            dataHora.getMinutes();
-
-        const horario =
-            `${String(horas).padStart(
-                2,
-                '0'
-            )}:${String(
-                minutos
-            ).padStart(
-                2,
-                '0'
-            )}`;
-
-        if (
-            !HORARIOS_DISPONIVEIS.includes(
-                horario
-            )
-        ) {
-            throw new Error(
-                'Horário não permitido para agendamento.'
-            );
-        }
-
+        // 8. NÃO PERMITIR REMARCAR
+        // PARA O MESMO HORÁRIO
         if (
             agendamento.dataHora.getTime() ===
             dataHora.getTime()
@@ -141,6 +128,18 @@ export class RemarcarAgendamentoService {
             );
         }
 
+        // 9. VERIFICAR DISPONIBILIDADE REAL
+        // DO PROFESSOR
+        //
+        // Não existe mais uma lista fixa de horários.
+        //
+        // Se o professor disponibilizou:
+        // 06:40
+        // 10:40
+        // 14:30
+        // 20:00
+        //
+        // qualquer um deles pode ser utilizado.
         const disponibilidade =
             await prisma.disponibilidade.findFirst({
                 where: {
@@ -157,6 +156,11 @@ export class RemarcarAgendamentoService {
                 'O professor não disponibilizou esse horário.'
             );
         }
+
+        // 10. VERIFICAR CONFLITO DO PROFESSOR
+        //
+        // Apenas o mesmo horário de início
+        // é considerado conflito.
         const conflitoProfessor =
             await prisma.agendamento.findFirst({
                 where: {
@@ -178,6 +182,8 @@ export class RemarcarAgendamentoService {
                 'Esse horário não está mais disponível para esse professor.'
             );
         }
+
+        // 11. VERIFICAR CONFLITO DO ALUNO
         const conflitoAluno =
             await prisma.agendamento.findFirst({
                 where: {
@@ -198,6 +204,8 @@ export class RemarcarAgendamentoService {
                 'Você já possui outra aula agendada nessa data e horário.'
             );
         }
+
+        // 12. ATUALIZAR AGENDAMENTO
         try {
             const agendamentoRemarcado =
                 await prisma.agendamento.update({
@@ -218,6 +226,7 @@ export class RemarcarAgendamentoService {
 
             return agendamentoRemarcado;
         } catch (error: any) {
+            // PROTEÇÃO CONTRA CONCORRÊNCIA
             if (
                 error?.code ===
                 'P2002'
@@ -225,6 +234,7 @@ export class RemarcarAgendamentoService {
                 const target =
                     error?.meta?.target;
 
+                // CONFLITO DO ALUNO
                 if (
                     Array.isArray(
                         target
@@ -241,6 +251,7 @@ export class RemarcarAgendamentoService {
                     );
                 }
 
+                // CONFLITO DO PROFESSOR
                 if (
                     Array.isArray(
                         target
