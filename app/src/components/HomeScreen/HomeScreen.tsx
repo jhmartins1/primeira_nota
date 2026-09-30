@@ -1,6 +1,6 @@
-import { colors } from '../../theme/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { colors } from '../../theme/colors';
 
 import {
     ActivityIndicator,
@@ -253,9 +253,9 @@ export default function HomeScreen() {
                             }
                         >
                             Olá,{' '}
-                            {usuario?.name?.split(
-                                ' '
-                            )[0] ??
+                            {usuario?.nomeAluno
+                                ?.trim()
+                                .split(/\s+/)[0] ??
                                 'Aluno'}
                             !
                         </Text>

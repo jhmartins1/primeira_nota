@@ -18,19 +18,47 @@ export interface Agendamento {
     instrumentoId: number;
     nivelId: number;
     dataHora: string;
-    status: 'AGENDADO' | 'CANCELADO' | 'CONCLUIDO';
+    status:
+    | 'AGENDADO'
+    | 'CANCELADO'
+    | 'CONCLUIDO';
+
     professor: Professor;
-    instrumento: { id: number; name: string };
-    nivel: { id: number; name: string };
+
+    instrumento: {
+        id: number;
+        name: string;
+    };
+
+    nivel: {
+        id: number;
+        name: string;
+    };
 }
+
+export type FaixaEtaria =
+    | 'ATE_6'
+    | 'DE_7_A_10'
+    | 'DE_11_A_14'
+    | 'DE_15_A_17'
+    | 'ADULTO';
 
 export interface Usuario {
     id: number;
+
+    // Nome da conta vindo do Clerk
     name: string;
+
+    // Dados do aluno cadastrados no Tocaê
+    nomeAluno?: string | null;
+    faixaEtaria?: FaixaEtaria | null;
+
     email: string;
     phone?: string | null;
     image?: string | null;
+
     profileComplete: boolean;
     onboardingComplete: boolean;
+
     instrumentos: InstrumentoUsuario[];
 }
