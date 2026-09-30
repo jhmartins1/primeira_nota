@@ -15,6 +15,11 @@ model Usuario {
     phone   String?
     image   String?
 
+    // Dados do aluno
+    nomeAluno   String?
+    faixaEtaria FaixaEtaria?
+
+    // Endereço
     cep         String?
     logradouro  String?
     numero      String?
@@ -128,6 +133,14 @@ model Agendamento {
     @@index([usuarioId])
     @@index([professorId])
     @@index([professorId, dataHora])
+}
+
+enum FaixaEtaria {
+    ATE_6
+    DE_7_A_10
+    DE_11_A_14
+    DE_15_A_17
+    ADULTO
 }
 
 enum StatusAgendamento {
