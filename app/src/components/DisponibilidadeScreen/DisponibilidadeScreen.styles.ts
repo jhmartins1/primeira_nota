@@ -1,7 +1,7 @@
-import { colors } from '../../theme/colors';
 import {
     StyleSheet,
 } from 'react-native';
+import { colors } from '../../theme/colors';
 
 const AZUL =
     colors.navy;
@@ -221,14 +221,17 @@ export const styles =
         modalConteudo: {
             backgroundColor:
                 colors.surface,
-            borderTopLeftRadius:
-                30,
-            borderTopRightRadius:
-                30,
-            paddingHorizontal:
-                22,
+
+            borderTopLeftRadius: 30,
+            borderTopRightRadius: 30,
+
+            paddingHorizontal: 22,
             paddingTop: 20,
-            paddingBottom: 34,
+
+            // O espaço inferior agora é controlado
+            // pelo SafeAreaInsets no ScrollView.
+            paddingBottom: 0,
+
             maxHeight: '92%',
         },
 
@@ -451,11 +454,11 @@ export const styles =
         },
 
         botaoSalvar: {
-        shadowColor: colors.navy,
-        shadowOpacity: 0.14,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 3,
+            shadowColor: colors.navy,
+            shadowOpacity: 0.14,
+            shadowRadius: 10,
+            shadowOffset: { width: 0, height: 4 },
+            elevation: 3,
             height: 52,
             borderRadius: 16,
             backgroundColor:
@@ -525,5 +528,159 @@ export const styles =
             fontSize: 12,
             fontWeight: '800',
             color: colors.danger,
+        },
+        modalScrollContent: {
+            paddingBottom: 24,
+        },
+
+        horariosPersonalizadosTitulo: {
+            fontSize: 13,
+            fontWeight: '700',
+            color: TEXTO_SECUNDARIO,
+            marginTop: 18,
+            marginBottom: 8,
+        },
+
+        botaoHorarioPersonalizado: {
+            minHeight: 48,
+            marginTop: 14,
+
+            borderRadius: 14,
+            borderWidth: 1.5,
+            borderStyle: 'dashed',
+            borderColor: colors.teal,
+
+            backgroundColor:
+                colors.tealSoft,
+
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+
+            gap: 8,
+
+            paddingHorizontal: 14,
+        },
+
+        botaoHorarioPersonalizadoTexto: {
+            fontSize: 14,
+            fontWeight: '800',
+            color: colors.navy,
+        },
+
+        horarioPersonalizadoContainer: {
+            width: '31%',
+            minHeight: 48,
+
+            borderWidth: 1,
+            borderColor: BORDA,
+            borderRadius: 12,
+
+            backgroundColor: FUNDO,
+
+            flexDirection: 'row',
+            alignItems: 'center',
+
+            overflow: 'hidden',
+        },
+
+        horarioPersonalizadoContainerSelecionado: {
+            borderColor: colors.teal,
+            backgroundColor:
+                colors.tealSoft,
+        },
+
+        horarioPersonalizadoSelecionar: {
+            flex: 1,
+
+            minHeight: 48,
+
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+
+            gap: 5,
+
+            paddingLeft: 6,
+        },
+
+        horarioPersonalizadoTexto: {
+            fontSize: 13,
+            fontWeight: '800',
+            color: TEXTO_PRINCIPAL,
+        },
+
+        horarioPersonalizadoRemover: {
+            width: 28,
+            minHeight: 48,
+
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+
+        pickerHorarioContainer: {
+            marginTop: 12,
+
+            borderRadius: 16,
+            borderWidth: 1,
+            borderColor: BORDA,
+
+            backgroundColor: FUNDO,
+
+            padding: 14,
+        },
+
+        pickerHorarioTitulo: {
+            fontSize: 13,
+            fontWeight: '800',
+            color: TEXTO_PRINCIPAL,
+
+            marginBottom: 8,
+        },
+
+        pickerHorarioAcoes: {
+            flexDirection: 'row',
+
+            gap: 10,
+
+            marginTop: 10,
+        },
+
+        botaoCancelarHorario: {
+            flex: 1,
+            height: 44,
+
+            borderRadius: 12,
+
+            borderWidth: 1,
+            borderColor: BORDA,
+
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+
+        botaoCancelarHorarioTexto: {
+            fontSize: 13,
+            fontWeight: '700',
+            color: TEXTO_SECUNDARIO,
+        },
+
+        botaoConfirmarHorario: {
+            flex: 1,
+            height: 44,
+
+            borderRadius: 12,
+
+            backgroundColor:
+                colors.navy,
+
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+
+        botaoConfirmarHorarioTexto: {
+            fontSize: 13,
+            fontWeight: '800',
+            color: colors.surface,
         },
     });
