@@ -1,7 +1,18 @@
 import { colors } from '../../theme/colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { useEffect, useState } from 'react';
+
+import {
+    MaterialCommunityIcons,
+} from '@expo/vector-icons';
+
+import DateTimePicker, {
+    DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
+
+import {
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 
 import {
     ActivityIndicator,
@@ -13,9 +24,22 @@ import {
     View,
 } from 'react-native';
 
-import { styles } from './DisponibilidadeScreen.styles';
+import {
+    useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
-const HORARIOS = [
+import {
+    styles,
+} from './DisponibilidadeScreen.styles';
+
+// ----------------------------------------------------
+// HORÁRIOS RÁPIDOS
+//
+// Eles NÃO são mais uma limitação.
+// São apenas atalhos visuais para o professor.
+// ----------------------------------------------------
+
+const HORARIOS_PADRAO = [
     '09:00',
     '10:00',
     '11:00',
@@ -42,35 +66,131 @@ export function NovoHorarioModal({
     onFechar,
     onSalvar,
 }: NovoHorarioModalProps) {
-    const [data, setData] = useState(new Date());
+    const insets =
+        useSafeAreaInsets();
+
+    const [
+        data,
+        setData,
+    ] =
+        useState(
+            new Date()
+        );
 
     const [
         horariosSelecionados,
         setHorariosSelecionados,
-    ] = useState<string[]>([]);
+    ] =
+        useState<string[]>(
+            []
+        );
+
+    const [
+        horariosPersonalizados,
+        setHorariosPersonalizados,
+    ] =
+        useState<string[]>(
+            []
+        );
 
     const [
         repetirSeteDiasUteis,
         setRepetirSeteDiasUteis,
-    ] = useState(false);
-
-    const [mostrarData, setMostrarData] =
+    ] =
         useState(false);
 
+    const [
+        mostrarData,
+        setMostrarData,
+    ] =
+        useState(false);
+
+    const [
+        mostrarHorario,
+        setMostrarHorario,
+    ] =
+        useState(false);
+
+    const [
+        horarioTemporario,
+        setHorarioTemporario,
+    ] =
+        useState(
+            criarHorarioInicial()
+        );
+
+    // ----------------------------------------------------
+    // TODOS OS HORÁRIOS MOSTRADOS
+    //
+    // Presets + personalizados.
+    // Remove duplicados e ordena.
+    // ----------------------------------------------------
+
+    const horariosDisponiveis =
+        useMemo(
+            () =>
+                Array.from(
+                    new Set([
+                        ...HORARIOS_PADRAO,
+                        ...horariosPersonalizados,
+                    ])
+                ).sort(),
+            [
+                horariosPersonalizados,
+            ]
+        );
+
     const todosSelecionados =
-        horariosSelecionados.length ===
-        HORARIOS.length;
+        horariosDisponiveis.length >
+        0 &&
+        horariosDisponiveis.every(
+            (horario) =>
+                horariosSelecionados.includes(
+                    horario
+                )
+        );
+
+    // ----------------------------------------------------
+    // RESETAR AO ABRIR
+    // ----------------------------------------------------
 
     useEffect(() => {
         if (!visivel) {
             return;
         }
 
-        setData(new Date());
-        setHorariosSelecionados([]);
-        setRepetirSeteDiasUteis(false);
-        setMostrarData(false);
+        setData(
+            new Date()
+        );
+
+        setHorariosSelecionados(
+            []
+        );
+
+        setHorariosPersonalizados(
+            []
+        );
+
+        setRepetirSeteDiasUteis(
+            false
+        );
+
+        setMostrarData(
+            false
+        );
+
+        setMostrarHorario(
+            false
+        );
+
+        setHorarioTemporario(
+            criarHorarioInicial()
+        );
     }, [visivel]);
+
+    // ----------------------------------------------------
+    // SELECIONAR / DESSELECIONAR
+    // ----------------------------------------------------
 
     function alternarHorario(
         horario: string
@@ -84,28 +204,181 @@ export function NovoHorarioModal({
                 ) {
                     return atuais.filter(
                         (item) =>
-                            item !== horario
+                            item !==
+                            horario
                     );
                 }
 
-                return [
+                return ordenarHorarios([
                     ...atuais,
                     horario,
-                ];
+                ]);
             }
         );
     }
 
+    // ----------------------------------------------------
+    // MARCAR TODOS
+    // ----------------------------------------------------
+
     function alternarTodos() {
-        if (todosSelecionados) {
-            setHorariosSelecionados([]);
+        if (
+            todosSelecionados
+        ) {
+            setHorariosSelecionados(
+                []
+            );
+
             return;
         }
 
-        setHorariosSelecionados([
-            ...HORARIOS,
-        ]);
+        setHorariosSelecionados(
+            [...horariosDisponiveis]
+        );
     }
+
+    // ----------------------------------------------------
+    // ADICIONAR HORÁRIO PERSONALIZADO
+    // ----------------------------------------------------
+
+    function adicionarHorarioPersonalizado(
+        dataHorario: Date
+    ) {
+        const horario =
+            formatarHorario(
+                dataHorario
+            );
+
+        // Se já for um horário padrão ou personalizado,
+        // apenas selecionamos.
+        if (
+            horariosDisponiveis.includes(
+                horario
+            )
+        ) {
+            setHorariosSelecionados(
+                (atuais) => {
+                    if (
+                        atuais.includes(
+                            horario
+                        )
+                    ) {
+                        return atuais;
+                    }
+
+                    return ordenarHorarios([
+                        ...atuais,
+                        horario,
+                    ]);
+                }
+            );
+
+            setMostrarHorario(
+                false
+            );
+
+            return;
+        }
+
+        setHorariosPersonalizados(
+            (atuais) =>
+                ordenarHorarios([
+                    ...atuais,
+                    horario,
+                ])
+        );
+
+        // Ao adicionar um horário personalizado,
+        // ele já fica selecionado.
+        setHorariosSelecionados(
+            (atuais) =>
+                ordenarHorarios([
+                    ...atuais,
+                    horario,
+                ])
+        );
+
+        setMostrarHorario(
+            false
+        );
+    }
+
+    // ----------------------------------------------------
+    // REMOVER HORÁRIO PERSONALIZADO
+    // ----------------------------------------------------
+
+    function removerHorarioPersonalizado(
+        horario: string
+    ) {
+        setHorariosPersonalizados(
+            (atuais) =>
+                atuais.filter(
+                    (item) =>
+                        item !==
+                        horario
+                )
+        );
+
+        setHorariosSelecionados(
+            (atuais) =>
+                atuais.filter(
+                    (item) =>
+                        item !==
+                        horario
+                )
+        );
+    }
+
+    // ----------------------------------------------------
+    // DATE TIME PICKER DE HORÁRIO
+    // ----------------------------------------------------
+
+    function handleAlterarHorario(
+        event: DateTimePickerEvent,
+        novoHorario?: Date
+    ) {
+        if (
+            Platform.OS ===
+            'android'
+        ) {
+            setMostrarHorario(
+                false
+            );
+
+            if (
+                event.type ===
+                'dismissed'
+            ) {
+                return;
+            }
+
+            if (
+                novoHorario
+            ) {
+                setHorarioTemporario(
+                    novoHorario
+                );
+
+                adicionarHorarioPersonalizado(
+                    novoHorario
+                );
+            }
+
+            return;
+        }
+
+        if (
+            novoHorario
+        ) {
+            setHorarioTemporario(
+                novoHorario
+            );
+        }
+    }
+
+    // ----------------------------------------------------
+    // SALVAR
+    // ----------------------------------------------------
 
     async function handleSalvar() {
         if (
@@ -115,10 +388,15 @@ export function NovoHorarioModal({
             return;
         }
 
+        const horariosOrdenados =
+            ordenarHorarios(
+                horariosSelecionados
+            );
+
         const sucesso =
             await onSalvar(
                 data,
-                horariosSelecionados,
+                horariosOrdenados,
                 repetirSeteDiasUteis
             );
 
@@ -141,10 +419,14 @@ export function NovoHorarioModal({
             visible={visivel}
             transparent
             animationType="slide"
-            onRequestClose={onFechar}
+            onRequestClose={
+                onFechar
+            }
         >
             <View
-                style={styles.modalFundo}
+                style={
+                    styles.modalFundo
+                }
             >
                 <View
                     style={
@@ -169,7 +451,22 @@ export function NovoHorarioModal({
                         showsVerticalScrollIndicator={
                             false
                         }
+                        keyboardShouldPersistTaps="handled"
+                        contentContainerStyle={[
+                            styles.modalScrollContent,
+
+                            {
+                                paddingBottom:
+                                    Math.max(
+                                        insets.bottom,
+                                        16
+                                    ) +
+                                    20,
+                            },
+                        ]}
                     >
+                        {/* DATA */}
+
                         <Text
                             style={
                                 styles.campoLabel
@@ -182,7 +479,9 @@ export function NovoHorarioModal({
                             style={
                                 styles.campoValor
                             }
-                            activeOpacity={0.8}
+                            activeOpacity={
+                                0.8
+                            }
                             onPress={() =>
                                 setMostrarData(
                                     true
@@ -192,7 +491,9 @@ export function NovoHorarioModal({
                             <MaterialCommunityIcons
                                 name="calendar-outline"
                                 size={18}
-                                color={colors.navy}
+                                color={
+                                    colors.navy
+                                }
                             />
 
                             <Text
@@ -208,7 +509,9 @@ export function NovoHorarioModal({
 
                         {mostrarData && (
                             <DateTimePicker
-                                value={data}
+                                value={
+                                    data
+                                }
                                 mode="date"
                                 display={
                                     Platform.OS ===
@@ -238,6 +541,8 @@ export function NovoHorarioModal({
                                 }}
                             />
                         )}
+
+                        {/* HORÁRIOS */}
 
                         <View
                             style={
@@ -272,12 +577,14 @@ export function NovoHorarioModal({
                             </TouchableOpacity>
                         </View>
 
+                        {/* HORÁRIOS PADRÃO */}
+
                         <View
                             style={
                                 styles.horariosGrade
                             }
                         >
-                            {HORARIOS.map(
+                            {HORARIOS_PADRAO.map(
                                 (
                                     horario
                                 ) => {
@@ -291,14 +598,15 @@ export function NovoHorarioModal({
                                             key={
                                                 horario
                                             }
-                                            activeOpacity={
-                                                0.8
-                                            }
                                             style={[
                                                 styles.horarioOpcao,
+
                                                 selecionado &&
                                                 styles.horarioOpcaoSelecionado,
                                             ]}
+                                            activeOpacity={
+                                                0.8
+                                            }
                                             onPress={() =>
                                                 alternarHorario(
                                                     horario
@@ -308,6 +616,7 @@ export function NovoHorarioModal({
                                             <View
                                                 style={[
                                                     styles.checkbox,
+
                                                     selecionado &&
                                                     styles.checkboxSelecionado,
                                                 ]}
@@ -316,9 +625,11 @@ export function NovoHorarioModal({
                                                     <MaterialCommunityIcons
                                                         name="check"
                                                         size={
-                                                            15
+                                                            14
                                                         }
-                                                        color={colors.surface}
+                                                        color={
+                                                            colors.surface
+                                                        }
                                                     />
                                                 )}
                                             </View>
@@ -326,6 +637,7 @@ export function NovoHorarioModal({
                                             <Text
                                                 style={[
                                                     styles.horarioOpcaoTexto,
+
                                                     selecionado &&
                                                     styles.horarioOpcaoTextoSelecionado,
                                                 ]}
@@ -340,25 +652,265 @@ export function NovoHorarioModal({
                             )}
                         </View>
 
+                        {/* HORÁRIOS PERSONALIZADOS */}
+
+                        {horariosPersonalizados.length >
+                            0 && (
+                                <>
+                                    <Text
+                                        style={
+                                            styles.horariosPersonalizadosTitulo
+                                        }
+                                    >
+                                        Horários personalizados
+                                    </Text>
+
+                                    <View
+                                        style={
+                                            styles.horariosGrade
+                                        }
+                                    >
+                                        {horariosPersonalizados.map(
+                                            (
+                                                horario
+                                            ) => {
+                                                const selecionado =
+                                                    horariosSelecionados.includes(
+                                                        horario
+                                                    );
+
+                                                return (
+                                                    <View
+                                                        key={
+                                                            horario
+                                                        }
+                                                        style={[
+                                                            styles.horarioPersonalizadoContainer,
+
+                                                            selecionado &&
+                                                            styles.horarioPersonalizadoContainerSelecionado,
+                                                        ]}
+                                                    >
+                                                        <TouchableOpacity
+                                                            style={
+                                                                styles.horarioPersonalizadoSelecionar
+                                                            }
+                                                            activeOpacity={
+                                                                0.8
+                                                            }
+                                                            onPress={() =>
+                                                                alternarHorario(
+                                                                    horario
+                                                                )
+                                                            }
+                                                        >
+                                                            <MaterialCommunityIcons
+                                                                name={
+                                                                    selecionado
+                                                                        ? 'check-circle'
+                                                                        : 'clock-outline'
+                                                                }
+                                                                size={
+                                                                    17
+                                                                }
+                                                                color={
+                                                                    selecionado
+                                                                        ? colors.teal
+                                                                        : colors.navy
+                                                                }
+                                                            />
+
+                                                            <Text
+                                                                style={
+                                                                    styles.horarioPersonalizadoTexto
+                                                                }
+                                                            >
+                                                                {
+                                                                    horario
+                                                                }
+                                                            </Text>
+                                                        </TouchableOpacity>
+
+                                                        <TouchableOpacity
+                                                            style={
+                                                                styles.horarioPersonalizadoRemover
+                                                            }
+                                                            activeOpacity={
+                                                                0.7
+                                                            }
+                                                            onPress={() =>
+                                                                removerHorarioPersonalizado(
+                                                                    horario
+                                                                )
+                                                            }
+                                                        >
+                                                            <MaterialCommunityIcons
+                                                                name="close"
+                                                                size={
+                                                                    16
+                                                                }
+                                                                color={
+                                                                    colors.danger
+                                                                }
+                                                            />
+                                                        </TouchableOpacity>
+                                                    </View>
+                                                );
+                                            }
+                                        )}
+                                    </View>
+                                </>
+                            )}
+
+                        {/* ADICIONAR OUTRO HORÁRIO */}
+
+                        <TouchableOpacity
+                            style={
+                                styles.botaoHorarioPersonalizado
+                            }
+                            activeOpacity={
+                                0.8
+                            }
+                            onPress={() => {
+                                setHorarioTemporario(
+                                    criarHorarioInicial()
+                                );
+
+                                setMostrarHorario(
+                                    true
+                                );
+                            }}
+                        >
+                            <MaterialCommunityIcons
+                                name="clock-plus-outline"
+                                size={20}
+                                color={
+                                    colors.teal
+                                }
+                            />
+
+                            <Text
+                                style={
+                                    styles.botaoHorarioPersonalizadoTexto
+                                }
+                            >
+                                Adicionar outro horário
+                            </Text>
+                        </TouchableOpacity>
+
+                        {/* PICKER DO HORÁRIO */}
+
+                        {mostrarHorario && (
+                            <View
+                                style={
+                                    styles.pickerHorarioContainer
+                                }
+                            >
+                                <Text
+                                    style={
+                                        styles.pickerHorarioTitulo
+                                    }
+                                >
+                                    Escolha o horário de início
+                                </Text>
+
+                                <DateTimePicker
+                                    value={
+                                        horarioTemporario
+                                    }
+                                    mode="time"
+                                    is24Hour
+                                    minuteInterval={
+                                        1
+                                    }
+                                    display={
+                                        Platform.OS ===
+                                            'ios'
+                                            ? 'spinner'
+                                            : 'default'
+                                    }
+                                    onChange={
+                                        handleAlterarHorario
+                                    }
+                                />
+
+                                {Platform.OS ===
+                                    'ios' && (
+                                        <View
+                                            style={
+                                                styles.pickerHorarioAcoes
+                                            }
+                                        >
+                                            <TouchableOpacity
+                                                style={
+                                                    styles.botaoCancelarHorario
+                                                }
+                                                activeOpacity={
+                                                    0.8
+                                                }
+                                                onPress={() =>
+                                                    setMostrarHorario(
+                                                        false
+                                                    )
+                                                }
+                                            >
+                                                <Text
+                                                    style={
+                                                        styles.botaoCancelarHorarioTexto
+                                                    }
+                                                >
+                                                    Cancelar
+                                                </Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={
+                                                    styles.botaoConfirmarHorario
+                                                }
+                                                activeOpacity={
+                                                    0.8
+                                                }
+                                                onPress={() =>
+                                                    adicionarHorarioPersonalizado(
+                                                        horarioTemporario
+                                                    )
+                                                }
+                                            >
+                                                <Text
+                                                    style={
+                                                        styles.botaoConfirmarHorarioTexto
+                                                    }
+                                                >
+                                                    Adicionar
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                            </View>
+                        )}
+
                         <Text
                             style={
                                 styles.infoAula
                             }
                         >
-                            Cada aula tem duração de 1 hora.
+                            Selecione os horários de início em que você estará disponível.
                         </Text>
+
+                        {/* REPETIÇÃO */}
 
                         <Text
                             style={
                                 styles.campoLabel
                             }
                         >
-                            Repetir
+                            Repetição
                         </Text>
 
                         <TouchableOpacity
                             style={[
                                 styles.repeticaoOpcao,
+
                                 !repetirSeteDiasUteis &&
                                 styles.repeticaoOpcaoSelecionada,
                             ]}
@@ -374,6 +926,7 @@ export function NovoHorarioModal({
                             <View
                                 style={[
                                     styles.radio,
+
                                     !repetirSeteDiasUteis &&
                                     styles.radioSelecionado,
                                 ]}
@@ -413,6 +966,7 @@ export function NovoHorarioModal({
                         <TouchableOpacity
                             style={[
                                 styles.repeticaoOpcao,
+
                                 repetirSeteDiasUteis &&
                                 styles.repeticaoOpcaoSelecionada,
                             ]}
@@ -428,6 +982,7 @@ export function NovoHorarioModal({
                             <View
                                 style={[
                                     styles.radio,
+
                                     repetirSeteDiasUteis &&
                                     styles.radioSelecionado,
                                 ]}
@@ -464,6 +1019,8 @@ export function NovoHorarioModal({
                             </View>
                         </TouchableOpacity>
 
+                        {/* RESUMO */}
+
                         {horariosSelecionados.length >
                             0 && (
                                 <View
@@ -473,10 +1030,10 @@ export function NovoHorarioModal({
                                 >
                                     <MaterialCommunityIcons
                                         name="information-outline"
-                                        size={
-                                            18
+                                        size={18}
+                                        color={
+                                            colors.navy
                                         }
-                                        color={colors.navy}
                                     />
 
                                     <Text
@@ -493,9 +1050,12 @@ export function NovoHorarioModal({
                                 </View>
                             )}
 
+                        {/* SALVAR */}
+
                         <TouchableOpacity
                             style={[
                                 styles.botaoSalvar,
+
                                 horariosSelecionados.length ===
                                 0 &&
                                 styles.botaoSalvarDesabilitado,
@@ -514,7 +1074,9 @@ export function NovoHorarioModal({
                         >
                             {salvando ? (
                                 <ActivityIndicator
-                                    color={colors.surface}
+                                    color={
+                                        colors.surface
+                                    }
                                 />
                             ) : (
                                 <Text
@@ -526,6 +1088,8 @@ export function NovoHorarioModal({
                                 </Text>
                             )}
                         </TouchableOpacity>
+
+                        {/* CANCELAR */}
 
                         <TouchableOpacity
                             style={
@@ -553,5 +1117,58 @@ export function NovoHorarioModal({
                 </View>
             </View>
         </Modal>
+    );
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function criarHorarioInicial() {
+    const agora =
+        new Date();
+
+    agora.setSeconds(
+        0,
+        0
+    );
+
+    return agora;
+}
+
+function formatarHorario(
+    data: Date
+) {
+    const hora =
+        String(
+            data.getHours()
+        ).padStart(
+            2,
+            '0'
+        );
+
+    const minuto =
+        String(
+            data.getMinutes()
+        ).padStart(
+            2,
+            '0'
+        );
+
+    return `${hora}:${minuto}`;
+}
+
+function ordenarHorarios(
+    horarios: string[]
+) {
+    return Array.from(
+        new Set(
+            horarios
+        )
+    ).sort(
+        (a, b) =>
+            a.localeCompare(
+                b
+            )
     );
 }
