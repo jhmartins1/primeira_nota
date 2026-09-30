@@ -3,9 +3,21 @@ import { createClerkClient } from '@clerk/backend';
 import { prisma } from '../../prisma/client';
 import { isTelefoneValido } from '../../utils/validators';
 
+type FaixaEtaria =
+    | 'ATE_6'
+    | 'DE_7_A_10'
+    | 'DE_11_A_14'
+    | 'DE_15_A_17'
+    | 'ADULTO';
+
 interface UpdateUsuarioRequest {
     clerkId: string;
+
+    nomeAluno?: string;
+    faixaEtaria?: FaixaEtaria;
+
     phone?: string;
+
     cep?: string;
     logradouro?: string;
     numero?: string;
@@ -19,12 +31,25 @@ const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY!,
 });
 
+const FAIXAS_ETARIAS_VALIDAS: FaixaEtaria[] = [
+    'ATE_6',
+    'DE_7_A_10',
+    'DE_11_A_14',
+    'DE_15_A_17',
+    'ADULTO',
+];
+
 const CAMPOS_SELECIONADOS = {
     id: true,
+
     name: true,
     email: true,
     phone: true,
     image: true,
+
+    nomeAluno: true,
+    faixaEtaria: true,
+
     cep: true,
     logradouro: true,
     numero: true,
@@ -37,7 +62,12 @@ const CAMPOS_SELECIONADOS = {
 export class UpdateUsuarioService {
     async execute({
         clerkId,
+
+        nomeAluno,
+        faixaEtaria,
+
         phone,
+
         cep,
         logradouro,
         numero,
@@ -46,7 +76,47 @@ export class UpdateUsuarioService {
         cidade,
         uf,
     }: UpdateUsuarioRequest) {
+        // =========================
+        // VALIDAR NOME DO ALUNO
+        // =========================
+
+        if (nomeAluno !== undefined) {
+            const nomeFormatado =
+                nomeAluno.trim();
+
+            if (nomeFormatado.length < 2) {
+                return new Error(
+                    'Nome do aluno inválido'
+                );
+            }
+
+            if (nomeFormatado.length > 100) {
+                return new Error(
+                    'Nome do aluno deve ter no máximo 100 caracteres'
+                );
+            }
+        }
+
+        // =========================
+        // VALIDAR FAIXA ETÁRIA
+        // =========================
+
+        if (faixaEtaria !== undefined) {
+            if (
+                !FAIXAS_ETARIAS_VALIDAS.includes(
+                    faixaEtaria
+                )
+            ) {
+                return new Error(
+                    'Faixa etária inválida'
+                );
+            }
+        }
+
+        // =========================
         // VALIDAR TELEFONE
+        // =========================
+
         if (phone !== undefined) {
             if (!isTelefoneValido(phone)) {
                 return new Error(
@@ -55,7 +125,10 @@ export class UpdateUsuarioService {
             }
         }
 
+        // =========================
         // VALIDAR CEP
+        // =========================
+
         if (cep !== undefined) {
             const cepNumeros =
                 cep.replace(/\D/g, '');
@@ -68,7 +141,20 @@ export class UpdateUsuarioService {
         }
 
         try {
-            const dadosEndereco = {
+            // =========================
+            // DADOS A SEREM ATUALIZADOS
+            // =========================
+
+            const dadosUsuario = {
+                ...(nomeAluno !== undefined && {
+                    nomeAluno:
+                        nomeAluno.trim(),
+                }),
+
+                ...(faixaEtaria !== undefined && {
+                    faixaEtaria,
+                }),
+
                 ...(phone !== undefined && {
                     phone: phone.replace(
                         /\D/g,
@@ -85,32 +171,39 @@ export class UpdateUsuarioService {
 
                 ...(logradouro !==
                     undefined && {
-                    logradouro,
+                    logradouro:
+                        logradouro.trim(),
                 }),
 
                 ...(numero !== undefined && {
-                    numero,
+                    numero: numero.trim(),
                 }),
 
                 ...(complemento !==
                     undefined && {
-                    complemento,
+                    complemento:
+                        complemento.trim(),
                 }),
 
                 ...(bairro !== undefined && {
-                    bairro,
+                    bairro: bairro.trim(),
                 }),
 
                 ...(cidade !== undefined && {
-                    cidade,
+                    cidade: cidade.trim(),
                 }),
 
                 ...(uf !== undefined && {
-                    uf,
+                    uf: uf
+                        .trim()
+                        .toUpperCase(),
                 }),
             };
 
-            // 1. PRIMEIRO TENTA LOCALIZAR PELO CLERK ID
+            // =========================
+            // 1. PROCURAR PELO CLERK ID
+            // =========================
+
             const usuarioPorClerkId =
                 await prisma.usuario.findUnique({
                     where: {
@@ -118,7 +211,7 @@ export class UpdateUsuarioService {
                     },
                 });
 
-            // USUÁRIO JÁ ESTÁ VINCULADO AO CLERK ATUAL
+            // Usuário já vinculado
             if (usuarioPorClerkId) {
                 const usuario =
                     await prisma.usuario.update({
@@ -126,7 +219,7 @@ export class UpdateUsuarioService {
                             id: usuarioPorClerkId.id,
                         },
 
-                        data: dadosEndereco,
+                        data: dadosUsuario,
 
                         select:
                             CAMPOS_SELECIONADOS,
@@ -135,13 +228,10 @@ export class UpdateUsuarioService {
                 return usuario;
             }
 
-            /*
-             * Não encontramos o clerkId.
-             *
-             * Precisamos consultar o Clerk antes de criar
-             * porque pode existir um usuário antigo no
-             * banco com o mesmo e-mail.
-             */
+            // =========================
+            // CONSULTAR CLERK
+            // =========================
+
             const clerkUser =
                 await clerkClient.users.getUser(
                     clerkId
@@ -166,7 +256,10 @@ export class UpdateUsuarioService {
             const image =
                 clerkUser.imageUrl;
 
-            // 2. VERIFICAR SE O E-MAIL JÁ EXISTE
+            // =========================
+            // 2. PROCURAR PELO E-MAIL
+            // =========================
+
             const usuarioPorEmail =
                 await prisma.usuario.findUnique({
                     where: {
@@ -174,14 +267,6 @@ export class UpdateUsuarioService {
                     },
                 });
 
-            /*
-             * O usuário já existia no nosso banco,
-             * mas estava associado a outro clerkId.
-             *
-             * Em vez de criar outro registro,
-             * vinculamos o registro existente ao
-             * clerkId atual.
-             */
             if (usuarioPorEmail) {
                 const usuario =
                     await prisma.usuario.update({
@@ -194,7 +279,8 @@ export class UpdateUsuarioService {
                             name,
                             email,
                             image,
-                            ...dadosEndereco,
+
+                            ...dadosUsuario,
                         },
 
                         select:
@@ -204,7 +290,10 @@ export class UpdateUsuarioService {
                 return usuario;
             }
 
-            // 3. USUÁRIO REALMENTE NOVO
+            // =========================
+            // 3. USUÁRIO NOVO
+            // =========================
+
             const usuario =
                 await prisma.usuario.create({
                     data: {
@@ -212,7 +301,8 @@ export class UpdateUsuarioService {
                         name,
                         email,
                         image,
-                        ...dadosEndereco,
+
+                        ...dadosUsuario,
                     },
 
                     select:

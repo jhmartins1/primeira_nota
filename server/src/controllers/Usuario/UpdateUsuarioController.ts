@@ -1,9 +1,15 @@
-import type { Request, Response } from 'express';
+import type {
+    Request,
+    Response,
+} from 'express';
 
 import { UpdateUsuarioService } from '../../services/Usuario/UpdateUsuarioService';
 
 export class UpdateUsuarioController {
-    async handle(req: Request, res: Response) {
+    async handle(
+        req: Request,
+        res: Response
+    ) {
         if (!req.clerkId) {
             return res.status(401).json({
                 error: 'Não autenticado',
@@ -11,7 +17,11 @@ export class UpdateUsuarioController {
         }
 
         const {
+            nomeAluno,
+            faixaEtaria,
+
             phone,
+
             cep,
             logradouro,
             numero,
@@ -21,19 +31,26 @@ export class UpdateUsuarioController {
             uf,
         } = req.body;
 
-        const service = new UpdateUsuarioService();
+        const service =
+            new UpdateUsuarioService();
 
-        const usuario = await service.execute({
-            clerkId: req.clerkId,
-            phone,
-            cep,
-            logradouro,
-            numero,
-            complemento,
-            bairro,
-            cidade,
-            uf,
-        });
+        const usuario =
+            await service.execute({
+                clerkId: req.clerkId,
+
+                nomeAluno,
+                faixaEtaria,
+
+                phone,
+
+                cep,
+                logradouro,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf,
+            });
 
         if (usuario instanceof Error) {
             return res.status(400).json({
@@ -41,6 +58,8 @@ export class UpdateUsuarioController {
             });
         }
 
-        return res.json(usuario);
+        return res
+            .status(200)
+            .json(usuario);
     }
 }

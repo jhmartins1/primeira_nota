@@ -2,46 +2,55 @@ import { prisma } from '../../prisma/client';
 
 export class GetOneUsuarioService {
     async execute(id: number) {
-        const usuario = await prisma.usuario.findUnique({
-            where: { id },
+        const usuario =
+            await prisma.usuario.findUnique({
+                where: {
+                    id,
+                },
 
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                image: true,
-                createdAt: true,
+                select: {
+                    id: true,
 
-                cep: true,
-                logradouro: true,
-                numero: true,
-                complemento: true,
-                bairro: true,
-                cidade: true,
-                uf: true,
+                    name: true,
+                    email: true,
+                    phone: true,
+                    image: true,
 
-                instrumentos: {
-                    select: {
-                        possuiInstrumento: true,
+                    nomeAluno: true,
+                    faixaEtaria: true,
 
-                        instrumento: {
-                            select: {
-                                id: true,
-                                name: true,
+                    createdAt: true,
+
+                    cep: true,
+                    logradouro: true,
+                    numero: true,
+                    complemento: true,
+                    bairro: true,
+                    cidade: true,
+                    uf: true,
+
+                    instrumentos: {
+                        select: {
+                            possuiInstrumento:
+                                true,
+
+                            instrumento: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
                             },
-                        },
 
-                        nivel: {
-                            select: {
-                                id: true,
-                                name: true,
+                            nivel: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
+            });
 
         if (!usuario) {
             throw new Error(
@@ -49,28 +58,63 @@ export class GetOneUsuarioService {
             );
         }
 
+        // =========================
+        // PERFIL COMPLETO
+        // =========================
+
         const profileComplete =
+            !!usuario.nomeAluno &&
+            !!usuario.faixaEtaria &&
             !!usuario.phone &&
             !!usuario.cep &&
-            !!usuario.numero;
+            !!usuario.logradouro &&
+            !!usuario.numero &&
+            !!usuario.bairro &&
+            !!usuario.cidade &&
+            !!usuario.uf;
+
+        // =========================
+        // ONBOARDING
+        // =========================
 
         const onboardingComplete =
             usuario.instrumentos.length > 0;
 
         return {
             id: usuario.id,
+
+            // Dono da conta (Clerk)
             name: usuario.name,
+
+            // Aluno
+            nomeAluno:
+                usuario.nomeAluno,
+
+            faixaEtaria:
+                usuario.faixaEtaria,
+
             email: usuario.email,
             phone: usuario.phone,
             image: usuario.image,
-            createdAt: usuario.createdAt,
 
+            createdAt:
+                usuario.createdAt,
+
+            // Endereço
             cep: usuario.cep,
-            logradouro: usuario.logradouro,
+
+            logradouro:
+                usuario.logradouro,
+
             numero: usuario.numero,
-            complemento: usuario.complemento,
+
+            complemento:
+                usuario.complemento,
+
             bairro: usuario.bairro,
+
             cidade: usuario.cidade,
+
             uf: usuario.uf,
 
             profileComplete,
@@ -80,7 +124,8 @@ export class GetOneUsuarioService {
                 usuario.instrumentos.map(
                     (item) => ({
                         instrumento:
-                            item.instrumento.name,
+                            item.instrumento
+                                .name,
 
                         nivel:
                             item.nivel.name,

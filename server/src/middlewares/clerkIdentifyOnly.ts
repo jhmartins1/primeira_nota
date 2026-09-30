@@ -1,5 +1,12 @@
-import type { Request, Response, NextFunction } from 'express';
-import { verifyToken } from '@clerk/backend';
+import type {
+    Request,
+    Response,
+    NextFunction,
+} from 'express';
+
+import {
+    verifyToken,
+} from '@clerk/backend';
 
 declare global {
     namespace Express {
@@ -15,28 +22,66 @@ export async function clerkIdentifyOnly(
     next: NextFunction
 ) {
     try {
-        const authHeader = req.headers.authorization;
+        const authHeader =
+            req.headers.authorization;
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({
-                error: 'Token não fornecido',
-            });
+        if (
+            !authHeader ||
+            !authHeader.startsWith(
+                'Bearer '
+            )
+        ) {
+            return res
+                .status(401)
+                .json({
+                    error:
+                        'Token não fornecido',
+                });
         }
 
-        const token = authHeader.replace('Bearer ', '');
+        const token =
+            authHeader.replace(
+                'Bearer ',
+                ''
+            );
 
-        const payload = await verifyToken(token, {
-            secretKey: process.env.CLERK_SECRET_KEY,
-        });
+        const payload =
+            await verifyToken(
+                token,
+                {
+                    secretKey:
+                        process.env
+                            .CLERK_SECRET_KEY,
+                }
+            );
 
-        req.clerkId = payload.sub;
+        const clerkId =
+            payload.sub;
 
-        next();
+        if (!clerkId) {
+            return res
+                .status(401)
+                .json({
+                    error:
+                        'Token sem identificação de usuário',
+                });
+        }
+
+        req.clerkId =
+            clerkId;
+
+        return next();
     } catch (error) {
-        console.error('ERRO AO IDENTIFICAR TOKEN:', error);
+        console.error(
+            'ERRO AO IDENTIFICAR TOKEN:',
+            error
+        );
 
-        return res.status(401).json({
-            error: 'Token inválido',
-        });
+        return res
+            .status(401)
+            .json({
+                error:
+                    'Token inválido',
+            });
     }
 }
