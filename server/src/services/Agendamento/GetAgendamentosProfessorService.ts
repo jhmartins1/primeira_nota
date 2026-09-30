@@ -12,7 +12,16 @@ export class GetAgendamentosProfessorService {
                     usuario: {
                         select: {
                             id: true,
+
+                            // Nome da conta / Clerk
+                            // Mantemos para compatibilidade
+                            // e fallback.
                             name: true,
+
+                            // Dados reais do aluno
+                            nomeAluno: true,
+                            faixaEtaria: true,
+
                             image: true,
                             phone: true,
 
@@ -49,23 +58,31 @@ export class GetAgendamentosProfessorService {
             return [];
         }
 
-        const usuarioIds = Array.from(
-            new Set(
-                agendamentos.map(
-                    (agendamento) =>
-                        agendamento.usuarioId
-                )
-            )
-        );
+        /*
+         * ----------------------------------------------------
+         * BUSCAR SE O ALUNO POSSUI O INSTRUMENTO
+         * ----------------------------------------------------
+         */
 
-        const instrumentoIds = Array.from(
-            new Set(
-                agendamentos.map(
-                    (agendamento) =>
-                        agendamento.instrumentoId
+        const usuarioIds =
+            Array.from(
+                new Set(
+                    agendamentos.map(
+                        (agendamento) =>
+                            agendamento.usuarioId
+                    )
                 )
-            )
-        );
+            );
+
+        const instrumentoIds =
+            Array.from(
+                new Set(
+                    agendamentos.map(
+                        (agendamento) =>
+                            agendamento.instrumentoId
+                    )
+                )
+            );
 
         const usuariosInstrumentos =
             await prisma.usuarioInstrumento.findMany({
@@ -86,6 +103,18 @@ export class GetAgendamentosProfessorService {
                 },
             });
 
+        /*
+         * ----------------------------------------------------
+         * MAPEAR:
+         *
+         * usuarioId:instrumentoId -> possuiInstrumento
+         *
+         * Exemplo:
+         *
+         * 10:3 -> true
+         * ----------------------------------------------------
+         */
+
         const mapaPossuiInstrumento =
             new Map<string, boolean>();
 
@@ -101,6 +130,12 @@ export class GetAgendamentosProfessorService {
                 item.possuiInstrumento
             );
         }
+
+        /*
+         * ----------------------------------------------------
+         * MONTAR RESPOSTA
+         * ----------------------------------------------------
+         */
 
         return agendamentos.map(
             (agendamento) => {
