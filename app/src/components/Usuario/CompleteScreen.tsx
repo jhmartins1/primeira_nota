@@ -1,8 +1,10 @@
 import { colors } from '../../theme/colors';
+
 import { useAuth } from '@clerk/expo';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+
 import {
     ActivityIndicator,
     KeyboardAvoidingView,
@@ -13,12 +15,39 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useBuscaCep } from '../../hooks/useBuscaCep';
 import { styles } from './CompleteScreen.styles';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+const FAIXAS_ETARIAS = [
+    {
+        label: 'Até 6 anos',
+        value: 'ATE_6',
+    },
+    {
+        label: '7 a 10 anos',
+        value: 'DE_7_A_10',
+    },
+    {
+        label: '11 a 14 anos',
+        value: 'DE_11_A_14',
+    },
+    {
+        label: '15 a 17 anos',
+        value: 'DE_15_A_17',
+    },
+    {
+        label: '18 anos ou mais',
+        value: 'ADULTO',
+    },
+] as const;
+
+type FaixaEtaria =
+    (typeof FAIXAS_ETARIAS)[number]['value'];
 
 export function CompleteScreen() {
     const { getToken, signOut } = useAuth();
@@ -30,22 +59,50 @@ export function CompleteScreen() {
         erroCep,
     } = useBuscaCep();
 
+    // =========================
+    // ALUNO
+    // =========================
+
+    const [nomeAluno, setNomeAluno] = useState('');
+    const [faixaEtaria, setFaixaEtaria] =
+        useState<FaixaEtaria | ''>('');
+
+    // =========================
+    // CONTATO
+    // =========================
+
     const [telefone, setTelefone] = useState('');
+
+    // =========================
+    // ENDEREÇO
+    // =========================
+
     const [cep, setCep] = useState('');
     const [logradouro, setLogradouro] = useState('');
     const [bairro, setBairro] = useState('');
     const [cidade, setCidade] = useState('');
     const [uf, setUf] = useState('');
     const [numero, setNumero] = useState('');
-    const [complemento, setComplemento] = useState('');
+    const [complemento, setComplemento] =
+        useState('');
 
-    const [carregando, setCarregando] = useState(false);
+    // =========================
+    // ESTADO DA TELA
+    // =========================
+
+    const [carregando, setCarregando] =
+        useState(false);
 
     // Erro geral da tela/API
     const [erro, setErro] = useState('');
 
     // Erro específico do telefone
-    const [erroTelefone, setErroTelefone] = useState('');
+    const [erroTelefone, setErroTelefone] =
+        useState('');
+
+    // =========================
+    // FORMATADORES
+    // =========================
 
     function formatarTelefone(valor: string) {
         const somenteNumeros = valor
@@ -87,6 +144,16 @@ export function CompleteScreen() {
         )}-${somenteNumeros.slice(5)}`;
     }
 
+    // =========================
+    // HANDLERS
+    // =========================
+
+    function limparErroGeral() {
+        if (erro) {
+            setErro('');
+        }
+    }
+
     function handleChangeTelefone(valor: string) {
         setTelefone(formatarTelefone(valor));
 
@@ -94,9 +161,7 @@ export function CompleteScreen() {
             setErroTelefone('');
         }
 
-        if (erro) {
-            setErro('');
-        }
+        limparErroGeral();
     }
 
     async function handleChangeCep(valor: string) {
@@ -104,9 +169,7 @@ export function CompleteScreen() {
 
         setCep(formatado);
 
-        if (erro) {
-            setErro('');
-        }
+        limparErroGeral();
 
         const somenteNumeros =
             formatado.replace(/\D/g, '');
@@ -121,12 +184,17 @@ export function CompleteScreen() {
                 setLogradouro(
                     endereco.logradouro
                 );
+
                 setBairro(endereco.bairro);
                 setCidade(endereco.localidade);
                 setUf(endereco.uf);
             }
         }
     }
+
+    // =========================
+    // SALVAR
+    // =========================
 
     async function handleSalvar() {
         const telefoneNumeros =
@@ -139,6 +207,35 @@ export function CompleteScreen() {
         setErro('');
         setErroTelefone('');
 
+        // =========================
+        // VALIDAÇÃO DO ALUNO
+        // =========================
+
+        if (!nomeAluno.trim()) {
+            setErro(
+                'Digite o nome do aluno.'
+            );
+            return;
+        }
+
+        if (nomeAluno.trim().length < 2) {
+            setErro(
+                'Digite um nome de aluno válido.'
+            );
+            return;
+        }
+
+        if (!faixaEtaria) {
+            setErro(
+                'Selecione a faixa etária do aluno.'
+            );
+            return;
+        }
+
+        // =========================
+        // VALIDAÇÃO DO TELEFONE
+        // =========================
+
         if (
             telefoneNumeros.length < 10 ||
             telefoneNumeros.length > 11
@@ -148,6 +245,10 @@ export function CompleteScreen() {
             );
             return;
         }
+
+        // =========================
+        // VALIDAÇÃO DO ENDEREÇO
+        // =========================
 
         if (cepNumeros.length !== 8) {
             setErro('Digite um CEP válido');
@@ -204,16 +305,28 @@ export function CompleteScreen() {
                     },
 
                     body: JSON.stringify({
+                        nomeAluno:
+                            nomeAluno.trim(),
+
+                        faixaEtaria,
+
                         phone: telefoneNumeros,
+
                         cep: cepNumeros,
+
                         logradouro:
                             logradouro.trim(),
+
                         numero: numero.trim(),
+
                         complemento:
                             complemento.trim() ||
                             undefined,
+
                         bairro: bairro.trim(),
+
                         cidade: cidade.trim(),
+
                         uf: uf.trim(),
                     }),
                 }
@@ -222,9 +335,6 @@ export function CompleteScreen() {
             const data = await response.json();
 
             if (!response.ok) {
-                // Se o próprio backend disser que
-                // o telefone é inválido, marca
-                // especificamente o campo.
                 if (
                     typeof data?.error ===
                     'string' &&
@@ -232,7 +342,9 @@ export function CompleteScreen() {
                         .toLowerCase()
                         .includes('telefone')
                 ) {
-                    setErroTelefone(data.error);
+                    setErroTelefone(
+                        data.error
+                    );
                     return;
                 }
 
@@ -259,17 +371,18 @@ export function CompleteScreen() {
         }
     }
 
+    // =========================
+    // VOLTAR PARA LOGIN
+    // =========================
+
     async function handleVoltarLogin() {
         try {
             setCarregando(true);
             setErro('');
             setErroTelefone('');
 
-            // Encerra de verdade a sessão do Clerk.
             await signOut();
 
-            // Agora o guard não considera mais
-            // o usuário autenticado.
             router.replace('/login');
         } catch (error) {
             console.log(
@@ -300,10 +413,14 @@ export function CompleteScreen() {
                         : 20
                 }
             >
+                {/* HEADER */}
+
                 <View style={styles.header}>
                     <TouchableOpacity
                         style={styles.botaoVoltar}
-                        onPress={handleVoltarLogin}
+                        onPress={
+                            handleVoltarLogin
+                        }
                         activeOpacity={0.7}
                         disabled={carregando}
                     >
@@ -332,8 +449,14 @@ export function CompleteScreen() {
                         false
                     }
                 >
-                    <View style={styles.conteudo}>
-                        <Text style={styles.titulo}>
+                    <View
+                        style={styles.conteudo}
+                    >
+                        {/* TÍTULO */}
+
+                        <Text
+                            style={styles.titulo}
+                        >
                             Falta pouco!
                             {'\n'}
 
@@ -342,22 +465,225 @@ export function CompleteScreen() {
                                     styles.tituloAzul
                                 }
                             >
-                                Complete seu cadastro
+                                Complete seu
+                                cadastro
                             </Text>
                         </Text>
 
                         <Text
-                            style={styles.subtitulo}
+                            style={
+                                styles.subtitulo
+                            }
                         >
-                            Precisamos do seu
-                            telefone e endereço para
-                            agendar suas aulas
-                            particulares.
+                            Precisamos de alguns
+                            dados do aluno, contato
+                            e endereço para agendar
+                            suas aulas particulares.
                         </Text>
 
-                        {/* CONTATO */}
+                        {/* ========================= */}
+                        {/* ALUNO */}
+                        {/* ========================= */}
 
-                        <View style={styles.card}>
+                        <View
+                            style={styles.card}
+                        >
+                            <View
+                                style={
+                                    styles.cardHeader
+                                }
+                            >
+                                <View
+                                    style={
+                                        styles.cardIcone
+                                    }
+                                >
+                                    <MaterialCommunityIcons
+                                        name="account-music-outline"
+                                        size={
+                                            19
+                                        }
+                                        color={
+                                            colors.navy
+                                        }
+                                    />
+                                </View>
+
+                                <View
+                                    style={
+                                        styles.cardTituloContainer
+                                    }
+                                >
+                                    <Text
+                                        style={
+                                            styles.cardTitulo
+                                        }
+                                    >
+                                        Aluno
+                                    </Text>
+
+                                    <Text
+                                        style={
+                                            styles.cardSubtitulo
+                                        }
+                                    >
+                                        Quem vai
+                                        fazer as
+                                        aulas
+                                    </Text>
+                                </View>
+                            </View>
+
+                            {/* NOME */}
+
+                            <View
+                                style={
+                                    styles.inputContainer
+                                }
+                            >
+                                <Text
+                                    style={
+                                        styles.label
+                                    }
+                                >
+                                    Nome do aluno
+                                </Text>
+
+                                <View
+                                    style={
+                                        styles.inputWrapper
+                                    }
+                                >
+                                    <MaterialCommunityIcons
+                                        name="account-outline"
+                                        size={
+                                            18
+                                        }
+                                        color={
+                                            colors.textSecondary
+                                        }
+                                        style={
+                                            styles.inputIcone
+                                        }
+                                    />
+
+                                    <TextInput
+                                        style={
+                                            styles.input
+                                        }
+                                        placeholder="Nome completo"
+                                        placeholderTextColor={
+                                            colors.textMuted
+                                        }
+                                        value={
+                                            nomeAluno
+                                        }
+                                        onChangeText={(
+                                            valor
+                                        ) => {
+                                            setNomeAluno(
+                                                valor
+                                            );
+
+                                            limparErroGeral();
+                                        }}
+                                        editable={
+                                            !carregando
+                                        }
+                                        autoCapitalize="words"
+                                        autoCorrect={
+                                            false
+                                        }
+                                        returnKeyType="next"
+                                        maxLength={
+                                            100
+                                        }
+                                    />
+                                </View>
+                            </View>
+
+                            {/* FAIXA ETÁRIA */}
+
+                            <View
+                                style={
+                                    styles.faixaEtariaContainer
+                                }
+                            >
+                                <Text
+                                    style={
+                                        styles.label
+                                    }
+                                >
+                                    Faixa etária
+                                </Text>
+
+                                <View
+                                    style={
+                                        styles.faixasContainer
+                                    }
+                                >
+                                    {FAIXAS_ETARIAS.map(
+                                        (
+                                            faixa
+                                        ) => {
+                                            const selecionada =
+                                                faixaEtaria ===
+                                                faixa.value;
+
+                                            return (
+                                                <TouchableOpacity
+                                                    key={
+                                                        faixa.value
+                                                    }
+                                                    style={[
+                                                        styles.faixaBotao,
+
+                                                        selecionada
+                                                            ? styles.faixaBotaoSelecionado
+                                                            : null,
+                                                    ]}
+                                                    onPress={() => {
+                                                        setFaixaEtaria(
+                                                            faixa.value
+                                                        );
+
+                                                        limparErroGeral();
+                                                    }}
+                                                    disabled={
+                                                        carregando
+                                                    }
+                                                    activeOpacity={
+                                                        0.75
+                                                    }
+                                                >
+                                                    <Text
+                                                        style={[
+                                                            styles.faixaTexto,
+
+                                                            selecionada
+                                                                ? styles.faixaTextoSelecionado
+                                                                : null,
+                                                        ]}
+                                                    >
+                                                        {
+                                                            faixa.label
+                                                        }
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            );
+                                        }
+                                    )}
+                                </View>
+                            </View>
+                        </View>
+
+                        {/* ========================= */}
+                        {/* CONTATO */}
+                        {/* ========================= */}
+
+                        <View
+                            style={styles.card}
+                        >
                             <View
                                 style={
                                     styles.cardHeader
@@ -370,8 +696,12 @@ export function CompleteScreen() {
                                 >
                                     <MaterialCommunityIcons
                                         name="phone-outline"
-                                        size={19}
-                                        color={colors.navy}
+                                        size={
+                                            19
+                                        }
+                                        color={
+                                            colors.navy
+                                        }
                                     />
                                 </View>
 
@@ -420,8 +750,12 @@ export function CompleteScreen() {
                                 >
                                     <MaterialCommunityIcons
                                         name="cellphone"
-                                        size={18}
-                                        color={colors.textSecondary}
+                                        size={
+                                            18
+                                        }
+                                        color={
+                                            colors.textSecondary
+                                        }
                                         style={
                                             styles.inputIcone
                                         }
@@ -430,12 +764,15 @@ export function CompleteScreen() {
                                     <TextInput
                                         style={[
                                             styles.input,
+
                                             erroTelefone
                                                 ? styles.inputErro
                                                 : null,
                                         ]}
                                         placeholder="(61) 98235-1199"
-                                        placeholderTextColor={colors.textMuted}
+                                        placeholderTextColor={
+                                            colors.textMuted
+                                        }
                                         keyboardType="phone-pad"
                                         value={
                                             telefone
@@ -443,7 +780,9 @@ export function CompleteScreen() {
                                         onChangeText={
                                             handleChangeTelefone
                                         }
-                                        maxLength={15}
+                                        maxLength={
+                                            15
+                                        }
                                         editable={
                                             !carregando
                                         }
@@ -465,9 +804,13 @@ export function CompleteScreen() {
                             </View>
                         </View>
 
+                        {/* ========================= */}
                         {/* ENDEREÇO */}
+                        {/* ========================= */}
 
-                        <View style={styles.card}>
+                        <View
+                            style={styles.card}
+                        >
                             <View
                                 style={
                                     styles.cardHeader
@@ -480,8 +823,12 @@ export function CompleteScreen() {
                                 >
                                     <MaterialCommunityIcons
                                         name="home-city-outline"
-                                        size={19}
-                                        color={colors.navy}
+                                        size={
+                                            19
+                                        }
+                                        color={
+                                            colors.navy
+                                        }
                                     />
                                 </View>
 
@@ -509,6 +856,8 @@ export function CompleteScreen() {
                                 </View>
                             </View>
 
+                            {/* CEP */}
+
                             <View
                                 style={
                                     styles.inputContainer
@@ -529,8 +878,12 @@ export function CompleteScreen() {
                                 >
                                     <MaterialCommunityIcons
                                         name="map-marker-outline"
-                                        size={18}
-                                        color={colors.textSecondary}
+                                        size={
+                                            18
+                                        }
+                                        color={
+                                            colors.textSecondary
+                                        }
                                         style={
                                             styles.inputIcone
                                         }
@@ -539,18 +892,25 @@ export function CompleteScreen() {
                                     <TextInput
                                         style={[
                                             styles.input,
+
                                             erroCep
                                                 ? styles.inputErro
                                                 : null,
                                         ]}
                                         placeholder="00000-000"
-                                        placeholderTextColor={colors.textMuted}
+                                        placeholderTextColor={
+                                            colors.textMuted
+                                        }
                                         keyboardType="numeric"
-                                        value={cep}
+                                        value={
+                                            cep
+                                        }
                                         onChangeText={
                                             handleChangeCep
                                         }
-                                        maxLength={9}
+                                        maxLength={
+                                            9
+                                        }
                                         editable={
                                             !carregando
                                         }
@@ -560,7 +920,9 @@ export function CompleteScreen() {
                                     {buscando && (
                                         <ActivityIndicator
                                             size="small"
-                                            color={colors.navy}
+                                            color={
+                                                colors.navy
+                                            }
                                             style={
                                                 styles.inputLoading
                                             }
@@ -574,12 +936,16 @@ export function CompleteScreen() {
                                             styles.textoErroCampo
                                         }
                                     >
-                                        {erroCep}
+                                        {
+                                            erroCep
+                                        }
                                     </Text>
                                 ) : null}
 
                                 {!!logradouro && (
                                     <>
+                                        {/* ENDEREÇO */}
+
                                         <View
                                             style={[
                                                 styles.inputContainer,
@@ -606,7 +972,9 @@ export function CompleteScreen() {
                                                     size={
                                                         18
                                                     }
-                                                    color={colors.textSecondary}
+                                                    color={
+                                                        colors.textSecondary
+                                                    }
                                                     style={
                                                         styles.inputIcone
                                                     }
@@ -617,7 +985,9 @@ export function CompleteScreen() {
                                                         styles.input
                                                     }
                                                     placeholder="Rua, avenida..."
-                                                    placeholderTextColor={colors.textMuted}
+                                                    placeholderTextColor={
+                                                        colors.textMuted
+                                                    }
                                                     value={
                                                         logradouro
                                                     }
@@ -628,13 +998,7 @@ export function CompleteScreen() {
                                                             valor
                                                         );
 
-                                                        if (
-                                                            erro
-                                                        ) {
-                                                            setErro(
-                                                                ''
-                                                            );
-                                                        }
+                                                        limparErroGeral();
                                                     }}
                                                     editable={
                                                         !carregando
@@ -643,6 +1007,8 @@ export function CompleteScreen() {
                                                 />
                                             </View>
                                         </View>
+
+                                        {/* BAIRRO */}
 
                                         <View
                                             style={[
@@ -670,7 +1036,9 @@ export function CompleteScreen() {
                                                     size={
                                                         18
                                                     }
-                                                    color={colors.textSecondary}
+                                                    color={
+                                                        colors.textSecondary
+                                                    }
                                                     style={
                                                         styles.inputIcone
                                                     }
@@ -681,7 +1049,9 @@ export function CompleteScreen() {
                                                         styles.input
                                                     }
                                                     placeholder="Bairro"
-                                                    placeholderTextColor={colors.textMuted}
+                                                    placeholderTextColor={
+                                                        colors.textMuted
+                                                    }
                                                     value={
                                                         bairro
                                                     }
@@ -692,13 +1062,7 @@ export function CompleteScreen() {
                                                             valor
                                                         );
 
-                                                        if (
-                                                            erro
-                                                        ) {
-                                                            setErro(
-                                                                ''
-                                                            );
-                                                        }
+                                                        limparErroGeral();
                                                     }}
                                                     editable={
                                                         !carregando
@@ -707,6 +1071,8 @@ export function CompleteScreen() {
                                                 />
                                             </View>
                                         </View>
+
+                                        {/* CIDADE / UF */}
 
                                         <View
                                             style={
@@ -718,7 +1084,9 @@ export function CompleteScreen() {
                                                 size={
                                                     16
                                                 }
-                                                color={colors.amberText}
+                                                color={
+                                                    colors.amberText
+                                                }
                                             />
 
                                             <Text
@@ -736,6 +1104,8 @@ export function CompleteScreen() {
                                     </>
                                 )}
                             </View>
+
+                            {/* NÚMERO + COMPLEMENTO */}
 
                             <View
                                 style={
@@ -761,9 +1131,13 @@ export function CompleteScreen() {
                                             styles.input
                                         }
                                         placeholder="123"
-                                        placeholderTextColor={colors.textMuted}
+                                        placeholderTextColor={
+                                            colors.textMuted
+                                        }
                                         keyboardType="numeric"
-                                        value={numero}
+                                        value={
+                                            numero
+                                        }
                                         onChangeText={(
                                             valor
                                         ) => {
@@ -771,11 +1145,7 @@ export function CompleteScreen() {
                                                 valor
                                             );
 
-                                            if (erro) {
-                                                setErro(
-                                                    ''
-                                                );
-                                            }
+                                            limparErroGeral();
                                         }}
                                         editable={
                                             !carregando
@@ -811,7 +1181,9 @@ export function CompleteScreen() {
                                             styles.input
                                         }
                                         placeholder="Apto 12, bloco B"
-                                        placeholderTextColor={colors.textMuted}
+                                        placeholderTextColor={
+                                            colors.textMuted
+                                        }
                                         value={
                                             complemento
                                         }
@@ -838,7 +1210,9 @@ export function CompleteScreen() {
                                 <MaterialCommunityIcons
                                     name="alert-circle-outline"
                                     size={18}
-                                    color={colors.danger}
+                                    color={
+                                        colors.danger
+                                    }
                                 />
 
                                 <Text
@@ -852,22 +1226,35 @@ export function CompleteScreen() {
                         ) : null}
                     </View>
 
-                    <View style={styles.footer}>
+                    {/* FOOTER */}
+
+                    <View
+                        style={styles.footer}
+                    >
                         <TouchableOpacity
                             style={[
                                 styles.botaoContinuar,
+
                                 carregando
                                     ? styles.botaoDesabilitado
                                     : null,
                             ]}
-                            onPress={handleSalvar}
-                            disabled={carregando}
-                            activeOpacity={0.85}
+                            onPress={
+                                handleSalvar
+                            }
+                            disabled={
+                                carregando
+                            }
+                            activeOpacity={
+                                0.85
+                            }
                         >
                             {carregando ? (
                                 <ActivityIndicator
                                     size="small"
-                                    color={colors.surface}
+                                    color={
+                                        colors.surface
+                                    }
                                 />
                             ) : (
                                 <>
@@ -881,8 +1268,12 @@ export function CompleteScreen() {
 
                                     <MaterialCommunityIcons
                                         name="arrow-right"
-                                        size={20}
-                                        color={colors.surface}
+                                        size={
+                                            20
+                                        }
+                                        color={
+                                            colors.surface
+                                        }
                                     />
                                 </>
                             )}

@@ -1,18 +1,21 @@
-import { colors } from '../../theme/colors';
 import { StyleSheet } from 'react-native';
 
+import { colors } from '../../theme/colors';
+
 const AZUL = colors.navy;
-const AZUL_CLARO = colors.tealSoft;
 const FUNDO = colors.background;
 const BORDA = colors.border;
 const TEXTO_PRINCIPAL = colors.text;
 const TEXTO_SECUNDARIO = colors.textSecondary;
-const DOURADO = colors.amberText;
 const DOURADO_FUNDO = colors.yellowSoft;
 const VERMELHO = colors.danger;
 const VERMELHO_FUNDO = colors.dangerSoft;
 
 export const styles = StyleSheet.create({
+    // =========================
+    // TELA
+    // =========================
+
     safeArea: {
         flex: 1,
         backgroundColor: FUNDO,
@@ -86,7 +89,7 @@ export const styles = StyleSheet.create({
     },
 
     // =========================
-    // CARDS DE SEÇÃO
+    // CARDS
     // =========================
 
     card: {
@@ -99,7 +102,10 @@ export const styles = StyleSheet.create({
         marginBottom: 16,
 
         shadowColor: colors.navy,
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
         shadowOpacity: 0.045,
         shadowRadius: 16,
         elevation: 2,
@@ -194,7 +200,64 @@ export const styles = StyleSheet.create({
     },
 
     // =========================
-    // PREVIEW DE ENDEREÇO
+    // FAIXA ETÁRIA
+    // =========================
+
+    faixaEtariaContainer: {
+        width: '100%',
+        marginTop: 18,
+    },
+
+    faixasContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        width: '100%',
+    },
+
+    faixaBotao: {
+        minHeight: 40,
+        paddingHorizontal: 14,
+        paddingVertical: 9,
+
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: BORDA,
+
+        backgroundColor:
+            colors.surfaceMuted,
+
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+
+    faixaBotaoSelecionado: {
+        backgroundColor: colors.navy,
+        borderColor: colors.navy,
+
+        shadowColor: colors.navy,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.12,
+        shadowRadius: 5,
+        elevation: 2,
+    },
+
+    faixaTexto: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: TEXTO_SECUNDARIO,
+    },
+
+    faixaTextoSelecionado: {
+        color: colors.surface,
+        fontWeight: '700',
+    },
+
+    // =========================
+    // PREVIEW ENDEREÇO
     // =========================
 
     enderecoPreview: {
@@ -279,7 +342,10 @@ export const styles = StyleSheet.create({
         gap: 8,
 
         shadowColor: colors.navy,
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
         shadowOpacity: 0.14,
         shadowRadius: 10,
         elevation: 3,
