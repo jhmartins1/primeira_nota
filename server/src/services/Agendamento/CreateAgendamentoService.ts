@@ -8,7 +8,7 @@ interface CreateAgendamentoDTO {
     dataHora: Date;
 }
 
-const DIAS_MAXIMOS_AGENDAMENTO = 14;
+const DIAS_MAXIMOS_AGENDAMENTO = 30;
 
 export class CreateAgendamentoService {
     async execute({

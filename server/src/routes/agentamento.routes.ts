@@ -16,6 +16,10 @@ import { RemarcarAgendamentoController } from '../controllers/Agendamento/Remarc
 
 import { RemarcarAgendamentoProfessorController } from '../controllers/Agendamento/RemarcarAgendamentoProfessorController';
 
+import {
+    CreateAgendamentosLoteController,
+} from '../controllers/Agendamento/CreateAgendamentosLoteController';
+
 const agendamentoRoutes =
     Router();
 
@@ -43,6 +47,9 @@ const remarcarAgendamentoController =
 
 const remarcarAgendamentoProfessorController =
     new RemarcarAgendamentoProfessorController();
+
+const createAgendamentosLoteController =
+    new CreateAgendamentosLoteController();
 
 // ----------------------------------------------------
 // DISPONIBILIDADE
@@ -137,6 +144,20 @@ agendamentoRoutes.patch(
     clerkAuthMiddleware,
     (req, res) =>
         cancelarAgendamentoController.handle(
+            req,
+            res
+        )
+);
+
+// ----------------------------------------------------
+// CRIAR AGENDAMENTOS EM LOTE
+// ----------------------------------------------------
+
+agendamentoRoutes.post(
+    '/lote',
+    clerkAuthMiddleware,
+    (req, res) =>
+        createAgendamentosLoteController.handle(
             req,
             res
         )
