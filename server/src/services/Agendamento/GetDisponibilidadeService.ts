@@ -30,7 +30,7 @@ interface HorarioDisponivel {
 
 const TIME_ZONE = 'America/Sao_Paulo';
 
-const DIAS_MAXIMOS_AGENDAMENTO = 14;
+const DIAS_MAXIMOS_AGENDAMENTO = 30;
 
 export class GetDisponibilidadeService {
     async execute({
